@@ -1,0 +1,24 @@
+{
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "compilerOptions": {
+    "outDir": "build",
+    "lib": ["es2015", "dom"],
+    "module": "commonjs",
+    "target": "es2015",
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "paths": {
+      "@ast/*": ["./ast/*"],
+      "@lib/*": ["./lib/*"],
+      "@visitors/*": ["./visitors/*"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true
+  },
+  "include": ["src/**/*"]
+}
