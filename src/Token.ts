@@ -1,5 +1,11 @@
+export enum KeyWord {
+  log,
+}
+
 export enum TokenType {
   WORD,
+
+  LOG,
 }
 
 export interface IToken {

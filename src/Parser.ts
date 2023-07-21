@@ -17,7 +17,7 @@ export default class Parser {
   }
 
   private statement(): IStatement {
-    if (this.match(TokenType.WORD)) return new LogStatement(this.expression())
+    if (this.match(TokenType.LOG)) return new LogStatement(this.expression())
     throw new Error('Unknown statement')
   }
 
