@@ -1,12 +1,16 @@
+export enum TokenType {
+  WORD,
+}
+
 export interface IToken {
-  getType(): string
+  getType(): TokenType
   getText(): string
 }
 
 export default class Token implements IToken {
-  constructor(private type: string, private text: string) {}
+  constructor(private type: TokenType, private text: string) {}
 
-  public getType(): string {
+  public getType(): TokenType {
     return this.type
   }
 

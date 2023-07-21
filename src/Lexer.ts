@@ -1,4 +1,4 @@
-import Token, { IToken } from 'Token'
+import Token, { IToken, TokenType } from 'Token'
 
 export interface ILexer {
   tokenize(): IToken[]
@@ -14,7 +14,7 @@ export default class Lexer implements ILexer {
 
   public tokenize(): IToken[] {
     for (const text of this.text.split(' ')) {
-      this.tokens.push(new Token('word', text))
+      this.tokens.push(new Token(TokenType.WORD, text))
     }
     return this.tokens
   }
