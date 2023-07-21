@@ -1,6 +1,9 @@
 import Lexer from 'Lexer'
+import Parser from 'Parser'
 
 const lexer = new Lexer('log helloWorld')
 const tokens = lexer.tokenize()
 
-console.log(tokens)
+const parser = new Parser(tokens)
+const ast = parser.parse()
+ast.execute()
