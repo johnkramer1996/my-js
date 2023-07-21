@@ -1,5 +1,8 @@
-import { LogStatement, ValueExpression, IStatement, IExpression } from 'ast'
 import { Token } from 'Token'
+import { IStatement } from '@ast/IStatement'
+import { IExpression } from '@ast/IExpression'
+import { LogStatement } from '@ast/LogStatement'
+import { ValueExpression } from '@ast/ValueExpression'
 
 export default class Parser {
   private tokens: Token[]
