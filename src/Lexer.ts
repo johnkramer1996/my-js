@@ -1,7 +1,4 @@
-type Token = {
-  type: string
-  text: string
-}
+import { Token } from 'Token'
 
 export interface ILexer {
   tokenize(): Token[]
