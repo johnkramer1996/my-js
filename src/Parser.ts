@@ -1,14 +1,14 @@
-import { Token } from 'Token'
+import Token, { IToken } from 'Token'
 import { IStatement } from '@ast/IStatement'
 import { IExpression } from '@ast/IExpression'
 import { LogStatement } from '@ast/LogStatement'
 import { ValueExpression } from '@ast/ValueExpression'
 
 export default class Parser {
-  private tokens: Token[]
+  private tokens: IToken[]
   private position = 0
 
-  constructor(tokens: Token[]) {
+  constructor(tokens: IToken[]) {
     this.tokens = tokens
   }
 
@@ -22,15 +22,15 @@ export default class Parser {
   }
 
   private expression(): IExpression {
-    if (this.match('word')) return new ValueExpression(this.get(-1).text)
+    if (this.match('word')) return new ValueExpression(this.get(-1).getText())
     throw new Error('Unknown expression')
   }
 
   private match(text: string): boolean {
-    return text === this.get().type ? (++this.position, true) : false
+    return text === this.get().getType() ? (++this.position, true) : false
   }
 
-  private get(relativePosition: number = 0): Token {
+  private get(relativePosition: number = 0): IToken {
     return this.tokens[this.position + relativePosition]
   }
 }

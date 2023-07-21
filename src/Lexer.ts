@@ -1,20 +1,20 @@
-import { Token } from 'Token'
+import Token, { IToken } from 'Token'
 
 export interface ILexer {
-  tokenize(): Token[]
+  tokenize(): IToken[]
 }
 
 export default class Lexer implements ILexer {
-  private tokens: Token[] = []
+  private tokens: IToken[] = []
   private text: string
 
   constructor(text: string) {
     this.text = text
   }
 
-  public tokenize(): Token[] {
+  public tokenize(): IToken[] {
     for (const text of this.text.split(' ')) {
-      this.tokens.push({ type: 'word', text })
+      this.tokens.push(new Token('word', text))
     }
     return this.tokens
   }
