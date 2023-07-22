@@ -2,6 +2,7 @@ enum TokenType {
   WORD,
   NUMBER,
   TEXT,
+  HEX_NUMBER,
 
   PLUS, // +
   MINUS, // -

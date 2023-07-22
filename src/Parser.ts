@@ -121,6 +121,7 @@ export default class Parser {
 
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(current.getText())
+    if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(String(Number.parseInt(current.getText(), 16)))
 
     throw new Error('Unknown expression ' + TokenType[current.getType()])
   }

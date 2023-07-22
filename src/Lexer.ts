@@ -43,6 +43,7 @@ export default class Lexer implements ILexer {
       else if (this.isSemikolon(char)) this.tokenizeSemikolon()
       else if (this.isLetter(char)) this.tokenizeWord()
       else if (this.isDigit(char)) this.tokenizeNumber()
+      else if (this.isOctothorp(char)) this.tokenizeHexNumber()
       else if (this.isQuote(char)) this.tokenizeText()
       else if (this.isOperator(char)) this.tokenizeOperator()
       else throw new Error(`Unknown char "${this.peek()}"`)
@@ -68,27 +69,39 @@ export default class Lexer implements ILexer {
     return (n >= 65 && n < 91) || (n >= 97 && n < 123)
   }
 
-  private isOperator(char: string): boolean {
-    return Lexer.OPERATOR_CHARS.includes(char)
-  }
-
   private isQuote(char: string): boolean {
     return Lexer.SINGLE_OR_DOUBLE_QUOTE.includes(char)
   }
 
+  private isOctothorp(char: string): boolean {
+    return char === '#'
+  }
+
+  private isHexNumber(char: string): boolean {
+    return !!~'abcdef'.indexOf(char.toLowerCase())
+  }
+
+  private isOperator(char: string): boolean {
+    return Lexer.OPERATOR_CHARS.includes(char)
+  }
+
+  private getNextChars(condition: (char: string) => boolean): string {
+    const buffer = []
+    let current = this.peek()
+    do {
+      buffer.push(current)
+      current = this.next()
+    } while (condition(current))
+    return buffer.join('')
+  }
+
   private tokenizeSemikolon(): void {
-    this.next()
+    this.skip()
     this.addToken(TokenType.SEMIKOLON)
   }
 
   private tokenizeWord(): void {
-    const str = []
-    let current = this.peek(0)
-    do {
-      str.push(current)
-      current = this.next()
-    } while (this.isLetter(current))
-    const word = str.join('')
+    const word = this.getNextChars(this.isLetter)
 
     switch (word) {
       case KeyWord[KeyWord.log]:
@@ -101,15 +114,13 @@ export default class Lexer implements ILexer {
   }
 
   private tokenizeNumber(): void {
-    const str = []
-    let current = this.peek(0)
-    do {
-      str.push(current)
-      current = this.next()
-    } while (this.isDigit(current))
-    const number = str.join('')
+    this.addToken(TokenType.NUMBER, this.getNextChars(this.isDigit))
+  }
 
-    this.addToken(TokenType.NUMBER, number)
+  private tokenizeHexNumber(): void {
+    this.skip()
+    const hexNumber = this.getNextChars((char) => this.isDigit(char) || this.isHexNumber(char))
+    this.addToken(TokenType.HEX_NUMBER, hexNumber)
   }
 
   private tokenizeText(): void {
@@ -129,7 +140,7 @@ export default class Lexer implements ILexer {
       }
       buffer.push(current)
     }
-    this.next() // skip closing ' or "
+    this.skip() // skip closing ' or "
 
     this.addToken(TokenType.TEXT, buffer.join(''))
   }
@@ -147,6 +158,10 @@ export default class Lexer implements ILexer {
         return
       }
     }
+  }
+
+  private skip(): void {
+    this.position++
   }
 
   private next(): string {
