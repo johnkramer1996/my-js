@@ -21,7 +21,7 @@ export default class Parser {
     const mainBlock = new BlockStatement()
     while (!this.match(TokenType.EOF)) {
       mainBlock.add(this.statement())
-      if (!this.match(TokenType.SEMIKOLON)) throw new Error('semikolon')
+      this.consume(TokenType.SEMIKOLON)
       while (this.match(TokenType.SEMIKOLON));
     }
     return mainBlock
@@ -83,6 +83,12 @@ export default class Parser {
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(current.getText())
     throw new Error('Unknown expression')
+  }
+
+  private consume(type: TokenType): IToken {
+    const current = this.get()
+    if (current.getType() !== type) throw new Error('Token ' + TokenType[current.getType()] + " doesn't match " + TokenType[type])
+    return current
   }
 
   private match(type: TokenType): boolean {
