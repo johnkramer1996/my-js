@@ -1,8 +1,14 @@
 import { IExpression } from './IExpression'
 
 enum Operator {
-  ADD,
-  SUBTRACT,
+  ADD = '+',
+  SUBTRACT = '-',
+  MULTIPLY = '*',
+  DIVIDE = '/',
+  REMAINDER = '%',
+  AND = '&',
+  OR = '|',
+  XOR = '^',
 }
 
 export default class BinaryExpression implements IExpression {
@@ -18,18 +24,30 @@ export default class BinaryExpression implements IExpression {
     this.expr2 = expr2
   }
 
-  public eval(): string {
+  public eval(): string | number {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
 
     const number1 = Number(value1)
     const number2 = Number(value2)
+
     switch (this.operation) {
       case Operator.ADD:
-        return String(number1 + number2)
+        return number1 + number2
       case Operator.SUBTRACT:
-        return String(number1 - number2)
-
+        return number1 - number2
+      case Operator.MULTIPLY:
+        return number1 * number2
+      case Operator.DIVIDE:
+        return number1 / number2
+      case Operator.REMAINDER:
+        return number1 % number2
+      case Operator.AND:
+        return number1 & number2
+      case Operator.XOR:
+        return number1 ^ number2
+      case Operator.OR:
+        return number1 | number2
       default:
         throw new Error('Operation ' + this.operation + ' is not supported')
     }

@@ -1,4 +1,5 @@
-import Token, { IToken, TokenType } from 'Token'
+import Token, { IToken } from 'Token'
+import TokenType from 'TokenType'
 import { IStatement } from '@ast/IStatement'
 import { IExpression } from '@ast/IExpression'
 import { LogStatement } from '@ast/LogStatement'
@@ -30,14 +31,47 @@ export default class Parser {
   }
 
   private expression(): IExpression {
-    return this.additive()
+    return this.bitwiseOr()
+  }
+
+  private bitwiseOr(): IExpression {
+    const result: IExpression = this.bitwiseXor()
+
+    if (this.match(TokenType.BAR)) return new BinaryExpression(BinaryExpression.Operator.OR, result, this.bitwiseOr())
+
+    return result
+  }
+
+  private bitwiseXor(): IExpression {
+    const result: IExpression = this.bitwiseAnd()
+
+    if (this.match(TokenType.CARET)) return new BinaryExpression(BinaryExpression.Operator.XOR, result, this.bitwiseXor())
+
+    return result
+  }
+
+  private bitwiseAnd(): IExpression {
+    const result: IExpression = this.additive()
+
+    if (this.match(TokenType.AMP)) return new BinaryExpression(BinaryExpression.Operator.AND, result, this.bitwiseAnd())
+
+    return result
   }
 
   private additive(): IExpression {
-    const result = this.primary()
+    const result = this.multiplicative()
 
     if (this.match(TokenType.PLUS)) return new BinaryExpression(BinaryExpression.Operator.ADD, result, this.additive())
     if (this.match(TokenType.MINUS)) return new BinaryExpression(BinaryExpression.Operator.SUBTRACT, result, this.additive())
+
+    return result
+  }
+
+  private multiplicative(): IExpression {
+    const result: IExpression = this.primary()
+
+    if (this.match(TokenType.STAR)) return new BinaryExpression(BinaryExpression.Operator.MULTIPLY, result, this.multiplicative())
+    if (this.match(TokenType.SLASH)) return new BinaryExpression(BinaryExpression.Operator.DIVIDE, result, this.multiplicative())
 
     return result
   }
@@ -49,8 +83,8 @@ export default class Parser {
     throw new Error('Unknown expression')
   }
 
-  private match(text: TokenType): boolean {
-    return text === this.get().getType() ? (++this.position, true) : false
+  private match(type: TokenType): boolean {
+    return type === this.get().getType() ? (++this.position, true) : false
   }
 
   private get(relativePosition: number = 0): IToken {

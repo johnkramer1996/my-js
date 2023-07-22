@@ -1,14 +1,21 @@
-import Token, { IToken, KeyWord, TokenType } from 'Token'
+import Token, { IToken, KeyWord } from 'Token'
+import TokenType from 'TokenType'
 
 export interface ILexer {
   tokenize(): IToken[]
 }
 
 export default class Lexer implements ILexer {
-  private static OPERATOR_CHARS = '+-'
+  private static OPERATOR_CHARS = '+-^&|'
   private static OPERATORS: Map<string, TokenType> = new Map([
     ['+', TokenType.PLUS],
     ['-', TokenType.MINUS],
+    ['*', TokenType.STAR],
+    ['/', TokenType.SLASH],
+    ['%', TokenType.PERCENT],
+    ['^', TokenType.CARET],
+    ['&', TokenType.AMP],
+    ['|', TokenType.BAR],
   ])
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
 
