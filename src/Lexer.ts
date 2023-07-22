@@ -10,6 +10,8 @@ export default class Lexer implements ILexer {
     ['+', TokenType.PLUS],
     ['-', TokenType.MINUS],
   ])
+  private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
+
   private tokens: IToken[] = []
   private text: string
   private length: number
@@ -26,6 +28,7 @@ export default class Lexer implements ILexer {
       if (this.isWhiteSpace(char)) this.next()
       else if (this.isLetter(char)) this.tokenizeWord()
       else if (this.isDigit(char)) this.tokenizeNumber()
+      else if (this.isQuote(char)) this.tokenizeText()
       else if (this.isOperator(char)) this.tokenizeOperator()
       else throw new Error(`Unknown char "${this.peek()}"`)
     }
@@ -45,8 +48,13 @@ export default class Lexer implements ILexer {
     const n = char.charCodeAt(0)
     return (n >= 65 && n < 91) || (n >= 97 && n < 123)
   }
+
   private isOperator(char: string): boolean {
     return Lexer.OPERATOR_CHARS.includes(char)
+  }
+
+  private isQuote(char: string): boolean {
+    return Lexer.SINGLE_OR_DOUBLE_QUOTE.includes(char)
   }
 
   private tokenizeWord(): void {
@@ -78,6 +86,16 @@ export default class Lexer implements ILexer {
     const number = str.join('')
 
     this.addToken(TokenType.NUMBER, number)
+  }
+
+  private tokenizeText(): void {
+    const singleOrDoubleQuote = this.peek()
+
+    const buffer: string[] = []
+    for (let current; (current = this.next()) !== singleOrDoubleQuote; ) buffer.push(current)
+    this.next() // skip singleOrDoubleQuote
+
+    this.addToken(TokenType.TEXT, buffer.join(''))
   }
 
   private tokenizeOperator(): void {

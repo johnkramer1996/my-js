@@ -5,6 +5,7 @@ export enum KeyWord {
 export enum TokenType {
   WORD,
   NUMBER,
+  TEXT,
 
   PLUS, // +
   MINUS, // -

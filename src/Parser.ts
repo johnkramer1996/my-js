@@ -44,7 +44,7 @@ export default class Parser {
 
   private primary(): IExpression {
     const current = this.get()
-    if (this.match(TokenType.WORD)) return new ValueExpression(current.getText())
+    if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(current.getText())
     throw new Error('Unknown expression')
   }
@@ -55,7 +55,7 @@ export default class Parser {
 
   private get(relativePosition: number = 0): IToken {
     const position = this.position + relativePosition
-    if (position >= this.tokens.length) return new Token(TokenType.EOF, '')
+    if (position >= this.size) return new Token(TokenType.EOF, '')
 
     return this.tokens[position]
   }

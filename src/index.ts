@@ -2,8 +2,8 @@ import Lexer from 'Lexer'
 import Parser from 'Parser'
 
 const program = `
-log hello
-log world
+log 'hello'
+log 'world'
 log 10 + 9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1 - 55 
 `
 
