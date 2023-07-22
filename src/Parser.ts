@@ -3,6 +3,7 @@ import { IStatement } from '@ast/IStatement'
 import { IExpression } from '@ast/IExpression'
 import { LogStatement } from '@ast/LogStatement'
 import { ValueExpression } from '@ast/ValueExpression'
+import BlockStatement from '@ast/BlockStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -13,7 +14,11 @@ export default class Parser {
   }
 
   public parse(): IStatement {
-    return this.statement()
+    const mainBlock = new BlockStatement()
+    while (this.position < this.tokens.length) {
+      mainBlock.add(this.statement())
+    }
+    return mainBlock
   }
 
   private statement(): IStatement {
