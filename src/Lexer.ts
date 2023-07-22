@@ -36,7 +36,7 @@ export default class Lexer implements ILexer {
   }
 
   public isWhiteSpace(char: string): boolean {
-    return [' ', '\n', '\t'].includes(char)
+    return [' ', '\n', '\t', '\r'].includes(char)
   }
 
   private isDigit(char: string): boolean {
