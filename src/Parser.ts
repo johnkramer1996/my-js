@@ -21,6 +21,8 @@ export default class Parser {
     const mainBlock = new BlockStatement()
     while (!this.match(TokenType.EOF)) {
       mainBlock.add(this.statement())
+      if (!this.match(TokenType.SEMIKOLON)) throw new Error('semikolon')
+      while (this.match(TokenType.SEMIKOLON));
     }
     return mainBlock
   }

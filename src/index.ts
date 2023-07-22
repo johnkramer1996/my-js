@@ -2,7 +2,7 @@ import { readFileSync } from 'fs'
 import Lexer from 'Lexer'
 import Parser from 'Parser'
 
-const program = readFileSync('log-bitwise.my-js', 'utf8')
+const program = readFileSync('log-semikolon.my-js', 'utf8')
 
 const lexer = new Lexer(program)
 const tokens = lexer.tokenize()

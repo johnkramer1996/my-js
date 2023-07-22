@@ -33,6 +33,7 @@ export default class Lexer implements ILexer {
     while (this.position < this.length) {
       const char = this.peek()
       if (this.isWhiteSpace(char)) this.next()
+      else if (this.isSemikolon(char)) this.tokenizeSemikolon()
       else if (this.isLetter(char)) this.tokenizeWord()
       else if (this.isDigit(char)) this.tokenizeNumber()
       else if (this.isQuote(char)) this.tokenizeText()
@@ -44,6 +45,10 @@ export default class Lexer implements ILexer {
 
   public isWhiteSpace(char: string): boolean {
     return [' ', '\n', '\t', '\r'].includes(char)
+  }
+
+  private isSemikolon(char: string): boolean {
+    return char === ';'
   }
 
   private isDigit(char: string): boolean {
@@ -62,6 +67,11 @@ export default class Lexer implements ILexer {
 
   private isQuote(char: string): boolean {
     return Lexer.SINGLE_OR_DOUBLE_QUOTE.includes(char)
+  }
+
+  private tokenizeSemikolon(): void {
+    this.next()
+    this.addToken(TokenType.SEMIKOLON)
   }
 
   private tokenizeWord(): void {

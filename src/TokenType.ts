@@ -16,6 +16,8 @@ enum TokenType {
   AMP, // &
   AMPAMP, // &&
 
+  SEMIKOLON, // ;
+
   LOG,
 
   EOF,
