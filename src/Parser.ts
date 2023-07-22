@@ -6,6 +6,7 @@ import { LogStatement } from '@ast/LogStatement'
 import { ValueExpression } from '@ast/ValueExpression'
 import BlockStatement from '@ast/BlockStatement'
 import BinaryExpression from '@ast/BinaryExpression'
+import UnaryExpression from '@ast/UnaryExpression'
 
 export default class Parser {
   private tokens: IToken[]
@@ -70,12 +71,25 @@ export default class Parser {
   }
 
   private multiplicative(): IExpression {
-    const result: IExpression = this.primary()
+    const result: IExpression = this.unary()
 
     if (this.match(TokenType.STAR)) return new BinaryExpression(BinaryExpression.Operator.MULTIPLY, result, this.multiplicative())
     if (this.match(TokenType.SLASH)) return new BinaryExpression(BinaryExpression.Operator.DIVIDE, result, this.multiplicative())
 
     return result
+  }
+
+  private unary(): IExpression {
+    // DELETE
+    // VOID
+    // TYPEOF
+    if (this.match(TokenType.PLUS)) return new UnaryExpression(UnaryExpression.Operator.PLUS, this.unary())
+    if (this.match(TokenType.MINUS)) return new UnaryExpression(UnaryExpression.Operator.NEGATION, this.unary())
+    if (this.match(TokenType.TILDE)) return new UnaryExpression(UnaryExpression.Operator.BITWISE_NOT, this.unary())
+    if (this.match(TokenType.EXCL)) return new UnaryExpression(UnaryExpression.Operator.LOGICAL_NOT, this.unary())
+    // AWAIT
+
+    return this.primary()
   }
 
   private primary(): IExpression {

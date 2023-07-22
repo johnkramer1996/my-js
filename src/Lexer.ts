@@ -6,14 +6,15 @@ export interface ILexer {
 }
 
 export default class Lexer implements ILexer {
-  private static OPERATOR_CHARS = '+-^&|'
-  private static OPERATORS: Map<string, TokenType> = new Map([
+  private static OPERATORS = new Map([
     ['+', TokenType.PLUS],
     ['-', TokenType.MINUS],
     ['*', TokenType.STAR],
     ['/', TokenType.SLASH],
     ['%', TokenType.PERCENT],
+    ['!', TokenType.EXCL],
     ['^', TokenType.CARET],
+    ['~', TokenType.TILDE],
     ['&', TokenType.AMP],
     ['|', TokenType.BAR],
   ])
@@ -62,7 +63,7 @@ export default class Lexer implements ILexer {
   }
 
   private isOperator(char: string): boolean {
-    return Lexer.OPERATOR_CHARS.includes(char)
+    return Lexer.OPERATORS.has(char)
   }
 
   private isQuote(char: string): boolean {
