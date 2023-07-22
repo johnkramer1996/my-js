@@ -54,9 +54,19 @@ export default class Parser {
   }
 
   private bitwiseAnd(): IExpression {
-    const result: IExpression = this.additive()
+    const result: IExpression = this.shift()
 
     if (this.match(TokenType.AMP)) return new BinaryExpression(BinaryExpression.Operator.AND, result, this.bitwiseAnd())
+
+    return result
+  }
+
+  private shift(): IExpression {
+    const result: IExpression = this.additive()
+
+    if (this.match(TokenType.LTLT)) return new BinaryExpression(BinaryExpression.Operator.LSHIFT, result, this.additive())
+    if (this.match(TokenType.GTGT)) return new BinaryExpression(BinaryExpression.Operator.RSHIFT, result, this.additive())
+    if (this.match(TokenType.GTGTGT)) return new BinaryExpression(BinaryExpression.Operator.URSHIFT, result, this.additive())
 
     return result
   }

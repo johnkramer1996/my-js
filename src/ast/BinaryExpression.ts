@@ -9,6 +9,9 @@ enum Operator {
   AND = '&',
   OR = '|',
   XOR = '^',
+  LSHIFT = '<<',
+  RSHIFT = '>>',
+  URSHIFT = '>>>',
 }
 
 export default class BinaryExpression implements IExpression {
@@ -48,6 +51,12 @@ export default class BinaryExpression implements IExpression {
         return number1 ^ number2
       case Operator.OR:
         return number1 | number2
+      case Operator.LSHIFT:
+        return number1 << number2
+      case Operator.RSHIFT:
+        return number1 >> number2
+      case Operator.URSHIFT:
+        return number1 >>> number2
       default:
         throw new Error('Operation ' + this.operation + ' is not supported')
     }

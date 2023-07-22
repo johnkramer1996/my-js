@@ -9,6 +9,10 @@ enum TokenType {
   SLASH, // /
   PERCENT, // %
 
+  LTLT, // <<
+  GTGT, // >>
+  GTGTGT, // >>>
+
   EXCL, // !
   TILDE, // ~
   CARET, // ^

@@ -17,7 +17,11 @@ export default class Lexer implements ILexer {
     ['~', TokenType.TILDE],
     ['&', TokenType.AMP],
     ['|', TokenType.BAR],
+    ['<<', TokenType.LTLT],
+    ['>>', TokenType.GTGT],
+    ['>>>', TokenType.GTGTGT],
   ])
+  private static OPERATOR_CHARS = '+-*/%()[]{}=<>!&|,^~?:'
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
 
   private tokens: IToken[] = []
@@ -63,7 +67,7 @@ export default class Lexer implements ILexer {
   }
 
   private isOperator(char: string): boolean {
-    return Lexer.OPERATORS.has(char)
+    return Lexer.OPERATOR_CHARS.includes(char)
   }
 
   private isQuote(char: string): boolean {
@@ -129,9 +133,17 @@ export default class Lexer implements ILexer {
   }
 
   private tokenizeOperator(): void {
-    const operator = this.peek()
-    this.next()
-    this.addToken(Lexer.OPERATORS.get(operator) as TokenType, operator)
+    let current = this.peek()
+    const buffer: string[] = []
+    while (true) {
+      buffer.push(current)
+      const text = buffer.join('')
+      current = this.next()
+      if (!Lexer.OPERATORS.has(text + current)) {
+        this.addToken(Lexer.OPERATORS.get(text) as TokenType, text)
+        return
+      }
+    }
   }
 
   private next(): string {
