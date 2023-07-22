@@ -22,6 +22,8 @@ enum TokenType {
   AMPAMP, // &&
 
   SEMIKOLON, // ;
+  QUESTION, // ?
+  COLON, // :
 
   LOG,
 

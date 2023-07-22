@@ -7,6 +7,7 @@ import { ValueExpression } from '@ast/ValueExpression'
 import BlockStatement from '@ast/BlockStatement'
 import BinaryExpression from '@ast/BinaryExpression'
 import UnaryExpression from '@ast/UnaryExpression'
+import TernaryExpression from '@ast/TernarExpression'
 
 export default class Parser {
   private tokens: IToken[]
@@ -34,11 +35,24 @@ export default class Parser {
   }
 
   private expression(): IExpression {
-    return this.bitwiseOr()
+    return this.ternary()
+  }
+
+  private ternary(): IExpression {
+    const result = this.bitwiseOr()
+
+    if (this.match(TokenType.QUESTION)) {
+      const trueExpr = this.expression()
+      this.consume(TokenType.COLON)
+      const falseExpr = this.expression()
+      return new TernaryExpression(result, trueExpr, falseExpr)
+    }
+
+    return result
   }
 
   private bitwiseOr(): IExpression {
-    const result: IExpression = this.bitwiseXor()
+    const result = this.bitwiseXor()
 
     if (this.match(TokenType.BAR)) return new BinaryExpression(BinaryExpression.Operator.OR, result, this.bitwiseOr())
 
@@ -46,7 +60,7 @@ export default class Parser {
   }
 
   private bitwiseXor(): IExpression {
-    const result: IExpression = this.bitwiseAnd()
+    const result = this.bitwiseAnd()
 
     if (this.match(TokenType.CARET)) return new BinaryExpression(BinaryExpression.Operator.XOR, result, this.bitwiseXor())
 
@@ -54,7 +68,7 @@ export default class Parser {
   }
 
   private bitwiseAnd(): IExpression {
-    const result: IExpression = this.shift()
+    const result = this.shift()
 
     if (this.match(TokenType.AMP)) return new BinaryExpression(BinaryExpression.Operator.AND, result, this.bitwiseAnd())
 
@@ -62,7 +76,7 @@ export default class Parser {
   }
 
   private shift(): IExpression {
-    const result: IExpression = this.additive()
+    const result = this.additive()
 
     if (this.match(TokenType.LTLT)) return new BinaryExpression(BinaryExpression.Operator.LSHIFT, result, this.additive())
     if (this.match(TokenType.GTGT)) return new BinaryExpression(BinaryExpression.Operator.RSHIFT, result, this.additive())
@@ -81,7 +95,7 @@ export default class Parser {
   }
 
   private multiplicative(): IExpression {
-    const result: IExpression = this.unary()
+    const result = this.unary()
 
     if (this.match(TokenType.STAR)) return new BinaryExpression(BinaryExpression.Operator.MULTIPLY, result, this.multiplicative())
     if (this.match(TokenType.SLASH)) return new BinaryExpression(BinaryExpression.Operator.DIVIDE, result, this.multiplicative())
@@ -104,14 +118,17 @@ export default class Parser {
 
   private primary(): IExpression {
     const current = this.get()
+
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(current.getText())
-    throw new Error('Unknown expression')
+
+    throw new Error('Unknown expression ' + TokenType[current.getType()])
   }
 
   private consume(type: TokenType): IToken {
     const current = this.get()
     if (current.getType() !== type) throw new Error('Token ' + TokenType[current.getType()] + " doesn't match " + TokenType[type])
+    ++this.position
     return current
   }
 

@@ -15,6 +15,8 @@ export default class Lexer implements ILexer {
     ['!', TokenType.EXCL],
     ['^', TokenType.CARET],
     ['~', TokenType.TILDE],
+    ['?', TokenType.QUESTION],
+    [':', TokenType.COLON],
     ['&', TokenType.AMP],
     ['|', TokenType.BAR],
     ['<<', TokenType.LTLT],
@@ -140,6 +142,7 @@ export default class Lexer implements ILexer {
       const text = buffer.join('')
       current = this.next()
       if (!Lexer.OPERATORS.has(text + current)) {
+        if (!Lexer.OPERATORS.has(text)) throw new Error(`Token ${text} not found`)
         this.addToken(Lexer.OPERATORS.get(text) as TokenType, text)
         return
       }
