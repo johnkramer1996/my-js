@@ -1,21 +1,7 @@
+import TokenType from 'TokenType'
+
 export enum KeyWord {
   log,
-}
-
-export enum TokenType {
-  WORD,
-  NUMBER,
-  TEXT,
-
-  PLUS, // +
-  MINUS, // -
-  STAR, // *
-  SLASH, // /
-  PERCENT, // %
-
-  LOG,
-
-  EOF,
 }
 
 export interface IToken {
