@@ -4,8 +4,17 @@ export enum KeyWord {
 
 export enum TokenType {
   WORD,
+  NUMBER,
+
+  PLUS, // +
+  MINUS, // -
+  STAR, // *
+  SLASH, // /
+  PERCENT, // %
 
   LOG,
+
+  EOF,
 }
 
 export interface IToken {

@@ -5,6 +5,11 @@ export interface ILexer {
 }
 
 export default class Lexer implements ILexer {
+  private static OPERATOR_CHARS = '+-'
+  private static OPERATORS: Map<string, TokenType> = new Map([
+    ['+', TokenType.PLUS],
+    ['-', TokenType.MINUS],
+  ])
   private tokens: IToken[] = []
   private text: string
   private length: number
@@ -17,23 +22,34 @@ export default class Lexer implements ILexer {
 
   public tokenize(): IToken[] {
     while (this.position < this.length) {
-      if (this.isWhiteSpace()) this.next()
-      else if (this.isLetter()) this.tokenizeWord()
+      const char = this.peek()
+      if (this.isWhiteSpace(char)) this.next()
+      else if (this.isLetter(char)) this.tokenizeWord()
+      else if (this.isDigit(char)) this.tokenizeNumber()
+      else if (this.isOperator(char)) this.tokenizeOperator()
       else throw new Error(`Unknown char "${this.peek()}"`)
     }
     return this.tokens
   }
 
-  public isWhiteSpace(char: string = this.peek()): boolean {
+  public isWhiteSpace(char: string): boolean {
     return [' ', '\n', '\t'].includes(char)
   }
 
-  public isLetter(char: string = this.peek()): boolean {
+  private isDigit(char: string): boolean {
+    const n = char.charCodeAt(0)
+    return n >= 48 && n < 58
+  }
+
+  public isLetter(char: string): boolean {
     const n = char.charCodeAt(0)
     return (n >= 65 && n < 91) || (n >= 97 && n < 123)
   }
+  private isOperator(char: string): boolean {
+    return Lexer.OPERATOR_CHARS.includes(char)
+  }
 
-  public tokenizeWord(): void {
+  private tokenizeWord(): void {
     const str = []
     let current = this.peek(0)
     do {
@@ -50,6 +66,24 @@ export default class Lexer implements ILexer {
         this.addToken(TokenType.WORD, word)
         return
     }
+  }
+
+  private tokenizeNumber(): void {
+    const str = []
+    let current = this.peek(0)
+    do {
+      str.push(current)
+      current = this.next()
+    } while (this.isDigit(current))
+    const number = str.join('')
+
+    this.addToken(TokenType.NUMBER, number)
+  }
+
+  private tokenizeOperator(): void {
+    const operator = this.peek()
+    this.next()
+    this.addToken(Lexer.OPERATORS.get(operator) as TokenType, operator)
   }
 
   private next(): string {
