@@ -85,16 +85,6 @@ export default class Lexer implements ILexer {
     return Lexer.OPERATOR_CHARS.includes(char)
   }
 
-  private getNextChars(condition: (char: string) => boolean): string {
-    const buffer = []
-    let current = this.peek()
-    do {
-      buffer.push(current)
-      current = this.next()
-    } while (condition(current))
-    return buffer.join('')
-  }
-
   private tokenizeSemikolon(): void {
     this.skip()
     this.addToken(TokenType.SEMIKOLON)
@@ -125,8 +115,8 @@ export default class Lexer implements ILexer {
 
   private tokenizeText(): void {
     const singleOrDoubleQuote = this.peek()
-
     const buffer: string[] = []
+
     for (let current: string; (current = this.next()) !== singleOrDoubleQuote; ) {
       if (current === '\\') {
         current = this.next()
@@ -140,13 +130,21 @@ export default class Lexer implements ILexer {
       }
       buffer.push(current)
     }
-    this.skip() // skip closing ' or "
 
+    this.skip()
     this.addToken(TokenType.TEXT, buffer.join(''))
   }
 
   private tokenizeOperator(): void {
     let current = this.peek()
+    if (current === '/') {
+      const next = this.peek(1)
+      if (next === '/' || next === '*') {
+        this.skip()
+        next === '/' ? this.tokenizeComment() : this.tokenizeMultilineComment()
+        return
+      }
+    }
     const buffer: string[] = []
     while (true) {
       buffer.push(current)
@@ -160,12 +158,38 @@ export default class Lexer implements ILexer {
     }
   }
 
+  private tokenizeComment(): void {
+    while (!'\r\n\0'.includes(this.next()));
+  }
+
+  private tokenizeMultilineComment(): void {
+    while (true) {
+      let current = this.next()
+      if (current === '\0') throw new Error('Reached end of file while parsing multiline comment')
+      if (current === '*' && this.peek(1) == '/') {
+        this.skip()
+        this.skip()
+        return
+      }
+    }
+  }
+
+  private getNextChars(condition: (char: string) => boolean): string {
+    const buffer = []
+    let current = this.peek()
+    do {
+      buffer.push(current)
+      current = this.next()
+    } while (condition(current))
+    return buffer.join('')
+  }
+
   private skip(): void {
-    this.position++
+    ++this.position
   }
 
   private next(): string {
-    this.position++
+    ++this.position
     return this.peek()
   }
 
