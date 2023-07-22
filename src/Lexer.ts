@@ -92,8 +92,20 @@ export default class Lexer implements ILexer {
     const singleOrDoubleQuote = this.peek()
 
     const buffer: string[] = []
-    for (let current; (current = this.next()) !== singleOrDoubleQuote; ) buffer.push(current)
-    this.next() // skip singleOrDoubleQuote
+    for (let current: string; (current = this.next()) !== singleOrDoubleQuote; ) {
+      if (current === '\\') {
+        current = this.next()
+        const escape = [
+          { char: 'n', escape: '\n' },
+          { char: 't', escape: '\t' },
+        ].find(({ char }) => char === current)
+
+        buffer.push(escape ? escape.escape : '\\')
+        continue
+      }
+      buffer.push(current)
+    }
+    this.next() // skip closing ' or "
 
     this.addToken(TokenType.TEXT, buffer.join(''))
   }
