@@ -1,4 +1,6 @@
+import IValue from '@lib/IValue'
 import { IExpression } from './IExpression'
+import NumberValue from '@lib/NumberValue'
 
 enum Operator {
   DELETE = 'delete',
@@ -22,17 +24,17 @@ export default class UnaryExpression implements IExpression {
     this.expression = expression
   }
 
-  public eval(): string | number {
-    const value = Number(this.expression.eval())
+  public eval(): IValue {
+    const value = this.expression.eval().asNumber()
     switch (this.operation) {
       case Operator.PLUS:
-        return Number(value)
+        return new NumberValue(value)
       case Operator.NEGATION:
-        return -value
+        return new NumberValue(-value)
       case Operator.LOGICAL_NOT:
-        return !!value ? 1 : 0
+        return new NumberValue(!!value ? 1 : 0)
       case Operator.BITWISE_NOT:
-        return ~value
+        return new NumberValue(~value)
       default:
         throw new Error('Operation ' + this.operation + ' is not supported')
     }

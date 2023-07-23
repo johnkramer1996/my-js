@@ -174,6 +174,10 @@ export default class Parser {
     return type === this.get().getType() ? (++this.position, true) : false
   }
 
+  private lookMatch(pos: number, type: TokenType): boolean {
+    return this.get(pos).getType() === type
+  }
+
   private get(relativePosition: number = 0): IToken {
     const position = this.position + relativePosition
     if (position >= this.size) return new Token(TokenType.EOF, '')

@@ -1,4 +1,7 @@
+import IValue from '@lib/IValue'
 import { IExpression } from './IExpression'
+import BooleanValue from '@lib/BooleanValue'
+import NumberValue from '@lib/NumberValue'
 
 enum Operator {
   EQUALS = '==',
@@ -16,14 +19,14 @@ export default class ConditionalExpression implements IExpression {
 
   constructor(private operation: Operator, private expr1: IExpression, private expr2: IExpression) {}
 
-  public eval(): string | number {
+  public eval(): IValue {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
 
-    const isNumber = typeof value1 === 'number' || typeof value2 === 'number'
-    const compareString: number = isNumber ? 0 : String(value1).localeCompare(String(value2))
-    const number1 = isNumber ? value1 : compareString
-    const number2 = isNumber ? value2 : 0
+    const isNumber = value1 instanceof NumberValue || value2 instanceof NumberValue
+    const compareString = isNumber ? 0 : value1.asString().localeCompare(value2.asString())
+    const number1 = isNumber ? value1.asNumber() : compareString
+    const number2 = isNumber ? value2.asNumber() : 0
 
     let result: boolean
     switch (this.operation) {
@@ -54,7 +57,6 @@ export default class ConditionalExpression implements IExpression {
       default:
         throw new Error('Operation ' + this.operation + ' is not supported')
     }
-
-    return result ? 1 : 0
+    return BooleanValue[result ? 'TRUE' : 'FALSE']
   }
 }

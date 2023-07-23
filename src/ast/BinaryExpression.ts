@@ -1,4 +1,6 @@
+import IValue from '@lib/IValue'
 import { IExpression } from './IExpression'
+import NumberValue from '@lib/NumberValue'
 
 enum Operator {
   ADD = '+',
@@ -27,38 +29,53 @@ export default class BinaryExpression implements IExpression {
     this.expr2 = expr2
   }
 
-  public eval(): string | number {
+  public eval(): IValue {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
 
-    const number1 = Number(value1)
-    const number2 = Number(value2)
+    const number1 = value1.asNumber()
+    const number2 = value2.asNumber()
+
+    let result: number
 
     switch (this.operation) {
       case Operator.ADD:
-        return number1 + number2
+        result = number1 + number2
+        break
       case Operator.SUBTRACT:
-        return number1 - number2
+        result = number1 - number2
+        break
       case Operator.MULTIPLY:
-        return number1 * number2
+        result = number1 * number2
+        break
       case Operator.DIVIDE:
-        return number1 / number2
+        result = number1 / number2
+        break
       case Operator.REMAINDER:
-        return number1 % number2
+        result = number1 % number2
+        break
       case Operator.AND:
-        return number1 & number2
+        result = number1 & number2
+        break
       case Operator.XOR:
-        return number1 ^ number2
+        result = number1 ^ number2
+        break
       case Operator.OR:
-        return number1 | number2
+        result = number1 | number2
+        break
       case Operator.LSHIFT:
-        return number1 << number2
+        result = number1 << number2
+        break
       case Operator.RSHIFT:
-        return number1 >> number2
+        result = number1 >> number2
+        break
       case Operator.URSHIFT:
-        return number1 >>> number2
+        result = number1 >>> number2
+        break
       default:
         throw new Error('Operation ' + this.operation + ' is not supported')
     }
+
+    return new NumberValue(result)
   }
 }
