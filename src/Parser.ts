@@ -9,6 +9,7 @@ import BinaryExpression from '@ast/BinaryExpression'
 import UnaryExpression from '@ast/UnaryExpression'
 import TernaryExpression from '@ast/TernarExpression'
 import ConditionalExpression from '@ast/ConditionalExpression'
+import VariableExpression from '@ast/VariableExpression'
 
 export default class Parser {
   private tokens: IToken[]
@@ -156,6 +157,7 @@ export default class Parser {
   private primary(): IExpression {
     const current = this.get()
 
+    if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
