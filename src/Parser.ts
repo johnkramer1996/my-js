@@ -15,6 +15,8 @@ import WhileStatement from '@ast/WhileStatement'
 import DoWhileStatement from '@ast/DoWhileStatement'
 import ForStatement from '@ast/ForStatement'
 import AssignmentStatement from '@ast/AssignmentStatement'
+import BreakStatement from '@ast/BreakStatement'
+import ContinueStatement from '@ast/ContinueStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -56,6 +58,8 @@ export default class Parser {
     if (this.match(TokenType.WHILE)) return this.whileStatement()
     if (this.match(TokenType.DO)) return this.doWhileStatement()
     if (this.match(TokenType.FOR)) return this.forStatement()
+    if (this.match(TokenType.BREAK)) return new BreakStatement()
+    if (this.match(TokenType.CONTINUE)) return new ContinueStatement()
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
     throw new Error('Unknown statement' + this.get())
   }

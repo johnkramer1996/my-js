@@ -7,6 +7,8 @@ export enum KeyWord {
   while,
   for,
   do,
+  break,
+  continue,
 }
 
 export interface IToken {

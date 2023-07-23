@@ -130,6 +130,12 @@ export default class Lexer implements ILexer {
       case KeyWord[KeyWord.do]:
         this.addToken(TokenType.DO, word)
         break
+      case KeyWord[KeyWord.break]:
+        this.addToken(TokenType.BREAK, word)
+        break
+      case KeyWord[KeyWord.continue]:
+        this.addToken(TokenType.CONTINUE, word)
+        break
       default:
         this.addToken(TokenType.WORD, word)
         return
