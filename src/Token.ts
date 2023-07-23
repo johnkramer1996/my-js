@@ -4,6 +4,9 @@ export enum KeyWord {
   log,
   if,
   else,
+  while,
+  for,
+  do,
 }
 
 export interface IToken {
@@ -12,7 +15,7 @@ export interface IToken {
 }
 
 export default class Token implements IToken {
-  constructor(private type: TokenType, private text: string) {}
+  constructor(private type: TokenType, private text: string, private row: number, private col: number) {}
 
   public getType(): TokenType {
     return this.type
@@ -20,5 +23,21 @@ export default class Token implements IToken {
 
   public getText(): string {
     return this.text
+  }
+
+  public getRow(): number {
+    return this.row
+  }
+
+  public getCol(): number {
+    return this.col
+  }
+
+  public position(): string {
+    return '[' + this.getRow() + ' ' + this.getCol() + ']'
+  }
+
+  public toString(): string {
+    return `${TokenType[this.type]} ${this.position()} "${this.text}"`
   }
 }

@@ -11,6 +11,10 @@ import TernaryExpression from '@ast/TernarExpression'
 import ConditionalExpression from '@ast/ConditionalExpression'
 import VariableExpression from '@ast/VariableExpression'
 import IfStatement from '@ast/IfStatement'
+import WhileStatement from '@ast/WhileStatement'
+import DoWhileStatement from '@ast/DoWhileStatement'
+import ForStatement from '@ast/ForStatement'
+import AssignmentStatement from '@ast/AssignmentStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -49,7 +53,11 @@ export default class Parser {
   private statement(): IStatement {
     if (this.match(TokenType.LOG)) return new LogStatement(this.expression())
     if (this.match(TokenType.IF)) return this.ifElse()
-    throw new Error('Unknown statement' + TokenType[this.get().getType()])
+    if (this.match(TokenType.WHILE)) return this.whileStatement()
+    if (this.match(TokenType.DO)) return this.doWhileStatement()
+    if (this.match(TokenType.FOR)) return this.forStatement()
+    if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
+    throw new Error('Unknown statement' + this.get())
   }
 
   private ifElse(): IStatement {
@@ -58,6 +66,42 @@ export default class Parser {
     const elseStatement = this.match(TokenType.ELSE) ? this.statementOrBlock() : null
 
     return new IfStatement(condition, ifStatement, elseStatement)
+  }
+
+  private whileStatement(): IStatement {
+    const condition = this.expression()
+    const statement = this.statementOrBlock()
+    return new WhileStatement(condition, statement)
+  }
+
+  private doWhileStatement(): IStatement {
+    const statement = this.statementOrBlock()
+    this.consume(TokenType.WHILE)
+    const condition = this.expression()
+    return new DoWhileStatement(condition, statement)
+  }
+
+  private forStatement(): IStatement {
+    this.match(TokenType.LPAREN)
+    const initialization = this.assignmentStatement()
+    this.consume(TokenType.COMMA)
+    const termination = this.expression()
+    this.consume(TokenType.COMMA)
+    const increment = this.assignmentStatement()
+    this.match(TokenType.RPAREN)
+    const statement = this.statementOrBlock()
+    return new ForStatement(initialization, termination, increment, statement)
+  }
+
+  private assignmentStatement(): IStatement {
+    const variable = this.consume(TokenType.WORD).getText()
+    if (this.lookMatch(0, TokenType.EQ)) {
+      this.consume(TokenType.EQ)
+      return new AssignmentStatement(variable, this.expression())
+    }
+    return new AssignmentStatement(variable, new ValueExpression(0))
+
+    throw new Error('Unknown statement ' + this.get(0))
   }
 
   private expression(): IExpression {
@@ -186,12 +230,12 @@ export default class Parser {
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
 
-    throw new Error('Unknown expression ' + TokenType[current.getType()])
+    throw new Error('Unknown expression ' + current)
   }
 
   private consume(type: TokenType): IToken {
     const current = this.get()
-    if (current.getType() !== type) throw new Error('Token ' + TokenType[current.getType()] + " doesn't match " + TokenType[type])
+    if (current.getType() !== type) throw this.error('Token ' + TokenType[current.getType()] + " doesn't match " + TokenType[type])
     ++this.position
     return current
   }
@@ -206,8 +250,12 @@ export default class Parser {
 
   private get(relativePosition: number = 0): IToken {
     const position = this.position + relativePosition
-    if (position >= this.size) return new Token(TokenType.EOF, '')
+    if (position >= this.size) return new Token(TokenType.EOF, '', -1, -1)
 
     return this.tokens[position]
+  }
+
+  private error(text: string): Error {
+    return new Error(text)
   }
 }

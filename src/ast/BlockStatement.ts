@@ -1,3 +1,4 @@
+import Variables from '@lib/Variables'
 import { IStatement } from './IStatement'
 
 export default class BlockStatement implements IStatement {

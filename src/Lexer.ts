@@ -46,6 +46,8 @@ export default class Lexer implements ILexer {
   private text: string
   private length: number
   private position = 0
+  private row = 1
+  private col = 1
 
   constructor(text: string) {
     this.text = text
@@ -62,7 +64,7 @@ export default class Lexer implements ILexer {
       else if (this.isOctothorp(char)) this.tokenizeHexNumber()
       else if (this.isQuote(char)) this.tokenizeText()
       else if (this.isOperator(char)) this.tokenizeOperator()
-      else throw new Error(`Unknown char "${this.peek()}"`)
+      else throw this.error(`Unknown char "${this.peek()}"`)
     }
     return this.tokens
   }
@@ -102,7 +104,7 @@ export default class Lexer implements ILexer {
   }
 
   private tokenizeSemikolon(): void {
-    this.skip()
+    this.next()
     this.addToken(TokenType.SEMIKOLON)
   }
 
@@ -119,6 +121,15 @@ export default class Lexer implements ILexer {
       case KeyWord[KeyWord.else]:
         this.addToken(TokenType.ELSE, word)
         break
+      case KeyWord[KeyWord.while]:
+        this.addToken(TokenType.WHILE, word)
+        break
+      case KeyWord[KeyWord.for]:
+        this.addToken(TokenType.FOR, word)
+        break
+      case KeyWord[KeyWord.do]:
+        this.addToken(TokenType.DO, word)
+        break
       default:
         this.addToken(TokenType.WORD, word)
         return
@@ -130,7 +141,7 @@ export default class Lexer implements ILexer {
   }
 
   private tokenizeHexNumber(): void {
-    this.skip()
+    this.next()
     const hexNumber = this.getNextChars((char) => this.isDigit(char) || this.isHexNumber(char))
     this.addToken(TokenType.HEX_NUMBER, hexNumber)
   }
@@ -153,7 +164,7 @@ export default class Lexer implements ILexer {
       buffer.push(current)
     }
 
-    this.skip()
+    this.next()
     this.addToken(TokenType.TEXT, buffer.join(''))
   }
 
@@ -162,7 +173,7 @@ export default class Lexer implements ILexer {
     if (current === '/') {
       const next = this.peek(1)
       if (next === '/' || next === '*') {
-        this.skip()
+        this.next()
         next === '/' ? this.tokenizeComment() : this.tokenizeMultilineComment()
         return
       }
@@ -173,7 +184,7 @@ export default class Lexer implements ILexer {
       const text = buffer.join('')
       current = this.next()
       if (!Lexer.OPERATORS.has(text + current)) {
-        if (!Lexer.OPERATORS.has(text)) throw new Error(`Token ${text} not found`)
+        if (!Lexer.OPERATORS.has(text)) throw this.error(`Token ${text} not found`)
         this.addToken(Lexer.OPERATORS.get(text) as TokenType, text)
         return
       }
@@ -187,10 +198,10 @@ export default class Lexer implements ILexer {
   private tokenizeMultilineComment(): void {
     while (true) {
       let current = this.next()
-      if (current === '\0') throw new Error('Reached end of file while parsing multiline comment')
+      if (current === '\0') throw this.error('Reached end of file while parsing multiline comment')
       if (current === '*' && this.peek(1) == '/') {
-        this.skip()
-        this.skip()
+        this.next()
+        this.next()
         return
       }
     }
@@ -206,13 +217,14 @@ export default class Lexer implements ILexer {
     return buffer.join('')
   }
 
-  private skip(): void {
+  private next() {
     ++this.position
-  }
-
-  private next(): string {
-    ++this.position
-    return this.peek()
+    const result = this.peek(0)
+    if (result === '\n') {
+      ++this.row
+      this.col = 1
+    } else ++this.col
+    return result
   }
 
   private peek(relativepos: number = 0): string {
@@ -222,6 +234,10 @@ export default class Lexer implements ILexer {
   }
 
   private addToken(type: TokenType, text = ''): void {
-    this.tokens.push(new Token(type, text))
+    this.tokens.push(new Token(type, text, this.row, this.col))
+  }
+
+  private error(text: string): Error {
+    return new Error(text + this.row + this.col)
   }
 }
