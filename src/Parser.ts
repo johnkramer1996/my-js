@@ -8,6 +8,7 @@ import BlockStatement from '@ast/BlockStatement'
 import BinaryExpression from '@ast/BinaryExpression'
 import UnaryExpression from '@ast/UnaryExpression'
 import TernaryExpression from '@ast/TernarExpression'
+import ConditionalExpression from '@ast/ConditionalExpression'
 
 export default class Parser {
   private tokens: IToken[]
@@ -39,7 +40,7 @@ export default class Parser {
   }
 
   private ternary(): IExpression {
-    const result = this.bitwiseOr()
+    const result = this.logicalOr()
 
     if (this.match(TokenType.QUESTION)) {
       const trueExpr = this.expression()
@@ -47,6 +48,22 @@ export default class Parser {
       const falseExpr = this.expression()
       return new TernaryExpression(result, trueExpr, falseExpr)
     }
+
+    return result
+  }
+
+  private logicalOr(): IExpression {
+    const result = this.logicalAnd()
+
+    if (this.match(TokenType.BARBAR)) return new ConditionalExpression(ConditionalExpression.Operator.OR, result, this.logicalOr())
+
+    return result
+  }
+
+  private logicalAnd(): IExpression {
+    const result = this.bitwiseOr()
+
+    if (this.match(TokenType.AMPAMP)) return new ConditionalExpression(ConditionalExpression.Operator.AND, result, this.logicalAnd())
 
     return result
   }
@@ -68,9 +85,29 @@ export default class Parser {
   }
 
   private bitwiseAnd(): IExpression {
-    const result = this.shift()
+    const result = this.equality()
 
     if (this.match(TokenType.AMP)) return new BinaryExpression(BinaryExpression.Operator.AND, result, this.bitwiseAnd())
+
+    return result
+  }
+
+  private equality(): IExpression {
+    const result = this.conditional()
+
+    if (this.match(TokenType.EQEQ)) return new ConditionalExpression(ConditionalExpression.Operator.EQUALS, result, this.equality())
+    if (this.match(TokenType.EXCLEQ)) return new ConditionalExpression(ConditionalExpression.Operator.NOT_EQUALS, result, this.equality())
+
+    return result
+  }
+
+  private conditional(): IExpression {
+    const result = this.shift()
+
+    if (this.match(TokenType.LT)) return new ConditionalExpression(ConditionalExpression.Operator.LT, result, this.conditional())
+    if (this.match(TokenType.LTEQ)) return new ConditionalExpression(ConditionalExpression.Operator.LTEQ, result, this.conditional())
+    if (this.match(TokenType.GT)) return new ConditionalExpression(ConditionalExpression.Operator.GT, result, this.conditional())
+    if (this.match(TokenType.GTEQ)) return new ConditionalExpression(ConditionalExpression.Operator.GTEQ, result, this.conditional())
 
     return result
   }
@@ -78,9 +115,9 @@ export default class Parser {
   private shift(): IExpression {
     const result = this.additive()
 
-    if (this.match(TokenType.LTLT)) return new BinaryExpression(BinaryExpression.Operator.LSHIFT, result, this.additive())
-    if (this.match(TokenType.GTGT)) return new BinaryExpression(BinaryExpression.Operator.RSHIFT, result, this.additive())
-    if (this.match(TokenType.GTGTGT)) return new BinaryExpression(BinaryExpression.Operator.URSHIFT, result, this.additive())
+    if (this.match(TokenType.LTLT)) return new BinaryExpression(BinaryExpression.Operator.LSHIFT, result, this.shift())
+    if (this.match(TokenType.GTGT)) return new BinaryExpression(BinaryExpression.Operator.RSHIFT, result, this.shift())
+    if (this.match(TokenType.GTGTGT)) return new BinaryExpression(BinaryExpression.Operator.URSHIFT, result, this.shift())
 
     return result
   }
@@ -120,8 +157,8 @@ export default class Parser {
     const current = this.get()
 
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
-    if (this.match(TokenType.NUMBER)) return new ValueExpression(current.getText())
-    if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(String(Number.parseInt(current.getText(), 16)))
+    if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
+    if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
 
     throw new Error('Unknown expression ' + TokenType[current.getType()])
   }

@@ -9,6 +9,13 @@ enum TokenType {
   STAR, // *
   SLASH, // /
   PERCENT, // %
+  EQ, // =
+  EQEQ, // ==
+  EXCLEQ, // !=
+  LTEQ, // <=
+  LT, // <
+  GT, // >
+  GTEQ, // >=
 
   LTLT, // <<
   GTGT, // >>
