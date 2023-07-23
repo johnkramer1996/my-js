@@ -2,6 +2,8 @@ import TokenType from 'TokenType'
 
 export enum KeyWord {
   log,
+  if,
+  else,
 }
 
 export interface IToken {

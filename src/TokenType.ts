@@ -4,6 +4,19 @@ enum TokenType {
   TEXT,
   HEX_NUMBER,
 
+  // keyword
+  PRINT,
+  IF,
+  ELSE,
+  WHILE,
+  FOR,
+  DO,
+  BREAK,
+  CONTINUE,
+  DEF,
+  RETURN,
+  USE,
+
   PLUS, // +
   MINUS, // -
   STAR, // *
@@ -32,6 +45,14 @@ enum TokenType {
   SEMIKOLON, // ;
   QUESTION, // ?
   COLON, // :
+
+  LPAREN, // (
+  RPAREN, // )
+  LBRACKET, // [
+  RBRACKET, // ]
+  LBRACE, // {
+  RBRACE, // }
+  COMMA, // ,
 
   LOG,
 

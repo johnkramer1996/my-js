@@ -31,6 +31,13 @@ export default class Lexer implements ILexer {
     ['<<', TokenType.LTLT],
     ['>>', TokenType.GTGT],
     ['>>>', TokenType.GTGTGT],
+    ['(', TokenType.LPAREN],
+    [')', TokenType.RPAREN],
+    ['[', TokenType.LBRACKET],
+    [']', TokenType.RBRACKET],
+    ['{', TokenType.LBRACE],
+    ['}', TokenType.RBRACE],
+    [',', TokenType.COMMA],
   ])
   private static OPERATOR_CHARS = '+-*/%()[]{}=<>!&|,^~?:'
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
@@ -106,6 +113,12 @@ export default class Lexer implements ILexer {
       case KeyWord[KeyWord.log]:
         this.addToken(TokenType.LOG, word)
         return
+      case KeyWord[KeyWord.if]:
+        this.addToken(TokenType.IF, word)
+        break
+      case KeyWord[KeyWord.else]:
+        this.addToken(TokenType.ELSE, word)
+        break
       default:
         this.addToken(TokenType.WORD, word)
         return

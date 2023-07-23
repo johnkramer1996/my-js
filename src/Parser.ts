@@ -10,6 +10,7 @@ import UnaryExpression from '@ast/UnaryExpression'
 import TernaryExpression from '@ast/TernarExpression'
 import ConditionalExpression from '@ast/ConditionalExpression'
 import VariableExpression from '@ast/VariableExpression'
+import IfStatement from '@ast/IfStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -25,15 +26,38 @@ export default class Parser {
     const mainBlock = new BlockStatement()
     while (!this.match(TokenType.EOF)) {
       mainBlock.add(this.statement())
-      this.consume(TokenType.SEMIKOLON)
+      // this.consume(TokenType.SEMIKOLON)
       while (this.match(TokenType.SEMIKOLON));
     }
     return mainBlock
   }
 
+  private statementOrBlock(): IStatement {
+    return this.lookMatch(0, TokenType.LBRACE) ? this.block() : this.statement()
+  }
+
+  private block(): IStatement {
+    const block = new BlockStatement()
+    this.consume(TokenType.LBRACE)
+    while (!this.match(TokenType.RBRACE)) {
+      block.add(this.statement())
+      while (this.match(TokenType.SEMIKOLON));
+    }
+    return block
+  }
+
   private statement(): IStatement {
     if (this.match(TokenType.LOG)) return new LogStatement(this.expression())
-    throw new Error('Unknown statement' + this.get().getText())
+    if (this.match(TokenType.IF)) return this.ifElse()
+    throw new Error('Unknown statement' + TokenType[this.get().getType()])
+  }
+
+  private ifElse(): IStatement {
+    const condition = this.expression()
+    const ifStatement = this.statementOrBlock()
+    const elseStatement = this.match(TokenType.ELSE) ? this.statementOrBlock() : null
+
+    return new IfStatement(condition, ifStatement, elseStatement)
   }
 
   private expression(): IExpression {
