@@ -176,7 +176,8 @@ export default class Parser {
   private comma(): IExpression {
     const result = this.ternary()
 
-    if (this.match(TokenType.COMMA)) {
+    if (this.lookMatch(0, TokenType.COMMA) && !(this.lookMatch(-2, TokenType.LPAREN) && this.lookMatch(-3, TokenType.WORD))) {
+      this.consume(TokenType.COMMA)
       const right = this.expression()
       return new CommaExpression(result, right)
     }

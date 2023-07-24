@@ -8,6 +8,7 @@ export default class Mathematics implements IModule {
   public init(): void {
     Functions.set('sin', (...args: IValue[]) => new NumberValue(Math.sin(args[0].asNumber())))
     Functions.set('cos', (...args: IValue[]) => new NumberValue(Math.sin(args[0].asNumber())))
+    Functions.set('add', (a: IValue, b: IValue) => new NumberValue(a.asNumber() + b.asNumber()))
 
     Variables.set('PI', new NumberValue(Math.PI))
     Variables.set('E', new NumberValue(Math.E))

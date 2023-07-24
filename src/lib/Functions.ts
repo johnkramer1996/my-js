@@ -3,7 +3,7 @@ import UserDefinedFunction from './UserDefinedFunction'
 
 type Function = (...args: IValue[]) => IValue
 
-type MultiFunction = UserDefinedFunction | Function
+type MultiFunction = UserDefinedFunction | Function | { (): IValue }
 
 export default class Functions {
   private static functions = new Map<string, MultiFunction>()
