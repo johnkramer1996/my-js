@@ -9,6 +9,9 @@ export enum KeyWord {
   do,
   break,
   continue,
+  def,
+  return,
+  use,
 }
 
 export interface IToken {

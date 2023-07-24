@@ -41,6 +41,19 @@ export default class Lexer implements ILexer {
   ])
   private static OPERATOR_CHARS = '+-*/%()[]{}=<>!&|,^~?:'
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
+  private static KEYWORDS = new Map([
+    [KeyWord[KeyWord.log], TokenType.LOG],
+    [KeyWord[KeyWord.if], TokenType.IF],
+    [KeyWord[KeyWord.else], TokenType.ELSE],
+    [KeyWord[KeyWord.while], TokenType.WHILE],
+    [KeyWord[KeyWord.for], TokenType.FOR],
+    [KeyWord[KeyWord.do], TokenType.DO],
+    [KeyWord[KeyWord.break], TokenType.BREAK],
+    [KeyWord[KeyWord.continue], TokenType.CONTINUE],
+    [KeyWord[KeyWord.def], TokenType.DEF],
+    [KeyWord[KeyWord.return], TokenType.RETURN],
+    [KeyWord[KeyWord.use], TokenType.USE],
+  ])
 
   private tokens: IToken[] = []
   private text: string
@@ -110,36 +123,8 @@ export default class Lexer implements ILexer {
 
   private tokenizeWord(): void {
     const word = this.getNextChars(this.isLetter)
-
-    switch (word) {
-      case KeyWord[KeyWord.log]:
-        this.addToken(TokenType.LOG, word)
-        return
-      case KeyWord[KeyWord.if]:
-        this.addToken(TokenType.IF, word)
-        break
-      case KeyWord[KeyWord.else]:
-        this.addToken(TokenType.ELSE, word)
-        break
-      case KeyWord[KeyWord.while]:
-        this.addToken(TokenType.WHILE, word)
-        break
-      case KeyWord[KeyWord.for]:
-        this.addToken(TokenType.FOR, word)
-        break
-      case KeyWord[KeyWord.do]:
-        this.addToken(TokenType.DO, word)
-        break
-      case KeyWord[KeyWord.break]:
-        this.addToken(TokenType.BREAK, word)
-        break
-      case KeyWord[KeyWord.continue]:
-        this.addToken(TokenType.CONTINUE, word)
-        break
-      default:
-        this.addToken(TokenType.WORD, word)
-        return
-    }
+    if (Lexer.KEYWORDS.has(word)) this.addToken(Lexer.KEYWORDS.get(word) as TokenType, word)
+    else this.addToken(TokenType.WORD, word)
   }
 
   private tokenizeNumber(): void {
