@@ -3,13 +3,7 @@ import { IExpression } from './IExpression'
 import { IStatement } from './IStatement'
 
 export default class DoWhileStatement implements IStatement {
-  public condition: IExpression
-  public statement: IStatement
-
-  constructor(condition: IExpression, statement: IStatement) {
-    this.condition = condition
-    this.statement = statement
-  }
+  constructor(private condition: IExpression, private statement: IStatement) {}
 
   public execute(): void {
     Variables.push()

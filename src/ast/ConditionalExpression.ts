@@ -28,35 +28,29 @@ export default class ConditionalExpression implements IExpression {
     const number1 = isNumber ? value1.asNumber() : compareString
     const number2 = isNumber ? value2.asNumber() : 0
 
-    let result: boolean
-    switch (this.operation) {
-      case Operator.EQUALS:
-        result = number1 == number2
-        break
-      case Operator.NOT_EQUALS:
-        result = number1 != number2
-        break
-      case Operator.LT:
-        result = number1 < number2
-        break
-      case Operator.LTEQ:
-        result = number1 <= number2
-        break
-      case Operator.GT:
-        result = number1 > number2
-        break
-      case Operator.GTEQ:
-        result = number1 >= number2
-        break
-      case Operator.AND:
-        result = number1 != 0 && number2 != 0
-        break
-      case Operator.OR:
-        result = number1 != 0 || number2 != 0
-        break
-      default:
-        throw new Error('Operation ' + this.operation + ' is not supported')
-    }
+    const result = (() => {
+      switch (this.operation) {
+        case Operator.EQUALS:
+          return number1 == number2
+        case Operator.NOT_EQUALS:
+          return number1 != number2
+        case Operator.LT:
+          return number1 < number2
+        case Operator.LTEQ:
+          return number1 <= number2
+        case Operator.GT:
+          return number1 > number2
+        case Operator.GTEQ:
+          return number1 >= number2
+        case Operator.AND:
+          return number1 != 0 && number2 != 0
+        case Operator.OR:
+          return number1 != 0 || number2 != 0
+        default:
+          throw new Error('Operation ' + this.operation + ' is not supported')
+      }
+    })()
+
     return BooleanValue[result ? 'TRUE' : 'FALSE']
   }
 }

@@ -14,15 +14,9 @@ enum Operator {
 }
 
 export default class UnaryExpression implements IExpression {
-  public operation: string
-  public expression: IExpression
-
   public static Operator = Operator
 
-  constructor(operation: Operator, expression: IExpression) {
-    this.operation = operation
-    this.expression = expression
-  }
+  constructor(private operation: Operator, private expression: IExpression) {}
 
   public eval(): IValue {
     const value = this.expression.eval().asNumber()

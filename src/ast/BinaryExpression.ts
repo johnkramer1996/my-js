@@ -17,17 +17,9 @@ enum Operator {
 }
 
 export default class BinaryExpression implements IExpression {
-  public operation: Operator
-  public expr1: IExpression
-  public expr2: IExpression
-
   public static Operator = Operator
 
-  constructor(operation: Operator, expr1: IExpression, expr2: IExpression) {
-    this.operation = operation
-    this.expr1 = expr1
-    this.expr2 = expr2
-  }
+  constructor(private operation: Operator, private expr1: IExpression, private expr2: IExpression) {}
 
   public eval(): IValue {
     const value1 = this.expr1.eval()
@@ -36,45 +28,34 @@ export default class BinaryExpression implements IExpression {
     const number1 = value1.asNumber()
     const number2 = value2.asNumber()
 
-    let result: number
-
-    switch (this.operation) {
-      case Operator.ADD:
-        result = number1 + number2
-        break
-      case Operator.SUBTRACT:
-        result = number1 - number2
-        break
-      case Operator.MULTIPLY:
-        result = number1 * number2
-        break
-      case Operator.DIVIDE:
-        result = number1 / number2
-        break
-      case Operator.REMAINDER:
-        result = number1 % number2
-        break
-      case Operator.AND:
-        result = number1 & number2
-        break
-      case Operator.XOR:
-        result = number1 ^ number2
-        break
-      case Operator.OR:
-        result = number1 | number2
-        break
-      case Operator.LSHIFT:
-        result = number1 << number2
-        break
-      case Operator.RSHIFT:
-        result = number1 >> number2
-        break
-      case Operator.URSHIFT:
-        result = number1 >>> number2
-        break
-      default:
-        throw new Error('Operation ' + this.operation + ' is not supported')
-    }
+    const result = (() => {
+      switch (this.operation) {
+        case Operator.ADD:
+          return number1 + number2
+        case Operator.SUBTRACT:
+          return number1 - number2
+        case Operator.MULTIPLY:
+          return number1 * number2
+        case Operator.DIVIDE:
+          return number1 / number2
+        case Operator.REMAINDER:
+          return number1 % number2
+        case Operator.AND:
+          return number1 & number2
+        case Operator.XOR:
+          return number1 ^ number2
+        case Operator.OR:
+          return number1 | number2
+        case Operator.LSHIFT:
+          return number1 << number2
+        case Operator.RSHIFT:
+          return number1 >> number2
+        case Operator.URSHIFT:
+          return number1 >>> number2
+        default:
+          throw new Error('Operation ' + this.operation + ' is not supported')
+      }
+    })()
 
     return new NumberValue(result)
   }
