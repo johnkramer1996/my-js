@@ -298,6 +298,12 @@ export default class Parser {
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
 
+    if (this.match(TokenType.LPAREN)) {
+      const result = this.expression()
+      this.match(TokenType.RPAREN)
+      return result
+    }
+
     throw this.error('Unknown expression ' + current)
   }
 
