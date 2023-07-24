@@ -19,4 +19,8 @@ export default class ForStatement implements IStatement {
     }
     Variables.pop()
   }
+
+  public toString(): string {
+    return 'for ' + this.initialization + ', ' + this.termination + ', ' + this.increment + ' ' + this.statement
+  }
 }

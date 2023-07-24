@@ -24,4 +24,8 @@ export default class UseStatement implements IStatement {
       console.log(err)
     }
   }
+
+  public toString(): string {
+    return 'use ' + this.expression
+  }
 }

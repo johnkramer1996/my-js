@@ -4,4 +4,8 @@ export default class ContinueStatement implements IStatement {
   public execute(): void {
     throw this
   }
+
+  public toString(): string {
+    return 'continue'
+  }
 }

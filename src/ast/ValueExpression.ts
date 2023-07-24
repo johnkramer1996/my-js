@@ -15,4 +15,8 @@ export class ValueExpression implements IExpression {
   public eval(): IValue {
     return this.value
   }
+
+  public toString(): string {
+    return this.value.asString()
+  }
 }

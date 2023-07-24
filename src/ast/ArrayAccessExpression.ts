@@ -27,4 +27,8 @@ export default class ArrayAccessExpression implements IExpression {
     if (value instanceof ArrayValue) return value
     throw new Error('Array expected')
   }
+
+  public toString(): string {
+    return String(`${this.variable} ${this.indices}`)
+  }
 }

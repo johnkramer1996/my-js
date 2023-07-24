@@ -7,4 +7,8 @@ export default class FunctionStatement implements IStatement {
   public execute(): void {
     this.func.eval()
   }
+
+  public toString(): string {
+    return this.func.toString()
+  }
 }

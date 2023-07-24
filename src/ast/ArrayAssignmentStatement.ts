@@ -8,4 +8,8 @@ export default class ArrayAssignmentStatement implements IStatement {
   public execute(): void {
     this.array.getArray().set(this.array.lastIndex(), this.expression.eval())
   }
+
+  public toString(): string {
+    return String(`${this.array} ${this.expression}`)
+  }
 }

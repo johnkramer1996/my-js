@@ -8,4 +8,8 @@ export default class AssignmentStatement implements IStatement {
   public execute(): void {
     Variables.set(this.variable, this.expression.eval())
   }
+
+  public toString() {
+    return `${this.variable} = ${this.expression}`
+  }
 }

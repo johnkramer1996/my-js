@@ -53,4 +53,8 @@ export default class ConditionalExpression implements IExpression {
 
     return BooleanValue[result ? 'TRUE' : 'FALSE']
   }
+
+  public toString(): string {
+    return `${this.expr1} ${this.operation} ${this.expr2}`
+  }
 }

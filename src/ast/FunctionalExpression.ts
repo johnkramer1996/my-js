@@ -27,4 +27,8 @@ export default class FunctionalExpression implements IExpression {
     throw new Error('never')
     // return func(...values)
   }
+
+  public toString(): string {
+    return this.name + '(' + this.args.toString() + ')'
+  }
 }

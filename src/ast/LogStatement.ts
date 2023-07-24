@@ -8,4 +8,8 @@ export class LogStatement implements IStatement {
     process.stdout.write(String(this.expression.eval().asString()))
     process.stdout.write('\n')
   }
+
+  public toString(): string {
+    return 'log ' + this.expression
+  }
 }

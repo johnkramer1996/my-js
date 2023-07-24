@@ -8,4 +8,8 @@ export default class FunctionDefineStatement implements IStatement {
   public execute(): void {
     Functions.set(this.name, new UserDefinedFunction(this.argNames, this.body))
   }
+
+  public toString(): string {
+    return `def ${this.name}(${this.argNames}) ${this.body}`
+  }
 }

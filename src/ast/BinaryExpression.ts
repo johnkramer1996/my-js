@@ -59,4 +59,8 @@ export default class BinaryExpression implements IExpression {
 
     return new NumberValue(result)
   }
+
+  public toString(): string {
+    return `${this.expr1} ${this.operation} ${this.expr2}`
+  }
 }

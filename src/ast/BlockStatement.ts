@@ -11,4 +11,14 @@ export default class BlockStatement implements IStatement {
   public add(statement: IStatement) {
     this.statements.push(statement)
   }
+
+  public toString(): string {
+    const result: string[] = ['{\n']
+    for (const statement of this.statements) {
+      result.push(statement.toString())
+      result.push('\n')
+    }
+    result.push('}')
+    return result.join('')
+  }
 }

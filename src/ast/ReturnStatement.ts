@@ -16,4 +16,8 @@ export default class ReturnStatement implements IStatement {
   public getResult(): IValue {
     return this.result || BooleanValue.FALSE
   }
+
+  public toString(): string {
+    return 'return ' + this.expression
+  }
 }

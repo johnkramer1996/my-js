@@ -122,7 +122,7 @@ export default class Lexer implements ILexer {
   }
 
   private tokenizeWord(): void {
-    const word = this.getNextChars(this.isLetter)
+    const word = this.getNextChars((current) => this.isLetter(current) || this.isDigit(current) || ['_', '$'].includes(current))
     if (Lexer.KEYWORDS.has(word)) this.addToken(Lexer.KEYWORDS.get(word) as TokenType, word)
     else this.addToken(TokenType.WORD, word)
   }

@@ -33,4 +33,8 @@ export default class UnaryExpression implements IExpression {
         throw new Error('Operation ' + this.operation + ' is not supported')
     }
   }
+
+  public toString(): string {
+    return `${this.operation}${this.expression}`
+  }
 }

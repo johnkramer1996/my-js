@@ -12,4 +12,8 @@ export default class DoWhileStatement implements IStatement {
     } while (this.condition.eval().asNumber() !== 0)
     Variables.pop()
   }
+
+  public toString(): string {
+    return 'do  ' + this.statement + ' while ' + this.condition
+  }
 }

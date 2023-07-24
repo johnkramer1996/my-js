@@ -11,4 +11,8 @@ export default class ArrayExpression implements IExpression {
     for (let i = 0; i < size; i++) array.set(i, this.elements[i].eval())
     return array
   }
+
+  public toString(): string {
+    return this.elements.toString()
+  }
 }

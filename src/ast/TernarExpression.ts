@@ -7,4 +7,8 @@ export default class TernaryExpression implements IExpression {
   public eval(): IValue {
     return Boolean(this.condition.eval()) ? this.trueExpr.eval() : this.falseExpr.eval()
   }
+
+  public toString(): string {
+    return `${this.condition} ${this.trueExpr}, ${this.falseExpr}`
+  }
 }

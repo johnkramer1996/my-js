@@ -10,4 +10,13 @@ export default class IfStatement implements IStatement {
     if (result === BooleanValue.TRUE.asNumber()) this.ifStatement.execute()
     else if (this.elseStatement) this.elseStatement.execute()
   }
+
+  public toString(): string {
+    const result: string[] = ['if ', String(this.expression), ' ', String(this.ifStatement)]
+    if (this.elseStatement) {
+      result.push('\nelse ')
+      result.push(String(this.elseStatement))
+    }
+    return result.join('')
+  }
 }

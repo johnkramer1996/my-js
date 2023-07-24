@@ -9,4 +9,5 @@ const tokens = lexer.tokenize()
 
 const parser = new Parser(tokens)
 const ast = parser.parse()
-ast.execute()
+console.log(ast.toString())
+// ast.execute()

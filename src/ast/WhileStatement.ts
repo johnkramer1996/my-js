@@ -19,4 +19,8 @@ export default class WhileStatement implements IStatement {
     }
     Variables.pop()
   }
+
+  public toString(): string {
+    return 'while ' + this.condition + ' ' + this.statement
+  }
 }
