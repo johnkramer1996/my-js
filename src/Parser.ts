@@ -22,6 +22,9 @@ import FunctionStatement from '@ast/FunctionStatement'
 import FunctionalExpression from '@ast/FunctionalExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
+import ArrayExpression from '@ast/ArrayExpression'
+import ArrayAccessExpression from '@ast/ArrayAccessExpression'
+import ArrayAssignmentStatement from '@ast/ArrayAssignmentStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -107,11 +110,17 @@ export default class Parser {
   }
 
   private assignmentStatement(): IStatement {
-    const variable = this.consume(TokenType.WORD).getText()
-    if (this.lookMatch(0, TokenType.EQ)) {
+    if (this.lookMatch(1, TokenType.EQ)) {
+      const variable = this.consume(TokenType.WORD).getText()
       this.consume(TokenType.EQ)
       return new AssignmentStatement(variable, this.expression())
     }
+    if (this.lookMatch(1, TokenType.LBRACKET)) {
+      const array = this.elementArray()
+      this.consume(TokenType.EQ)
+      return new ArrayAssignmentStatement(array, this.expression())
+    }
+    const variable = this.consume(TokenType.WORD).getText()
     return new AssignmentStatement(variable, new ValueExpression(0))
   }
 
@@ -135,6 +144,27 @@ export default class Parser {
       this.match(TokenType.COMMA)
     }
     return new FunctionalExpression(name, args)
+  }
+
+  private array(): IExpression {
+    this.consume(TokenType.LBRACKET)
+    const elements: IExpression[] = []
+    while (!this.match(TokenType.RBRACKET)) {
+      elements.push(this.expression())
+      this.match(TokenType.COMMA)
+    }
+    return new ArrayExpression(elements)
+  }
+
+  private elementArray(): ArrayAccessExpression {
+    const variable = this.consume(TokenType.WORD).getText()
+    const indices: IExpression[] = []
+    do {
+      this.consume(TokenType.LBRACKET)
+      indices.push(this.expression())
+      this.consume(TokenType.RBRACKET)
+    } while (this.lookMatch(0, TokenType.LBRACKET))
+    return new ArrayAccessExpression(variable, indices)
   }
 
   private expression(): IExpression {
@@ -259,6 +289,8 @@ export default class Parser {
     const current = this.get()
 
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
+    if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
     if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))

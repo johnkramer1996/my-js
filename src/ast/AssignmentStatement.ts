@@ -3,13 +3,7 @@ import { IExpression } from './IExpression'
 import { IStatement } from './IStatement'
 
 export default class AssignmentStatement implements IStatement {
-  public variable: string
-  public expression: IExpression
-
-  constructor(variable: string, expression: IExpression) {
-    this.variable = variable
-    this.expression = expression
-  }
+  constructor(private variable: string, private expression: IExpression) {}
 
   public execute(): void {
     Variables.set(this.variable, this.expression.eval())

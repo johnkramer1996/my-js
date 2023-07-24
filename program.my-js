@@ -1,5 +1,3 @@
-def myFunc(one, two) {
-    return one + two;
-}
+arr = [[[1, 1], [1, 2]], 10]
 
-log myFunc(10, 90);
+log arr[0][1][1]

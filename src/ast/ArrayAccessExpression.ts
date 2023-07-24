@@ -1,0 +1,30 @@
+import ArrayValue from '@lib/ArrayValue'
+import IValue from '@lib/IValue'
+import Variables from '@lib/Variables'
+import { IExpression } from './IExpression'
+
+export default class ArrayAccessExpression implements IExpression {
+  constructor(private variable: string, private indices: IExpression[]) {}
+
+  public eval(): IValue {
+    return this.getArray().get(this.lastIndex())
+  }
+
+  public getArray(array: ArrayValue = this.isArrayValue(Variables.get(this.variable)), i: number = 0): ArrayValue {
+    if (i === this.lastIndex()) return array
+    return this.getArray(this.isArrayValue(array.get(this.index(i))), ++i)
+  }
+
+  public lastIndex(): number {
+    return this.index(this.indices.length - 1)
+  }
+
+  private index(index: number): number {
+    return this.indices[index].eval().asNumber()
+  }
+
+  private isArrayValue(value: IValue): ArrayValue {
+    if (value instanceof ArrayValue) return value
+    throw new Error('Array expected')
+  }
+}
