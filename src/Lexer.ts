@@ -131,9 +131,12 @@ export default class Lexer implements ILexer {
   private tokenizeNumber(): void {
     let hasDot = false
     const result = this.getNextChars((current) => {
-      if (hasDot && current === '.') throw this.error('Invalid float number')
-      if (current === '.') hasDot = true
-      return this.isDigit(current) || current === '.'
+      const isDot = current === '.'
+      if (isDot) {
+        if (hasDot) throw this.error('Invalid float number')
+        hasDot = true
+      }
+      return isDot || this.isDigit(current)
     })
     this.addToken(TokenType.NUMBER, result)
   }

@@ -26,8 +26,8 @@ export default class BinaryExpression implements IExpression {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
 
-    const number1 = value1.asNumber()
-    const number2 = value2.asNumber()
+    const number1 = value1.asNumber() || 0
+    const number2 = value2.asNumber() || 0
 
     const result = (() => {
       switch (this.operation) {

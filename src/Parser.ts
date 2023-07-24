@@ -74,7 +74,7 @@ export default class Parser {
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function())
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
-    throw new Error('Unknown statement' + this.get())
+    throw this.error('Unknown statement ' + this.get())
   }
 
   private ifElse(): IStatement {
@@ -269,6 +269,7 @@ export default class Parser {
 
     if (this.match(TokenType.STAR)) return new BinaryExpression(BinaryExpression.Operator.MULTIPLY, result, this.multiplicative())
     if (this.match(TokenType.SLASH)) return new BinaryExpression(BinaryExpression.Operator.DIVIDE, result, this.multiplicative())
+    if (this.match(TokenType.PERCENT)) return new BinaryExpression(BinaryExpression.Operator.REMAINDER, result, this.multiplicative())
 
     return result
   }
@@ -297,7 +298,7 @@ export default class Parser {
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
 
-    throw new Error('Unknown expression ' + current)
+    throw this.error('Unknown expression ' + current)
   }
 
   private consume(type: TokenType): IToken {
