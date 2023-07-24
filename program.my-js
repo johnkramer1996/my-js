@@ -1,9 +1,7 @@
-use 'Std'
+i = 10
 
-log factorial(5)
-log rand(1, 10)
-
-def factorial(n) {
-    if n == 1 return 1;
-    return n * factorial(n - 1)
+def myFunc(i) {
+    log i
 }
+
+myFunc(1)

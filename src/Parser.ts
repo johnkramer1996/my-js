@@ -25,6 +25,7 @@ import ReturnStatement from '@ast/ReturnStatement'
 import ArrayExpression from '@ast/ArrayExpression'
 import ArrayAccessExpression from '@ast/ArrayAccessExpression'
 import ArrayAssignmentStatement from '@ast/ArrayAssignmentStatement'
+import ParserException from 'ParserException'
 
 export default class Parser {
   private tokens: IToken[]
@@ -322,6 +323,6 @@ export default class Parser {
   }
 
   private error(text: string): Error {
-    return new Error(text)
+    return new ParserException(text)
   }
 }

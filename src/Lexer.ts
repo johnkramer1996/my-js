@@ -1,3 +1,4 @@
+import LexerException from 'LexerException'
 import Token, { IToken, KeyWord } from 'Token'
 import TokenType from 'TokenType'
 
@@ -229,6 +230,6 @@ export default class Lexer implements ILexer {
   }
 
   private error(text: string): Error {
-    return new Error(text + this.row + this.col)
+    return new LexerException(text + this.row + this.col)
   }
 }
