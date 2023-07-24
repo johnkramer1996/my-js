@@ -19,12 +19,10 @@ export default class FunctionalExpression implements IExpression {
       Variables.push()
       values.forEach((v: IValue, i: number) => Variables.set(func.getArgsName(i), v))
       const result = func.execute()
-
       Variables.pop()
       return result
     }
-    throw new Error('never')
-    // return func(...values)
+    return func(...values)
   }
 
   public accept(visitor: IVisitor): void {

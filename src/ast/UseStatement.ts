@@ -3,6 +3,7 @@ import IStatement from './IStatement'
 import IExpression from './IExpression'
 import Mathematics from 'modules/Mathematics'
 import IVisitor from './IVisitor'
+import Std from 'modules/Std'
 
 type ModuleConstroctor = new () => IModule
 
@@ -10,6 +11,7 @@ export default class UseStatement implements IStatement {
   // prettier-ignore
   private static MODULES = new Map<string, ModuleConstroctor>([
     ['Math', Mathematics],
+    ['Std', Std],
   ])
 
   constructor(public expression: IExpression) {}
