@@ -1,5 +1,5 @@
 import IValue from '@lib/IValue'
-import { IExpression } from './IExpression'
+import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 
 export default class TernaryExpression implements IExpression {

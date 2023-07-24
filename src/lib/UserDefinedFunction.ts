@@ -1,4 +1,4 @@
-import { IStatement } from '@ast/IStatement'
+import IStatement from '@ast/IStatement'
 import ReturnStatement from '@ast/ReturnStatement'
 import IValue from './IValue'
 import BooleanValue from './BooleanValue'

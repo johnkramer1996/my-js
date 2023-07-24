@@ -1,4 +1,4 @@
-import { IStatement } from './IStatement'
+import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class ContinueStatement implements IStatement {

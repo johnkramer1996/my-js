@@ -1,6 +1,6 @@
 import Functions from '@lib/Functions'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
-import { IStatement } from './IStatement'
+import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class FunctionDefineStatement implements IStatement {

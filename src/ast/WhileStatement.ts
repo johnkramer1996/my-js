@@ -1,6 +1,6 @@
 import Variables from '@lib/Variables'
-import { IExpression } from './IExpression'
-import { IStatement } from './IStatement'
+import IExpression from './IExpression'
+import IStatement from './IStatement'
 import BreakStatement from './BreakStatement'
 import ContinueStatement from './ContinueStatement'
 import IVisitor from './IVisitor'

@@ -1,8 +1,8 @@
-import { IStatement } from '@ast/IStatement'
-import { IExpression } from '@ast/IExpression'
+import IStatement from '@ast/IStatement'
+import IExpression from '@ast/IExpression'
 import IVisitor from './IVisitor'
 
-export class LogStatement implements IStatement {
+export default class LogStatement implements IStatement {
   constructor(public expression: IExpression) {}
 
   public execute(): void {

@@ -1,6 +1,6 @@
 import Variables from '@lib/Variables'
-import { IExpression } from './IExpression'
-import { IStatement } from './IStatement'
+import IExpression from './IExpression'
+import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class AssignmentStatement implements IStatement {

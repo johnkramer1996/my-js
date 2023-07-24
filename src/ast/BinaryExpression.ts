@@ -1,5 +1,5 @@
 import IValue from '@lib/IValue'
-import { IExpression } from './IExpression'
+import IExpression from './IExpression'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 

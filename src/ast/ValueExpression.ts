@@ -1,10 +1,10 @@
-import { IExpression } from '@ast/IExpression'
+import IExpression from '@ast/IExpression'
 import IValue from '@lib/IValue'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import IVisitor from './IVisitor'
 
-export class ValueExpression implements IExpression {
+export default class ValueExpression implements IExpression {
   public value: IValue
 
   constructor(value: number)

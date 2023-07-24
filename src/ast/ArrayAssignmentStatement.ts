@@ -1,6 +1,6 @@
 import ArrayAccessExpression from './ArrayAccessExpression'
-import { IExpression } from './IExpression'
-import { IStatement } from './IStatement'
+import IExpression from './IExpression'
+import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class ArrayAssignmentStatement implements IStatement {

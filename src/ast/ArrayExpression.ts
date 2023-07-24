@@ -1,6 +1,6 @@
 import ArrayValue from '@lib/ArrayValue'
 import IValue from '@lib/IValue'
-import { IExpression } from './IExpression'
+import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 
 export default class ArrayExpression implements IExpression {

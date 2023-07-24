@@ -2,7 +2,7 @@ import Functions from '@lib/Functions'
 import IValue from '@lib/IValue'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import Variables from '@lib/Variables'
-import { IExpression } from './IExpression'
+import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 
 export default class FunctionalExpression implements IExpression {

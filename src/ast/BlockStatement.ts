@@ -1,5 +1,5 @@
 import Variables from '@lib/Variables'
-import { IStatement } from './IStatement'
+import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class BlockStatement implements IStatement {

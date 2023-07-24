@@ -1,6 +1,6 @@
-import { IExpression } from '@ast/IExpression'
+import IExpression from '@ast/IExpression'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
-import { IStatement } from '@ast/IStatement'
+import IStatement from '@ast/IStatement'
 import AbstractVisitor from './AbstractVisitor'
 
 export default class FunctionAdder extends AbstractVisitor {

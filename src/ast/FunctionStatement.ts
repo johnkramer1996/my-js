@@ -1,5 +1,5 @@
 import FunctionalExpression from './FunctionalExpression'
-import { IStatement } from './IStatement'
+import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class FunctionStatement implements IStatement {

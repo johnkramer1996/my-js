@@ -1,6 +1,6 @@
 import IValue from '@lib/IValue'
-import { IStatement } from './IStatement'
-import { IExpression } from './IExpression'
+import IStatement from './IStatement'
+import IExpression from './IExpression'
 import BooleanValue from '@lib/BooleanValue'
 import IVisitor from './IVisitor'
 

@@ -1,6 +1,6 @@
 import IModule from '@lib/IModule'
-import { IStatement } from './IStatement'
-import { IExpression } from './IExpression'
+import IStatement from './IStatement'
+import IExpression from './IExpression'
 import Mathematics from 'modules/Mathematics'
 import IVisitor from './IVisitor'
 
