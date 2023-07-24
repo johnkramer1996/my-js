@@ -21,6 +21,7 @@ import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 import FunctionStatement from '@ast/FunctionStatement'
 import FunctionalExpression from '@ast/FunctionalExpression'
 import UseStatement from '@ast/UseStatement'
+import ReturnStatement from '@ast/ReturnStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -65,6 +66,7 @@ export default class Parser {
     if (this.match(TokenType.BREAK)) return new BreakStatement()
     if (this.match(TokenType.CONTINUE)) return new ContinueStatement()
     if (this.match(TokenType.DEF)) return this.functionDefine()
+    if (this.match(TokenType.RETURN)) return new ReturnStatement(this.expression())
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function())
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
@@ -256,6 +258,7 @@ export default class Parser {
   private primary(): IExpression {
     const current = this.get()
 
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
     if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))

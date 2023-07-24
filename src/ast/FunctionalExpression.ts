@@ -4,6 +4,7 @@ import UserDefinedFunction from '@lib/UserDefinedFunction'
 import Variables from '@lib/Variables'
 import { IExpression } from './IExpression'
 import BooleanValue from '@lib/BooleanValue'
+import ReturnStatement from './ReturnStatement'
 
 export default class FunctionalExpression implements IExpression {
   constructor(private name: string, private args: IExpression[]) {}
@@ -18,9 +19,10 @@ export default class FunctionalExpression implements IExpression {
 
       Variables.push()
       values.forEach((v: IValue, i: number) => Variables.set(func.getArgsName(i), v))
-      func.execute()
+      const result = func.execute()
+
       Variables.pop()
-      return BooleanValue.FALSE
+      return result
     }
     throw new Error('never')
     // return func(...values)

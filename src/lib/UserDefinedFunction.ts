@@ -1,4 +1,7 @@
 import { IStatement } from '@ast/IStatement'
+import ReturnStatement from '@ast/ReturnStatement'
+import IValue from './IValue'
+import BooleanValue from './BooleanValue'
 
 export default class UserDefinedFunction {
   constructor(private argNames: string[], private body: IStatement) {}
@@ -12,7 +15,13 @@ export default class UserDefinedFunction {
     return this.argNames[index]
   }
 
-  public execute(): void {
-    this.body.execute()
+  public execute(): IValue {
+    try {
+      this.body.execute()
+    } catch (rt) {
+      if (rt instanceof ReturnStatement) return rt.getResult()
+    }
+
+    return BooleanValue.FALSE
   }
 }
