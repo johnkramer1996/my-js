@@ -1,4 +1,5 @@
 def myFunc(one, two) {
-    log one;
-    log two;
+    log one + two;
 }
+
+myFunc(10, 90);

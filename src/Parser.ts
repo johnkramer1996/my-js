@@ -18,6 +18,8 @@ import AssignmentStatement from '@ast/AssignmentStatement'
 import BreakStatement from '@ast/BreakStatement'
 import ContinueStatement from '@ast/ContinueStatement'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
+import FunctionStatement from '@ast/FunctionStatement'
+import FunctionalExpression from '@ast/FunctionalExpression'
 
 export default class Parser {
   private tokens: IToken[]
@@ -62,6 +64,7 @@ export default class Parser {
     if (this.match(TokenType.BREAK)) return new BreakStatement()
     if (this.match(TokenType.CONTINUE)) return new ContinueStatement()
     if (this.match(TokenType.DEF)) return this.functionDefine()
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function())
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
     throw new Error('Unknown statement' + this.get())
   }
@@ -117,6 +120,17 @@ export default class Parser {
       this.match(TokenType.COMMA)
     }
     return new FunctionDefineStatement(name, argNames, this.statementOrBlock())
+  }
+
+  private function(): FunctionalExpression {
+    const name: string = this.consume(TokenType.WORD).getText()
+    this.consume(TokenType.LPAREN)
+    const args: IExpression[] = []
+    while (!this.match(TokenType.RPAREN)) {
+      args.push(this.expression())
+      this.match(TokenType.COMMA)
+    }
+    return new FunctionalExpression(name, args)
   }
 
   private expression(): IExpression {

@@ -1,14 +1,7 @@
 import { IStatement } from '@ast/IStatement'
 
-// todo implements IFunction
 export default class UserDefinedFunction {
-  private argNames: string[]
-  private body: IStatement
-
-  constructor(argNames: string[], body: IStatement) {
-    this.argNames = argNames
-    this.body = body
-  }
+  constructor(private argNames: string[], private body: IStatement) {}
 
   public getArgsCount(): number {
     return this.argNames.length
