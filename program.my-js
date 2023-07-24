@@ -1,5 +1,4 @@
-for (i = 1, i < 10, i = i + 1) {
-    if i == 3 break;
-    log i;
-} 
-
+def myFunc(one, two) {
+    log one;
+    log two;
+}

@@ -17,6 +17,7 @@ import ForStatement from '@ast/ForStatement'
 import AssignmentStatement from '@ast/AssignmentStatement'
 import BreakStatement from '@ast/BreakStatement'
 import ContinueStatement from '@ast/ContinueStatement'
+import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -60,6 +61,7 @@ export default class Parser {
     if (this.match(TokenType.FOR)) return this.forStatement()
     if (this.match(TokenType.BREAK)) return new BreakStatement()
     if (this.match(TokenType.CONTINUE)) return new ContinueStatement()
+    if (this.match(TokenType.DEF)) return this.functionDefine()
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
     throw new Error('Unknown statement' + this.get())
   }
@@ -104,8 +106,17 @@ export default class Parser {
       return new AssignmentStatement(variable, this.expression())
     }
     return new AssignmentStatement(variable, new ValueExpression(0))
+  }
 
-    throw new Error('Unknown statement ' + this.get(0))
+  private functionDefine(): FunctionDefineStatement {
+    const name = this.consume(TokenType.WORD).getText()
+    this.consume(TokenType.LPAREN)
+    const argNames: string[] = []
+    while (!this.match(TokenType.RPAREN)) {
+      argNames.push(this.consume(TokenType.WORD).getText())
+      this.match(TokenType.COMMA)
+    }
+    return new FunctionDefineStatement(name, argNames, this.statementOrBlock())
   }
 
   private expression(): IExpression {
