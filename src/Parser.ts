@@ -26,6 +26,7 @@ import ArrayExpression from '@ast/ArrayExpression'
 import ArrayAccessExpression from '@ast/ArrayAccessExpression'
 import ArrayAssignmentStatement from '@ast/ArrayAssignmentStatement'
 import ParserException from 'ParserException'
+import CommaExpression from '@ast/CommaExpresstion'
 
 export default class Parser {
   private tokens: IToken[]
@@ -169,7 +170,18 @@ export default class Parser {
   }
 
   private expression(): IExpression {
-    return this.ternary()
+    return this.comma()
+  }
+
+  private comma(): IExpression {
+    const result = this.ternary()
+
+    if (this.match(TokenType.COMMA)) {
+      const right = this.expression()
+      return new CommaExpression(result, right)
+    }
+
+    return result
   }
 
   private ternary(): IExpression {
