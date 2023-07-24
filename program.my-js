@@ -1,5 +1,8 @@
+use 'Math'
+
 def myFunc(one, two) {
     log one + two;
 }
 
 myFunc(10, 90);
+log PI;

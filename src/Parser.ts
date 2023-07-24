@@ -20,6 +20,7 @@ import ContinueStatement from '@ast/ContinueStatement'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 import FunctionStatement from '@ast/FunctionStatement'
 import FunctionalExpression from '@ast/FunctionalExpression'
+import UseStatement from '@ast/UseStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -64,6 +65,7 @@ export default class Parser {
     if (this.match(TokenType.BREAK)) return new BreakStatement()
     if (this.match(TokenType.CONTINUE)) return new ContinueStatement()
     if (this.match(TokenType.DEF)) return this.functionDefine()
+    if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function())
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
     throw new Error('Unknown statement' + this.get())
