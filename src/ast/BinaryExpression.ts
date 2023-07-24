@@ -1,6 +1,7 @@
 import IValue from '@lib/IValue'
 import { IExpression } from './IExpression'
 import NumberValue from '@lib/NumberValue'
+import IVisitor from './IVisitor'
 
 enum Operator {
   ADD = '+',
@@ -19,7 +20,7 @@ enum Operator {
 export default class BinaryExpression implements IExpression {
   public static Operator = Operator
 
-  constructor(private operation: Operator, private expr1: IExpression, private expr2: IExpression) {}
+  constructor(public operation: Operator, public expr1: IExpression, public expr2: IExpression) {}
 
   public eval(): IValue {
     const value1 = this.expr1.eval()
@@ -58,6 +59,10 @@ export default class BinaryExpression implements IExpression {
     })()
 
     return new NumberValue(result)
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

@@ -1,5 +1,6 @@
 import Variables from '@lib/Variables'
 import { IStatement } from './IStatement'
+import IVisitor from './IVisitor'
 
 export default class BlockStatement implements IStatement {
   public statements: IStatement[] = []
@@ -10,6 +11,10 @@ export default class BlockStatement implements IStatement {
 
   public add(statement: IStatement) {
     this.statements.push(statement)
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

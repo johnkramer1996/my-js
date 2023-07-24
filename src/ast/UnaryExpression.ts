@@ -1,6 +1,7 @@
 import IValue from '@lib/IValue'
 import { IExpression } from './IExpression'
 import NumberValue from '@lib/NumberValue'
+import IVisitor from './IVisitor'
 
 enum Operator {
   DELETE = 'delete',
@@ -16,7 +17,7 @@ enum Operator {
 export default class UnaryExpression implements IExpression {
   public static Operator = Operator
 
-  constructor(private operation: Operator, private expression: IExpression) {}
+  constructor(public operation: Operator, public expression: IExpression) {}
 
   public eval(): IValue {
     const value = this.expression.eval().asNumber()
@@ -32,6 +33,10 @@ export default class UnaryExpression implements IExpression {
       default:
         throw new Error('Operation ' + this.operation + ' is not supported')
     }
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

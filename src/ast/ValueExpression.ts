@@ -2,9 +2,10 @@ import { IExpression } from '@ast/IExpression'
 import IValue from '@lib/IValue'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
+import IVisitor from './IVisitor'
 
 export class ValueExpression implements IExpression {
-  private value: IValue
+  public value: IValue
 
   constructor(value: number)
   constructor(value: string)
@@ -14,6 +15,10 @@ export class ValueExpression implements IExpression {
 
   public eval(): IValue {
     return this.value
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

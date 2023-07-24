@@ -2,6 +2,7 @@ import IModule from '@lib/IModule'
 import { IStatement } from './IStatement'
 import { IExpression } from './IExpression'
 import Mathematics from 'modules/Mathematics'
+import IVisitor from './IVisitor'
 
 type ModuleConstroctor = new () => IModule
 
@@ -11,7 +12,7 @@ export default class UseStatement implements IStatement {
     ['Math', Mathematics],
   ])
 
-  constructor(private expression: IExpression) {}
+  constructor(public expression: IExpression) {}
 
   public execute(): void {
     try {
@@ -23,6 +24,10 @@ export default class UseStatement implements IStatement {
     } catch (err) {
       console.log(err)
     }
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

@@ -1,9 +1,10 @@
 import Variables from '@lib/Variables'
 import { IExpression } from './IExpression'
 import { IStatement } from './IStatement'
+import IVisitor from './IVisitor'
 
 export default class DoWhileStatement implements IStatement {
-  constructor(private condition: IExpression, private statement: IStatement) {}
+  constructor(public condition: IExpression, public statement: IStatement) {}
 
   public execute(): void {
     Variables.push()
@@ -11,6 +12,10 @@ export default class DoWhileStatement implements IStatement {
       this.statement.execute()
     } while (this.condition.eval().asNumber() !== 0)
     Variables.pop()
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

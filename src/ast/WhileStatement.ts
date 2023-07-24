@@ -3,9 +3,10 @@ import { IExpression } from './IExpression'
 import { IStatement } from './IStatement'
 import BreakStatement from './BreakStatement'
 import ContinueStatement from './ContinueStatement'
+import IVisitor from './IVisitor'
 
 export default class WhileStatement implements IStatement {
-  constructor(private condition: IExpression, private statement: IStatement) {}
+  constructor(public condition: IExpression, public statement: IStatement) {}
 
   public execute(): void {
     Variables.push()
@@ -18,6 +19,10 @@ export default class WhileStatement implements IStatement {
       }
     }
     Variables.pop()
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

@@ -3,11 +3,10 @@ import IValue from '@lib/IValue'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import Variables from '@lib/Variables'
 import { IExpression } from './IExpression'
-import BooleanValue from '@lib/BooleanValue'
-import ReturnStatement from './ReturnStatement'
+import IVisitor from './IVisitor'
 
 export default class FunctionalExpression implements IExpression {
-  constructor(private name: string, private args: IExpression[]) {}
+  constructor(public name: string, public args: IExpression[]) {}
 
   public eval(): IValue {
     const size = this.args.length
@@ -26,6 +25,10 @@ export default class FunctionalExpression implements IExpression {
     }
     throw new Error('never')
     // return func(...values)
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

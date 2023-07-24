@@ -1,9 +1,10 @@
 import BooleanValue from '@lib/BooleanValue'
 import { IExpression } from './IExpression'
 import { IStatement } from './IStatement'
+import IVisitor from './IVisitor'
 
 export default class IfStatement implements IStatement {
-  constructor(private expression: IExpression, private ifStatement: IStatement, private elseStatement: IStatement | null) {}
+  constructor(public expression: IExpression, public ifStatement: IStatement, public elseStatement: IStatement | null) {}
 
   public execute(): void {
     const result = this.expression.eval().asNumber()
@@ -18,5 +19,9 @@ export default class IfStatement implements IStatement {
       result.push(String(this.elseStatement))
     }
     return result.join('')
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 }

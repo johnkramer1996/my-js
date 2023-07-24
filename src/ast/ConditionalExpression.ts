@@ -2,6 +2,7 @@ import IValue from '@lib/IValue'
 import { IExpression } from './IExpression'
 import BooleanValue from '@lib/BooleanValue'
 import NumberValue from '@lib/NumberValue'
+import IVisitor from './IVisitor'
 
 enum Operator {
   EQUALS = '==',
@@ -17,7 +18,7 @@ enum Operator {
 export default class ConditionalExpression implements IExpression {
   public static Operator = Operator
 
-  constructor(private operation: Operator, private expr1: IExpression, private expr2: IExpression) {}
+  constructor(public operation: Operator, public expr1: IExpression, public expr2: IExpression) {}
 
   public eval(): IValue {
     const value1 = this.expr1.eval()
@@ -52,6 +53,10 @@ export default class ConditionalExpression implements IExpression {
     })()
 
     return BooleanValue[result ? 'TRUE' : 'FALSE']
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {

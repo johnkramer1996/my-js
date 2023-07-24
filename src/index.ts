@@ -1,3 +1,4 @@
+import FunctionAdder from '@visitors/FunctionAdder'
 import { readFileSync } from 'fs'
 import Lexer from 'Lexer'
 import Parser from 'Parser'
@@ -9,5 +10,5 @@ const tokens = lexer.tokenize()
 
 const parser = new Parser(tokens)
 const ast = parser.parse()
-console.log(ast.toString())
-// ast.execute()
+ast.accept(new FunctionAdder())
+ast.execute()

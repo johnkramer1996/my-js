@@ -2,9 +2,10 @@ import ArrayValue from '@lib/ArrayValue'
 import IValue from '@lib/IValue'
 import Variables from '@lib/Variables'
 import { IExpression } from './IExpression'
+import IVisitor from './IVisitor'
 
 export default class ArrayAccessExpression implements IExpression {
-  constructor(private variable: string, private indices: IExpression[]) {}
+  constructor(public variable: string, public indices: IExpression[]) {}
 
   public eval(): IValue {
     return this.getArray().get(this.lastIndex())
@@ -26,6 +27,10 @@ export default class ArrayAccessExpression implements IExpression {
   private isArrayValue(value: IValue): ArrayValue {
     if (value instanceof ArrayValue) return value
     throw new Error('Array expected')
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {
