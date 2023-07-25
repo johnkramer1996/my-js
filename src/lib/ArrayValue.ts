@@ -1,20 +1,25 @@
 import IValue from './IValue'
+import Value from './Value'
 
-export default class ArrayValue implements IValue {
-  private elements: IValue[]
+export class MyArray<T extends IValue> extends Array<T> {
+  toString() {
+    return this.join(', ')
+  }
+}
 
+export default class ArrayValue extends Value<IValue[]> {
   constructor(value: number)
   constructor(size: IValue[])
   constructor(value: number | IValue[]) {
-    this.elements = typeof value === 'number' ? new Array(value) : [...value]
+    super(typeof value === 'number' ? new MyArray(value) : MyArray.from([...value]))
   }
 
   public get(index: number): IValue {
-    return this.elements[index]
+    return this.value[index]
   }
 
   public set(index: number, value: IValue) {
-    this.elements[index] = value
+    this.value[index] = value
   }
 
   public asNumber(): number {
@@ -22,6 +27,6 @@ export default class ArrayValue implements IValue {
   }
 
   public asString(): string {
-    return String(`[${this.elements}]`)
+    return String(`[${this.value}]`)
   }
 }

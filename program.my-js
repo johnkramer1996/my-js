@@ -1,3 +1,2 @@
-use 'Math'
-
-log add(10, (11, 12))
+arr = Array(10, 10)
+log arr

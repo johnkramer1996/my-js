@@ -170,7 +170,7 @@ export default class Parser {
   }
 
   private expression(): IExpression {
-    return this.comma()
+    return this.ternary()
   }
 
   private comma(): IExpression {

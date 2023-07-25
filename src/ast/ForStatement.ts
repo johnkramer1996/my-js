@@ -13,9 +13,10 @@ export default class ForStatement implements IStatement {
     for (this.initialization.execute(); this.termination.eval().asNumber() != 0; this.increment.execute()) {
       try {
         this.statement.execute()
-      } catch (statement) {
-        if (statement instanceof BreakStatement) break
-        if (statement instanceof ContinueStatement) continue
+      } catch (er) {
+        if (er instanceof BreakStatement) break
+        if (er instanceof ContinueStatement) continue
+        throw er
       }
     }
     Variables.pop()

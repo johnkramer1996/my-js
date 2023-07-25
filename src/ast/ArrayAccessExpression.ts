@@ -11,8 +11,8 @@ export default class ArrayAccessExpression implements IExpression {
     return this.getArray().get(this.lastIndex())
   }
 
-  public getArray(array: ArrayValue = this.isArrayValue(Variables.get(this.variable)), i: number = 0): ArrayValue {
-    if (i === this.lastIndex()) return array
+  public getArray(array = this.isArrayValue(Variables.get(this.variable)), i: number = 0): ArrayValue {
+    if (i === this.indices.length - 1) return array
     return this.getArray(this.isArrayValue(array.get(this.index(i))), ++i)
   }
 

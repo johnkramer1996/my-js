@@ -1,15 +1,11 @@
 import IValue from './IValue'
 
-export default abstract class Value<T extends string | number | boolean> implements IValue {
+export default abstract class Value<T extends string | number | boolean | IValue[]> implements IValue {
   constructor(protected value: T) {}
 
-  public asNumber(): number {
-    throw new Error('Not implementation')
-  }
+  public abstract asNumber(): number
 
-  public asString(): string {
-    throw new Error('Not implementation')
-  }
+  public abstract asString(): string
 
   public toString() {
     return this.asString()
