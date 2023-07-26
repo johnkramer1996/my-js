@@ -1,4 +1,6 @@
+use 'Math'
 
+log PI
 
 add = def(a,b) = a+b
 sub = def(a,b) = a-b

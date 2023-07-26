@@ -1,8 +1,8 @@
-import AssignValidator from '@visitors/AssignValidator'
-import FunctionAdder from '@visitors/FunctionAdder'
+import AssignValidator from 'parser/visitors/AssignValidator'
+import FunctionAdder from 'parser/visitors/FunctionAdder'
 import { readFileSync } from 'fs'
-import Lexer from 'Lexer'
-import Parser from 'Parser'
+import Lexer from 'parser/Lexer'
+import Parser from 'parser/Parser'
 
 const program = readFileSync('program.my-js', 'utf8')
 

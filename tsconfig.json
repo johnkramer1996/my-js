@@ -10,9 +10,9 @@
     "moduleResolution": "node",
     "baseUrl": "src",
     "paths": {
-      "@ast/*": ["./ast/*"],
-      "@lib/*": ["./lib/*"],
-      "@visitors/*": ["./visitors/*"]
+      "@ast/*": ["./parser/ast/*"],
+      "@visitors/*": ["./parser/visitors/*"],
+      "@lib/*": ["./lib/*"]
     },
     "strict": true,
     "esModuleInterop": true,

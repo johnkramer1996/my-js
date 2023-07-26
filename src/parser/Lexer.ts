@@ -1,6 +1,6 @@
-import LexerException from 'LexerException'
-import Token, { IToken, KeyWord } from 'Token'
-import TokenType from 'TokenType'
+import LexerException from './LexerException'
+import Token, { IToken, KeyWord } from './Token'
+import TokenType from './TokenType'
 
 export interface ILexer {
   tokenize(): IToken[]

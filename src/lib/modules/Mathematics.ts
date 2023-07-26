@@ -6,15 +6,23 @@ import Variables from '@lib/Variables'
 
 export default class Mathematics implements IModule {
   public init(): void {
-    // Functions.set('abs', (...args: IValue[]) => new NumberValue(Math.abs(args[0].asNumber())))
-    // Functions.set('sin', (...args: IValue[]) => new NumberValue(Math.sin(args[0].asNumber())))
-    // Functions.set('cos', (...args: IValue[]) => new NumberValue(Math.sin(args[0].asNumber())))
-    // Functions.set('sqrt', (...args: IValue[]) => new NumberValue(Math.sqrt(args[0].asNumber())))
+    const binaryFunc = ['atan2', 'pow', 'max', 'min']
+    for (const key of Object.getOwnPropertyNames(Math)) {
+      const isBinary = binaryFunc.includes(key)
+      const countArgs = isBinary ? 2 : 1
+      const item = Object.getOwnPropertyDescriptor(Math, key)?.value
+      if (typeof item === 'function') {
+        Functions.set(key, {
+          execute: (...args: IValue[]) => {
+            if (args.length != countArgs) throw new Error('Invalid number of arguments, expected ' + countArgs)
 
-    // Functions.set('pow', (...args: IValue[]) => new NumberValue(Math.pow(args[0].asNumber(), args[1].asNumber())))
-    // Functions.set('atan2', (...args: IValue[]) => new NumberValue(Math.atan2(args[0].asNumber(), args[1].asNumber())))
+            return new NumberValue(!isBinary ? item(args[0].asNumber()) : item(args[0].asNumber(), args[1].asNumber()))
+          },
+        })
+        continue
+      }
 
-    Variables.set('PI', new NumberValue(Math.PI))
-    Variables.set('E', new NumberValue(Math.E))
+      Variables.set(key, new NumberValue(item))
+    }
   }
 }
