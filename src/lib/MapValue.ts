@@ -1,7 +1,12 @@
 import IValue from './IValue'
+import Value from './Value'
 
-export default class MapValue implements IValue, Iterable<[string, IValue]> {
-  public value: { [index: string]: IValue } = {}
+export type Object = { [index: string]: IValue }
+
+export default class MapValue extends Value<Object> implements Iterable<[string, IValue]> {
+  constructor() {
+    super({})
+  }
 
   public get(key: string): IValue {
     if (!this.value[key]) throw new Error('error')
