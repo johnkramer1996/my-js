@@ -10,20 +10,9 @@ export default class FunctionalExpression implements IExpression {
   constructor(public name: string, public args: IExpression[]) {}
 
   public eval(): IValue {
-    const size = this.args.length
     const values = this.args.map((v) => v.eval())
-    const func = this.getFunction(this.name)
 
-    if (func instanceof UserDefinedFunction) {
-      if (size != func.getArgsCount()) throw new Error('Args count mismatch')
-
-      Variables.push()
-      values.forEach((v: IValue, i: number) => Variables.set(func.getArgsName(i), v))
-      const result = func.execute()
-      Variables.pop()
-      return result
-    }
-    return func.execute(...values)
+    return this.getFunction(this.name).execute(...values)
   }
 
   private getFunction(key: string): Function {

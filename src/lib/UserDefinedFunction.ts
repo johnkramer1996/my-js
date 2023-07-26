@@ -3,6 +3,7 @@ import ReturnStatement from '@ast/ReturnStatement'
 import IValue from './IValue'
 import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
+import Variables from './Variables'
 
 export default class UserDefinedFunction implements Function {
   constructor(private argNames: string[], private body: IStatement) {}
@@ -16,11 +17,18 @@ export default class UserDefinedFunction implements Function {
     return this.argNames[index]
   }
 
-  public execute(): IValue {
+  public execute(...values: IValue[]): IValue {
     try {
+      if (values.length != this.getArgsCount()) throw new Error('Args count mismatch')
+
+      Variables.push()
+      values.forEach((v: IValue, i: number) => Variables.set(this.getArgsName(i), v))
       this.body.execute()
+      return BooleanValue.FALSE
     } catch (rt) {
       if (rt instanceof ReturnStatement) return rt.getResult()
+    } finally {
+      Variables.pop()
     }
 
     return BooleanValue.FALSE
