@@ -1,11 +1,12 @@
 import IValue from './IValue'
+import Types from './Types'
 import Value from './Value'
 
 export type Object = { [index: string]: IValue }
 
 export default class MapValue extends Value<Object> implements Iterable<[string, IValue]> {
   constructor() {
-    super({})
+    super({}, Types.OBJECT)
   }
 
   public get(key: string): IValue {

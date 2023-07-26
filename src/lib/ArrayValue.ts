@@ -1,4 +1,5 @@
 import IValue from './IValue'
+import Types from './Types'
 import Value from './Value'
 
 export class MyArray<T extends IValue> extends Array<T> implements Iterable<IValue> {
@@ -11,7 +12,7 @@ export default class ArrayValue extends Value<IValue[]> {
   constructor(value: number)
   constructor(size: IValue[])
   constructor(value: number | IValue[]) {
-    super(typeof value === 'number' ? new MyArray(value) : MyArray.from([...value]))
+    super(typeof value === 'number' ? new MyArray(value) : MyArray.from([...value]), Types.ARRAY)
   }
 
   public get(index: number): IValue {

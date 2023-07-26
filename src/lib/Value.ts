@@ -1,12 +1,22 @@
+import { Function } from './Functions'
 import IValue from './IValue'
 import { Object } from './MapValue'
+import Types from './Types'
 
-export default abstract class Value<T extends string | number | boolean | IValue[] | Object> implements IValue {
-  constructor(protected value: T) {}
+export default abstract class Value<T extends string | number | boolean | IValue[] | Object | Function> implements IValue {
+  constructor(protected value: T, protected typeValue: Types) {}
 
-  public abstract asNumber(): number
+  public type() {
+    return this.typeValue
+  }
 
-  public abstract asString(): string
+  public asNumber(): number {
+    return Number(this.value)
+  }
+
+  public asString(): string {
+    return String(this.value)
+  }
 
   public toString() {
     return this.asString()

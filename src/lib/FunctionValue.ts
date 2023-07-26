@@ -1,8 +1,12 @@
 import { Function } from './Functions'
 import IValue from './IValue'
+import Types from './Types'
+import Value from './Value'
 
-export default class FunctionValue implements IValue {
-  constructor(public value: Function) {}
+export default class FunctionValue extends Value<Function> implements IValue {
+  constructor(value: Function) {
+    super(value, Types.FUNCTION)
+  }
 
   public getValue(): Function {
     return this.value
