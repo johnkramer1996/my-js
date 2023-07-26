@@ -4,6 +4,7 @@ import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 import StringValue from '@lib/StringValue'
 import ArrayValue from '@lib/ArrayValue'
+import Value from '@lib/Value'
 
 enum Operator {
   ADD = '+',
@@ -11,6 +12,7 @@ enum Operator {
   MULTIPLY = '*',
   DIVIDE = '/',
   REMAINDER = '%',
+  PUSH = '::',
   AND = '&',
   OR = '|',
   XOR = '^',
@@ -28,7 +30,7 @@ export default class BinaryExpression implements IExpression {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
 
-    if (value1 instanceof StringValue || value1 instanceof ArrayValue) {
+    if (value1 instanceof StringValue) {
       const string1 = value1.asString()
       switch (this.operation) {
         case Operator.MULTIPLY: {
@@ -37,11 +39,22 @@ export default class BinaryExpression implements IExpression {
           for (let i = 0; i < iterations; i++) {
             buffer.push(string1)
           }
-          return new StringValue(buffer.join(''))
+          return new StringValue(buffer.toString())
         }
         case Operator.ADD:
         default:
           return new StringValue(string1 + value2.asString())
+      }
+    }
+
+    if (value1 instanceof ArrayValue) {
+      switch (this.operation) {
+        case Operator.LSHIFT:
+          if (!(value2 instanceof ArrayValue)) throw new Error('Cannot merge non array value to array')
+          return ArrayValue.merge(value1, value2)
+        case Operator.PUSH:
+        default:
+          return ArrayValue.add(value1, value2)
       }
     }
 

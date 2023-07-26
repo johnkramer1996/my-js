@@ -22,9 +22,16 @@ export default class ArrayValue extends Value<IValue[]> {
     this.value[index] = value
   }
 
-  public [Symbol.iterator](): IterableIterator<IValue> {
-    const ret = this.value[Symbol.iterator]()
-    return ret
+  public static add(array: ArrayValue, value: IValue): ArrayValue {
+    return new ArrayValue([...array, value])
+  }
+
+  public static merge(array1: ArrayValue, array2: ArrayValue): ArrayValue {
+    return new ArrayValue([...array1, ...array2])
+  }
+
+  public [Symbol.iterator](): Iterator<IValue> {
+    return this.value[Symbol.iterator]()
   }
 
   public asNumber(): number {

@@ -293,6 +293,7 @@ export default class Parser {
 
     if (this.match(TokenType.PLUS)) return new BinaryExpression(BinaryExpression.Operator.ADD, result, this.additive())
     if (this.match(TokenType.MINUS)) return new BinaryExpression(BinaryExpression.Operator.SUBTRACT, result, this.additive())
+    if (this.match(TokenType.COLONCOLON)) return new BinaryExpression(BinaryExpression.Operator.PUSH, result, this.additive())
 
     return result
   }
