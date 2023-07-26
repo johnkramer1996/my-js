@@ -1,7 +1,6 @@
 import IValue from './IValue'
-import Value from './Value'
 
-export default class MapValue implements IValue {
+export default class MapValue implements IValue, Iterable<[string, IValue]> {
   public value: { [index: string]: IValue } = {}
 
   public get(key: string): IValue {
@@ -13,17 +12,14 @@ export default class MapValue implements IValue {
     this.value[key] = value
   }
 
-  // : IterableIterator<IValue>
-  public [Symbol.iterator]() {
+  public [Symbol.iterator](): Iterator<[string, IValue]> {
     const entries = Object.entries(this.value)
-    let index = 0
+
     const length = entries.length
+    let index = 0
     return {
-      next() {
-        if (index < length) {
-          return { value: entries[index++], done: false }
-        }
-        return { value: entries[index], done: true }
+      next(): IteratorResult<[string, IValue]> {
+        return index < length ? { value: entries[index++], done: false } : { value: entries[index], done: true }
       },
     }
   }
