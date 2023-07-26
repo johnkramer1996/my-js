@@ -4,6 +4,7 @@ import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import Mathematics from '@lib/modules/Mathematics'
 import Std from '@lib/modules/Std'
+import Types from '@lib/modules/Types'
 
 type ModuleConstroctor = new () => IModule
 
@@ -11,6 +12,7 @@ export default class UseStatement implements IStatement {
   private static MODULES = new Map<string, ModuleConstroctor>([
     ['math', Mathematics],
     ['std', Std],
+    ['types', Types],
   ])
 
   constructor(public expression: IExpression) {}

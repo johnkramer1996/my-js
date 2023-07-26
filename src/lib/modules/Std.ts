@@ -5,7 +5,7 @@ import StdMultiArray from './functions/StdMultiArray'
 import StdArray from './functions/StdArray'
 import StdEcho from './functions/StdEcho'
 import StdNewArray from './functions/StdNewArray'
-import StdForeach from './functions/stdForeach'
+import StdForeach from './functions/StdForeach'
 
 export default class Std implements IModule {
   public init(): void {
