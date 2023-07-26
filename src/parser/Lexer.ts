@@ -38,10 +38,11 @@ export default class Lexer implements ILexer {
     [']', TokenType.RBRACKET],
     ['{', TokenType.LBRACE],
     ['}', TokenType.RBRACE],
+    ['.', TokenType.DOT],
     [',', TokenType.COMMA],
     ['::', TokenType.COLONCOLON],
   ])
-  private static OPERATOR_CHARS = '+-*/%()[]{}=<>!&|,^~?:'
+  private static OPERATOR_CHARS = '+-*/%()[]{}=<>!&|.,^~?:'
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
   private static KEYWORDS = new Map([
     [KeyWord[KeyWord.log], TokenType.LOG],

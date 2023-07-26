@@ -228,6 +228,16 @@ export default class Parser {
     return new ArrayAccessExpression(variable, indices)
   }
 
+  private elementObject(): ArrayAccessExpression {
+    const variable = this.consume(TokenType.WORD).getText()
+    const indices: IExpression[] = []
+    while (this.match(TokenType.DOT)) {
+      const key = new ValueExpression(this.consume(TokenType.WORD).getText())
+      indices.push(key)
+    }
+    return new ArrayAccessExpression(variable, indices)
+  }
+
   private expression(): IExpression {
     return this.ternary()
   }
@@ -365,14 +375,12 @@ export default class Parser {
 
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.elementObject()
     if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
     if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
     if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
-    if (this.match(TokenType.COLONCOLON)) {
-      const functionName = this.consume(TokenType.WORD).getText()
-      return new FunctionReferenceExpression(functionName)
-    }
+    if (this.match(TokenType.COLONCOLON)) return new FunctionReferenceExpression(this.consume(TokenType.WORD).getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
 

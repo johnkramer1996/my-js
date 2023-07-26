@@ -4,42 +4,46 @@ import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import MapValue from '@lib/MapValue'
+import BooleanValue from '@lib/BooleanValue'
 
 export default class ArrayAccessExpression implements IExpression {
   constructor(public variable: string, public indices: IExpression[]) {}
 
   public eval(): IValue {
     const value = this.getValue()
-    if (value instanceof ArrayValue) return value.get(this.lastIndex())
-    return value.get(this.indices[0].eval().asString())
+    if (value instanceof ArrayValue) return value.get(this.lastIndex().asNumber())
+    return value.get(this.lastIndex().asString())
   }
 
   public getValue(): ArrayValue | MapValue {
     const variable = Variables.get(this.variable)
-    return variable instanceof ArrayValue ? this.getArray(variable) : this.getObj(variable)
+    if (variable instanceof ArrayValue) return this.getArray(variable)
+    if (variable instanceof MapValue) return this.getObj(variable)
+    throw new Error('expect map or array')
   }
 
-  public setValue(value: IValue) {
+  public setValue(value: IValue): void {
     const arrOrObj = this.getValue()
-    if (arrOrObj instanceof ArrayValue) return arrOrObj.set(this.lastIndex(), value)
-    arrOrObj.set(this.indices[0].eval().asString(), value)
+    if (arrOrObj instanceof ArrayValue) return arrOrObj.set(this.lastIndex().asNumber(), value)
+    arrOrObj.set(this.lastIndex().asString(), value)
   }
 
   private getArray(array: ArrayValue, i: number = 0): ArrayValue {
     if (i === this.indices.length - 1) return array
-    return this.getArray(this.isArrayValue(array.get(this.index(i))), ++i)
+    return this.getArray(this.isArrayValue(array.get(this.index(i).asNumber())), ++i)
   }
 
-  private getObj(variable: IValue): MapValue {
-    return this.isMapValue(variable)
+  private getObj(map: MapValue, i: number = 0): MapValue {
+    if (i === this.indices.length - 1) return map
+    return this.getObj(this.isMapValue(map.get(this.index(i).asString())), ++i)
   }
 
-  private lastIndex(): number {
+  private lastIndex(): IValue {
     return this.index(this.indices.length - 1)
   }
 
-  private index(index: number): number {
-    return this.indices[index].eval().asNumber()
+  private index(index: number): IValue {
+    return this.indices[index].eval()
   }
 
   private isArrayValue(value: IValue): ArrayValue {

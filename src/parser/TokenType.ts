@@ -46,6 +46,7 @@ enum TokenType {
   SEMIKOLON, // ;
   QUESTION, // ?
   COLON, // :
+  COLONCOLON, // ::
 
   LPAREN, // (
   RPAREN, // )
@@ -54,7 +55,7 @@ enum TokenType {
   LBRACE, // {
   RBRACE, // }
   COMMA, // ,
-  COLONCOLON, // ::
+  DOT, // .
 
   LOG,
 
