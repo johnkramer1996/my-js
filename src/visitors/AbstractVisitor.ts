@@ -24,6 +24,7 @@ import ValueExpression from '@ast/ValueExpression'
 import VariableExpression from '@ast/VariableExpression'
 import WhileStatement from '@ast/WhileStatement'
 import IVisitor from '@ast/IVisitor'
+import MapExpression from '@ast/MapExpression'
 
 export default abstract class AbstractVisitor implements IVisitor {
   public visit(s: IStatement | IExpression): void {
@@ -73,9 +74,7 @@ export default abstract class AbstractVisitor implements IVisitor {
     } else if (s instanceof IfStatement) {
       s.expression.accept(this)
       s.ifStatement.accept(this)
-      if (s.elseStatement != null) {
-        s.elseStatement.accept(this)
-      }
+      s.elseStatement?.accept(this)
     } else if (s instanceof LogStatement) {
       s.expression.accept(this)
     } else if (s instanceof ReturnStatement) {
@@ -96,6 +95,11 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.statement.accept(this)
     } else if (s instanceof UseStatement) {
       s.expression.accept(this)
+    } else if (s instanceof MapExpression) {
+      for (const [key, value] of s.elements.entries()) {
+        key.accept(this)
+        value.accept(this)
+      }
     }
   }
 }

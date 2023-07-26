@@ -1,3 +1,4 @@
+import AssignValidator from '@visitors/AssignValidator'
 import FunctionAdder from '@visitors/FunctionAdder'
 import { readFileSync } from 'fs'
 import Lexer from 'Lexer'
@@ -11,4 +12,5 @@ const tokens = lexer.tokenize()
 const parser = new Parser(tokens)
 const ast = parser.parse()
 ast.accept(new FunctionAdder())
+ast.accept(new AssignValidator())
 ast.execute()

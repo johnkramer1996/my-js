@@ -3,14 +3,17 @@ import IValue from '@lib/IValue'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import IVisitor from './IVisitor'
+import FunctionValue from '@lib/FunctionValue'
+import { Function } from '@lib/Functions'
 
 export default class ValueExpression implements IExpression {
   public value: IValue
 
   constructor(value: number)
   constructor(value: string)
-  constructor(value: string | number) {
-    this.value = typeof value === 'number' ? new NumberValue(value) : new StringValue(value)
+  constructor(value: Function)
+  constructor(value: string | number | Function) {
+    this.value = typeof value === 'number' ? new NumberValue(value) : typeof value === 'string' ? new StringValue(value) : new FunctionValue(value)
   }
 
   public eval(): IValue {

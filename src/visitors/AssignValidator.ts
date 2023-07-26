@@ -7,6 +7,7 @@ import AbstractVisitor from './AbstractVisitor'
 export default class AssignValidator extends AbstractVisitor {
   public visit(s: IStatement | IExpression): void {
     super.visit(s)
+
     if (s instanceof AssignmentStatement) {
       if (Variables.isExists(s.variable)) {
         throw new Error('Cannot assign value to constant')

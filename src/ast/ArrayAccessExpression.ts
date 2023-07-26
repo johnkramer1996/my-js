@@ -3,12 +3,15 @@ import IValue from '@lib/IValue'
 import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IVisitor from './IVisitor'
+import MapValue from '@lib/MapValue'
 
 export default class ArrayAccessExpression implements IExpression {
   constructor(public variable: string, public indices: IExpression[]) {}
 
   public eval(): IValue {
-    return this.getArray().get(this.lastIndex())
+    const container = Variables.get(this.variable)
+    if (container instanceof ArrayValue) return this.getArray().get(this.lastIndex())
+    return this.isMapValue(container).get(this.indices[0].eval().asString())
   }
 
   public getArray(array = this.isArrayValue(Variables.get(this.variable)), i: number = 0): ArrayValue {
@@ -27,6 +30,11 @@ export default class ArrayAccessExpression implements IExpression {
   private isArrayValue(value: IValue): ArrayValue {
     if (value instanceof ArrayValue) return value
     throw new Error('Array expected')
+  }
+
+  private isMapValue(value: IValue): MapValue {
+    if (value instanceof MapValue) return value
+    throw new Error('Map expected')
   }
 
   public accept(visitor: IVisitor): void {

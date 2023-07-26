@@ -2,8 +2,9 @@ import IStatement from '@ast/IStatement'
 import ReturnStatement from '@ast/ReturnStatement'
 import IValue from './IValue'
 import BooleanValue from './BooleanValue'
+import { Function } from './Functions'
 
-export default class UserDefinedFunction {
+export default class UserDefinedFunction implements Function {
   constructor(private argNames: string[], private body: IStatement) {}
 
   public getArgsCount(): number {
@@ -23,5 +24,9 @@ export default class UserDefinedFunction {
     }
 
     return BooleanValue.FALSE
+  }
+
+  toString() {
+    return this.body.toString()
   }
 }

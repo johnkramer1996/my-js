@@ -1,9 +1,10 @@
-import Functions from '@lib/Functions'
+import Functions, { Function } from '@lib/Functions'
 import IValue from '@lib/IValue'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IVisitor from './IVisitor'
+import FunctionValue from '@lib/FunctionValue'
 
 export default class FunctionalExpression implements IExpression {
   constructor(public name: string, public args: IExpression[]) {}
@@ -11,7 +12,7 @@ export default class FunctionalExpression implements IExpression {
   public eval(): IValue {
     const size = this.args.length
     const values = this.args.map((v) => v.eval())
-    const func = Functions.get(this.name)
+    const func = this.getFunction(this.name)
 
     if (func instanceof UserDefinedFunction) {
       if (size != func.getArgsCount()) throw new Error('Args count mismatch')
@@ -22,7 +23,16 @@ export default class FunctionalExpression implements IExpression {
       Variables.pop()
       return result
     }
-    return func(...values)
+    return func.execute(...values)
+  }
+
+  private getFunction(key: string): Function {
+    if (Functions.isExists(key)) return Functions.get(key)
+    if (Variables.isExists(key)) {
+      const value = Variables.get(key)
+      if (value instanceof FunctionValue) return value.getValue()
+    }
+    throw new Error('Unknown function ' + key)
   }
 
   public accept(visitor: IVisitor): void {

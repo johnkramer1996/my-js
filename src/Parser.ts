@@ -27,6 +27,8 @@ import ArrayAccessExpression from '@ast/ArrayAccessExpression'
 import ArrayAssignmentStatement from '@ast/ArrayAssignmentStatement'
 import ParserException from 'ParserException'
 import CommaExpression from '@ast/CommaExpresstion'
+import UserDefinedFunction from '@lib/UserDefinedFunction'
+import MapExpression from '@ast/MapExpression'
 
 export default class Parser {
   private tokens: IToken[]
@@ -134,6 +136,10 @@ export default class Parser {
       argNames.push(this.consume(TokenType.WORD).getText())
       this.match(TokenType.COMMA)
     }
+    if (this.lookMatch(0, TokenType.EQ)) {
+      this.match(TokenType.EQ)
+      return new FunctionDefineStatement(name, argNames, new ReturnStatement(this.expression()))
+    }
     return new FunctionDefineStatement(name, argNames, this.statementOrBlock())
   }
 
@@ -156,6 +162,19 @@ export default class Parser {
       this.match(TokenType.COMMA)
     }
     return new ArrayExpression(elements)
+  }
+
+  private map(): IExpression {
+    this.consume(TokenType.LBRACE)
+    const elements: Map<IExpression, IExpression> = new Map()
+    while (!this.match(TokenType.RBRACE)) {
+      const key = this.primary()
+      this.consume(TokenType.COLON)
+      const value = this.expression()
+      elements.set(key, value)
+      this.match(TokenType.COMMA)
+    }
+    return new MapExpression(elements)
   }
 
   private elementArray(): ArrayAccessExpression {
@@ -306,10 +325,23 @@ export default class Parser {
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
     if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
+    if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
     if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
+
+    if (this.match(TokenType.DEF)) {
+      this.consume(TokenType.LPAREN)
+      const argNames: string[] = []
+      while (!this.match(TokenType.RPAREN)) {
+        argNames.push(this.consume(TokenType.WORD).getText())
+        this.match(TokenType.COMMA)
+      }
+
+      const statement: IStatement = this.lookMatch(0, TokenType.EQ) ? (this.match(TokenType.EQ), new ReturnStatement(this.expression())) : this.statementOrBlock()
+      return new ValueExpression(new UserDefinedFunction(argNames, statement))
+    }
 
     if (this.match(TokenType.LPAREN)) {
       const result = this.expression()

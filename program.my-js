@@ -1,2 +1,21 @@
-arr = Array(10, 10)
-log arr
+
+
+add = def(a,b) = a+b
+sub = def(a,b) = a-b
+mul = def(a,b) = a*b
+div = def(a,b) = a/b
+cube = def(x) = x*mul(x, x)
+log mul(8, 5)
+log cube(2)
+
+functions = [add, sub, mul, div]
+def function(f, a, b) = f(a, b)
+for i = 0, i < 4, i = i + 1 {
+    log functions[i]
+    log function(functions[i], 6, 3)
+}
+
+// map
+map = {"+" : add, "-" : sub, "*" : mul, "/" : div}
+log map["+"]
+log function(map["+"], 4, 5)
