@@ -30,16 +30,11 @@ export default class BinaryExpression implements IExpression {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
 
-    if (value1 instanceof StringValue) {
+    if (value1 instanceof StringValue || value2 instanceof StringValue) {
       const string1 = value1.asString()
       switch (this.operation) {
         case Operator.MULTIPLY: {
-          const iterations = value2.asNumber()
-          const buffer: string[] = []
-          for (let i = 0; i < iterations; i++) {
-            buffer.push(string1)
-          }
-          return new StringValue(buffer.toString())
+          return new StringValue(string1.repeat(value2.asNumber()))
         }
         case Operator.ADD:
         default:

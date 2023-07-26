@@ -8,6 +8,7 @@ import BreakStatement from './BreakStatement'
 import ConditionalExpression1 from './ConditionalExpression'
 import ContinueStatement from './ContinueStatement'
 import DoWhileStatement from './DoWhileStatement'
+import ForeachArrayStatement from './ForeachStatement'
 import ForStatement from './ForStatement'
 import FunctionalExpression from './FunctionalExpression'
 import FunctionDefineStatement from './FunctionDefineStatement'
@@ -36,6 +37,7 @@ export default interface IVisitor {
   visit(s: ContinueStatement): void
   visit(s: DoWhileStatement): void
   visit(s: ForStatement): void
+  visit(s: ForeachArrayStatement): void
   visit(s: FunctionDefineStatement): void
   visit(s: FunctionReferenceExpression): void
   visit(s: FunctionStatement): void

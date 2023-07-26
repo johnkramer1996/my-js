@@ -15,16 +15,9 @@ export default class StdForeach implements Function {
     const func = args[1].getValue()
     const container = args[0]
     if (container instanceof ArrayValue) {
-      const array = container
-      for (const element of array) func.execute(element)
-      return BooleanValue.FALSE
-    }
-    if (container instanceof MapValue) {
-      const map = container
-      const iterator = container[Symbol.iterator]()
-      // iterator.
-      for (const [key, value] of map) func.execute(new StringValue(key), value)
-      return BooleanValue.FALSE
+      for (const element of container) func.execute(element)
+    } else if (container instanceof MapValue) {
+      for (const [key, value] of container) func.execute(new StringValue(key), value)
     }
     return BooleanValue.FALSE
   }

@@ -7,7 +7,7 @@ export default class LogStatement implements IStatement {
 
   public execute(): void {
     process.stdout.write(String(this.expression.eval().asString()))
-    process.stdout.write('\n')
+    // process.stdout.write('\n')
   }
 
   public accept(visitor: IVisitor): void {

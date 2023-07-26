@@ -25,6 +25,7 @@ import VariableExpression from '@ast/VariableExpression'
 import WhileStatement from '@ast/WhileStatement'
 import IVisitor from '@ast/IVisitor'
 import MapExpression from '@ast/MapExpression'
+import ForeachArrayStatement from '@ast/ForeachStatement'
 
 export default abstract class AbstractVisitor implements IVisitor {
   public visit(s: IStatement | IExpression): void {
@@ -63,6 +64,9 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.termination.accept(this)
       s.increment.accept(this)
       s.statement.accept(this)
+    } else if (s instanceof ForeachArrayStatement) {
+      s.container.accept(this)
+      s.body.accept(this)
     } else if (s instanceof FunctionDefineStatement) {
       s.body.accept(this)
     } else if (s instanceof FunctionStatement) {

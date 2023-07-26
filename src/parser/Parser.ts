@@ -30,6 +30,7 @@ import CommaExpression from '@ast/CommaExpresstion'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import MapExpression from '@ast/MapExpression'
 import FunctionReferenceExpression from '@ast/FunctionReferenceExpression'
+import ForeachStatement from '@ast/ForeachStatement'
 
 export default class Parser {
   private tokens: IToken[]
@@ -67,7 +68,7 @@ export default class Parser {
 
   private statement(): IStatement {
     if (this.match(TokenType.LOG) || this.match(TokenType.PRINT)) return new LogStatement(this.expression())
-    if (this.match(TokenType.IF)) return this.ifElse()
+    if (this.match(TokenType.IF)) return this.ifElseStatement()
     if (this.match(TokenType.WHILE)) return this.whileStatement()
     if (this.match(TokenType.DO)) return this.doWhileStatement()
     if (this.match(TokenType.FOR)) return this.forStatement()
@@ -81,7 +82,7 @@ export default class Parser {
     throw this.error('Unknown statement ' + this.get())
   }
 
-  private ifElse(): IStatement {
+  private ifElseStatement(): IStatement {
     const condition = this.expression()
     const ifStatement = this.statementOrBlock()
     const elseStatement = this.match(TokenType.ELSE) ? this.statementOrBlock() : null
@@ -103,13 +104,49 @@ export default class Parser {
   }
 
   private forStatement(): IStatement {
-    this.match(TokenType.LPAREN)
+    const foreachIndex = this.lookMatch(0, TokenType.LPAREN) ? 1 : 0
+    if (this.lookMatch(foreachIndex, TokenType.WORD) && this.lookMatch(foreachIndex + 1, TokenType.COLON)) return this.foreachArrayStatement()
+    if (
+      this.lookMatch(foreachIndex, TokenType.WORD) &&
+      this.lookMatch(foreachIndex + 1, TokenType.COMMA) &&
+      this.lookMatch(foreachIndex + 2, TokenType.WORD) &&
+      this.lookMatch(foreachIndex + 3, TokenType.COLON)
+    )
+      return this.foreachMapStatement()
+
+    return this.simpleForStatement()
+  }
+
+  private foreachArrayStatement(): ForeachStatement {
+    const openParen = this.match(TokenType.LPAREN)
+    const variable = this.consume(TokenType.WORD).getText()
+    this.consume(TokenType.COLON)
+    const container = this.expression()
+    if (openParen) this.consume(TokenType.RPAREN)
+    const statement = this.statementOrBlock()
+    return new ForeachStatement(container, statement, variable)
+  }
+
+  private foreachMapStatement(): ForeachStatement {
+    const openParen = this.match(TokenType.LPAREN)
+    const key = this.consume(TokenType.WORD).getText()
+    this.consume(TokenType.COMMA)
+    const value = this.consume(TokenType.WORD).getText()
+    this.consume(TokenType.COLON)
+    const container = this.expression()
+    if (openParen) this.consume(TokenType.RPAREN)
+    const statement = this.statementOrBlock()
+    return new ForeachStatement(container, statement, key, value)
+  }
+
+  private simpleForStatement(): ForStatement {
+    const openParen = this.match(TokenType.LPAREN)
     const initialization = this.assignmentStatement()
     this.consume(TokenType.COMMA)
     const termination = this.expression()
     this.consume(TokenType.COMMA)
     const increment = this.assignmentStatement()
-    this.match(TokenType.RPAREN)
+    if (openParen) this.consume(TokenType.RPAREN)
     const statement = this.statementOrBlock()
     return new ForStatement(initialization, termination, increment, statement)
   }
