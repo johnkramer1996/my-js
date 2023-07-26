@@ -90,3 +90,8 @@ print "\n"
 print function(map["+"], 4, 5)
 print "\nforeach map"
 foreach(map, def(op, func) = echo (4, op, 5, "=", func(4,5)))
+
+
+print 'Last!!!!!!!!!!!!!!!!!!!!!'
+foreach(arr, ::echo)
+

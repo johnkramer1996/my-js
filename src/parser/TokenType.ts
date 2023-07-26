@@ -53,6 +53,7 @@ enum TokenType {
   LBRACE, // {
   RBRACE, // }
   COMMA, // ,
+  COLONCOLON, // ::
 
   LOG,
 

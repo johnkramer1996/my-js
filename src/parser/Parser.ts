@@ -29,6 +29,7 @@ import ParserException from './ParserException'
 import CommaExpression from '@ast/CommaExpresstion'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import MapExpression from '@ast/MapExpression'
+import FunctionReferenceExpression from '@ast/FunctionReferenceExpression'
 
 export default class Parser {
   private tokens: IToken[]
@@ -328,6 +329,10 @@ export default class Parser {
     if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
     if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
+    if (this.match(TokenType.COLONCOLON)) {
+      const functionName = this.consume(TokenType.WORD).getText()
+      return new FunctionReferenceExpression(functionName)
+    }
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
 

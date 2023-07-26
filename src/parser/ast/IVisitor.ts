@@ -11,6 +11,7 @@ import DoWhileStatement from './DoWhileStatement'
 import ForStatement from './ForStatement'
 import FunctionalExpression from './FunctionalExpression'
 import FunctionDefineStatement from './FunctionDefineStatement'
+import FunctionReferenceExpression from './FunctionReferenceExpression'
 import FunctionStatement from './FunctionStatement'
 import IfStatement from './IfStatement'
 import LogStatement from './LogStatement'
@@ -36,6 +37,7 @@ export default interface IVisitor {
   visit(s: DoWhileStatement): void
   visit(s: ForStatement): void
   visit(s: FunctionDefineStatement): void
+  visit(s: FunctionReferenceExpression): void
   visit(s: FunctionStatement): void
   visit(s: FunctionalExpression): void
   visit(s: IfStatement): void

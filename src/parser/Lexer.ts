@@ -39,6 +39,7 @@ export default class Lexer implements ILexer {
     ['{', TokenType.LBRACE],
     ['}', TokenType.RBRACE],
     [',', TokenType.COMMA],
+    ['::', TokenType.COLONCOLON],
   ])
   private static OPERATOR_CHARS = '+-*/%()[]{}=<>!&|,^~?:'
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
