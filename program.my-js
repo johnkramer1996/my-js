@@ -85,6 +85,8 @@ for i = 0, i < 4, i = i + 1 {
 
 // map
 map = {"+" : add, "-" : sub, "*" : mul, "/" : div}
+map["%"] = def(x,y) = x % y
+map["pow"] = def(x,y) = pow(x, y)
 //print map["+"]
 print "\n"
 print function(map["+"], 4, 5)

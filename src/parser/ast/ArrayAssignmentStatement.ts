@@ -1,13 +1,15 @@
+import Variables from '@lib/Variables'
 import ArrayAccessExpression from './ArrayAccessExpression'
 import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
+import ArrayValue from '@lib/ArrayValue'
 
 export default class ArrayAssignmentStatement implements IStatement {
   constructor(public array: ArrayAccessExpression, public expression: IExpression) {}
 
   public execute(): void {
-    this.array.getArray().set(this.array.lastIndex(), this.expression.eval())
+    this.array.setValue(this.expression.eval())
   }
 
   public accept(visitor: IVisitor): void {
