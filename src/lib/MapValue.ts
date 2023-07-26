@@ -13,6 +13,21 @@ export default class MapValue implements IValue {
     this.value[key] = value
   }
 
+  // : IterableIterator<IValue>
+  public [Symbol.iterator]() {
+    const entries = Object.entries(this.value)
+    let index = 0
+    const length = entries.length
+    return {
+      next() {
+        if (index < length) {
+          return { value: entries[index++], done: false }
+        }
+        return { value: entries[index], done: true }
+      },
+    }
+  }
+
   public asNumber(): number {
     throw new Error('Cannot cast array to number')
   }

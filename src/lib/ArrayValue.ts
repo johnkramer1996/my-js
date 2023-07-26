@@ -1,7 +1,7 @@
 import IValue from './IValue'
 import Value from './Value'
 
-export class MyArray<T extends IValue> extends Array<T> {
+export class MyArray<T extends IValue> extends Array<T> implements Iterable<IValue> {
   toString() {
     return this.join(', ')
   }
@@ -20,6 +20,11 @@ export default class ArrayValue extends Value<IValue[]> {
 
   public set(index: number, value: IValue) {
     this.value[index] = value
+  }
+
+  public [Symbol.iterator](): IterableIterator<IValue> {
+    const ret = this.value[Symbol.iterator]()
+    return ret
   }
 
   public asNumber(): number {

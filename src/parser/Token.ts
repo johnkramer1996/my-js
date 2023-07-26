@@ -2,6 +2,7 @@ import TokenType from './TokenType'
 
 export enum KeyWord {
   log,
+  print,
   if,
   else,
   while,

@@ -44,6 +44,7 @@ export default class Lexer implements ILexer {
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
   private static KEYWORDS = new Map([
     [KeyWord[KeyWord.log], TokenType.LOG],
+    [KeyWord[KeyWord.print], TokenType.PRINT],
     [KeyWord[KeyWord.if], TokenType.IF],
     [KeyWord[KeyWord.else], TokenType.ELSE],
     [KeyWord[KeyWord.while], TokenType.WHILE],

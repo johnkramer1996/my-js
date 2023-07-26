@@ -9,8 +9,8 @@ type ModuleConstroctor = new () => IModule
 
 export default class UseStatement implements IStatement {
   private static MODULES = new Map<string, ModuleConstroctor>([
-    ['Math', Mathematics],
-    ['Std', Std],
+    ['math', Mathematics],
+    ['std', Std],
   ])
 
   constructor(public expression: IExpression) {}

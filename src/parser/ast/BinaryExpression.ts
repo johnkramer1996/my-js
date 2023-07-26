@@ -2,6 +2,8 @@ import IValue from '@lib/IValue'
 import IExpression from './IExpression'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
+import StringValue from '@lib/StringValue'
+import ArrayValue from '@lib/ArrayValue'
 
 enum Operator {
   ADD = '+',
@@ -25,6 +27,23 @@ export default class BinaryExpression implements IExpression {
   public eval(): IValue {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
+
+    if (value1 instanceof StringValue || value1 instanceof ArrayValue) {
+      const string1 = value1.asString()
+      switch (this.operation) {
+        case Operator.MULTIPLY: {
+          const iterations = value2.asNumber()
+          const buffer: string[] = []
+          for (let i = 0; i < iterations; i++) {
+            buffer.push(string1)
+          }
+          return new StringValue(buffer.join(''))
+        }
+        case Operator.ADD:
+        default:
+          return new StringValue(string1 + value2.asString())
+      }
+    }
 
     const number1 = value1.asNumber() || 0
     const number2 = value2.asNumber() || 0
