@@ -3,6 +3,7 @@ import TokenType from './TokenType'
 export enum KeyWord {
   log,
   print,
+  println,
   if,
   else,
   while,

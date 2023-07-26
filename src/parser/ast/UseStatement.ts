@@ -5,6 +5,7 @@ import IVisitor from './IVisitor'
 import Mathematics from '@lib/modules/Mathematics'
 import Std from '@lib/modules/Std'
 import Types from '@lib/modules/Types'
+import Functional from '@lib/modules/Functional'
 
 type ModuleConstroctor = new () => IModule
 
@@ -13,6 +14,7 @@ export default class UseStatement implements IStatement {
     ['math', Mathematics],
     ['std', Std],
     ['types', Types],
+    ['functional', Functional],
   ])
 
   constructor(public expression: IExpression) {}

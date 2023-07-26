@@ -15,6 +15,10 @@ export default class ArrayValue extends Value<IValue[]> {
     super(typeof value === 'number' ? new MyArray(value) : MyArray.from([...value]), Types.ARRAY)
   }
 
+  public size(): number {
+    return this.value.length
+  }
+
   public get(index: number): IValue {
     return this.value[index]
   }

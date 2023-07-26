@@ -3,11 +3,11 @@ import IExpression from '@ast/IExpression'
 import IVisitor from './IVisitor'
 
 export default class LogStatement implements IStatement {
-  constructor(public expression: IExpression) {}
+  constructor(public expression: IExpression, public newLine: boolean = false) {}
 
   public execute(): void {
     process.stdout.write(String(this.expression.eval().asString()))
-    // process.stdout.write('\n')
+    this.newLine && process.stdout.write('\n')
   }
 
   public accept(visitor: IVisitor): void {

@@ -9,6 +9,10 @@ export default class MapValue extends Value<Object> implements Iterable<[string,
     super({}, Types.OBJECT)
   }
 
+  public size(): number {
+    return Object.keys(this.value).length
+  }
+
   public get(key: string): IValue {
     if (!this.value[key]) throw new Error('error')
     return this.value[key] as IValue

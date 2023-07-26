@@ -6,6 +6,7 @@ enum TokenType {
 
   // keyword
   PRINT,
+  PRINTLN,
   IF,
   ELSE,
   WHILE,

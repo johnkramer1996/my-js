@@ -5,7 +5,6 @@ import StdMultiArray from './functions/StdMultiArray'
 import StdArray from './functions/StdArray'
 import StdEcho from './functions/StdEcho'
 import StdNewArray from './functions/StdNewArray'
-import StdForeach from './functions/StdForeach'
 
 export default class Std implements IModule {
   public init(): void {
@@ -14,6 +13,5 @@ export default class Std implements IModule {
     Functions.set('newarray', new StdNewArray())
     Functions.set('multiArray', new StdMultiArray())
     Functions.set('rand', new StdRand())
-    Functions.set('foreach', new StdForeach())
   }
 }

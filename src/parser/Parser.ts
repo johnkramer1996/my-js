@@ -67,7 +67,9 @@ export default class Parser {
   }
 
   private statement(): IStatement {
-    if (this.match(TokenType.LOG) || this.match(TokenType.PRINT)) return new LogStatement(this.expression())
+    if (this.match(TokenType.LOG)) return new LogStatement(this.expression())
+    if (this.match(TokenType.PRINT)) return new LogStatement(this.expression())
+    if (this.match(TokenType.PRINTLN)) return new LogStatement(this.expression(), true)
     if (this.match(TokenType.IF)) return this.ifElseStatement()
     if (this.match(TokenType.WHILE)) return this.whileStatement()
     if (this.match(TokenType.DO)) return this.doWhileStatement()
