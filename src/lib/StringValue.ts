@@ -6,6 +6,10 @@ export default class StringValue extends Value<string> {
     super(value, Types.STRING)
   }
 
+  public length(): number {
+    return this.value.length
+  }
+
   public asNumber(): number {
     return Number.parseFloat(this.value)
   }
