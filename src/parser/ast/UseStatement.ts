@@ -6,6 +6,7 @@ import Mathematics from '@lib/modules/Mathematics'
 import Std from '@lib/modules/Std'
 import Types from '@lib/modules/Types'
 import Functional from '@lib/modules/Functional'
+import Canvas from '@lib/modules/Canvas'
 
 type ModuleConstroctor = new () => IModule
 
@@ -15,6 +16,7 @@ export default class UseStatement implements IStatement {
     ['std', Std],
     ['types', Types],
     ['functional', Functional],
+    ['canvas', Canvas],
   ])
 
   constructor(public expression: IExpression) {}

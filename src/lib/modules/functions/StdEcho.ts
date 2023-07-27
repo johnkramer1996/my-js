@@ -1,3 +1,4 @@
+import { process } from '@ast/LogStatement'
 import BooleanValue from '@lib/BooleanValue'
 import { Function } from '@lib/Functions'
 import IValue from '@lib/IValue'

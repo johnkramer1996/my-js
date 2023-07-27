@@ -13,6 +13,7 @@ import StringValue from '@lib/StringValue'
 import FunctionValue from '@lib/FunctionValue'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import NumberValue from '@lib/NumberValue'
+import StdNextFrame from './functions/stdNextFrame'
 
 class StdLength implements Function {
   public execute(...args: IValue[]): IValue {
@@ -49,5 +50,6 @@ export default class Std implements IModule {
     Functions.set('multiArray', new StdMultiArray())
     Functions.set('length', new StdLength())
     Functions.set('rand', new StdRand())
+    Functions.set('nextFrame', new StdNextFrame())
   }
 }

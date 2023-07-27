@@ -4,6 +4,7 @@ import Lexer from 'parser/Lexer'
 import Parser from 'parser/Parser'
 import program from '../program.my-js'
 
+// for node.js
 // import { readFileSync } from 'fs'
 // const program = readFileSync('program.my-js', 'utf8')
 
@@ -14,4 +15,8 @@ const parser = new Parser(tokens)
 const ast = parser.parse()
 ast.accept(new FunctionAdder())
 ast.accept(new AssignValidator())
-ast.execute()
+try {
+  ast.execute()
+} catch (e) {
+  console.log(e)
+}

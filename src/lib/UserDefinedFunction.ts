@@ -20,15 +20,16 @@ export default class UserDefinedFunction implements Function {
   public execute(...values: IValue[]): IValue {
     try {
       if (values.length != this.getArgsCount()) throw new Error('Args count mismatch')
+      // Variables.push()
+      // console.log(Variables)
 
-      Variables.push()
       values.forEach((v: IValue, i: number) => Variables.set(this.getArgsName(i), v))
       this.body.execute()
-      return BooleanValue.FALSE
     } catch (rt) {
       if (rt instanceof ReturnStatement) return rt.getResult()
+      throw rt
     } finally {
-      Variables.pop()
+      // Variables.pop()
     }
 
     return BooleanValue.FALSE

@@ -9,7 +9,6 @@ export default class ForStatement implements IStatement {
   constructor(public initialization: IStatement, public termination: IExpression, public increment: IStatement, public statement: IStatement) {}
 
   public execute(): void {
-    Variables.push()
     for (this.initialization.execute(); this.termination.eval().asNumber() != 0; this.increment.execute()) {
       try {
         this.statement.execute()
@@ -19,7 +18,6 @@ export default class ForStatement implements IStatement {
         throw er
       }
     }
-    Variables.pop()
   }
 
   public accept(visitor: IVisitor): void {

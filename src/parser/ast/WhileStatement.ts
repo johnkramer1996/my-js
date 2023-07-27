@@ -9,16 +9,15 @@ export default class WhileStatement implements IStatement {
   constructor(public condition: IExpression, public statement: IStatement) {}
 
   public execute(): void {
-    Variables.push()
     while (this.condition.eval().asNumber() !== 0) {
       try {
         this.statement.execute()
-      } catch (statement) {
-        if (statement instanceof BreakStatement) break
-        if (statement instanceof ContinueStatement) continue
+      } catch (rt) {
+        if (rt instanceof BreakStatement) break
+        if (rt instanceof ContinueStatement) continue
+        throw rt
       }
     }
-    Variables.pop()
   }
 
   public accept(visitor: IVisitor): void {

@@ -255,6 +255,7 @@ export default class Parser {
   }
 
   private ternary(): IExpression {
+    console.log('one')
     const result = this.logicalOr()
 
     if (this.match(TokenType.QUESTION)) {
@@ -338,21 +339,45 @@ export default class Parser {
   }
 
   private additive(): IExpression {
-    const result = this.multiplicative()
+    let result = this.multiplicative()
 
-    if (this.match(TokenType.PLUS)) return new BinaryExpression(BinaryExpression.Operator.ADD, result, this.additive())
-    if (this.match(TokenType.MINUS)) return new BinaryExpression(BinaryExpression.Operator.SUBTRACT, result, this.additive())
-    if (this.match(TokenType.COLONCOLON)) return new BinaryExpression(BinaryExpression.Operator.PUSH, result, this.additive())
+    while (true) {
+      if (this.match(TokenType.PLUS)) {
+        result = new BinaryExpression(BinaryExpression.Operator.ADD, result, this.multiplicative())
+        continue
+      }
+      if (this.match(TokenType.MINUS)) {
+        result = new BinaryExpression(BinaryExpression.Operator.SUBTRACT, result, this.multiplicative())
+        continue
+      }
+      if (this.match(TokenType.COLONCOLON)) {
+        result = new BinaryExpression(BinaryExpression.Operator.PUSH, result, this.multiplicative())
+        continue
+      }
+      break
+    }
 
     return result
   }
 
   private multiplicative(): IExpression {
-    const result = this.unary()
+    let result = this.unary()
 
-    if (this.match(TokenType.STAR)) return new BinaryExpression(BinaryExpression.Operator.MULTIPLY, result, this.multiplicative())
-    if (this.match(TokenType.SLASH)) return new BinaryExpression(BinaryExpression.Operator.DIVIDE, result, this.multiplicative())
-    if (this.match(TokenType.PERCENT)) return new BinaryExpression(BinaryExpression.Operator.REMAINDER, result, this.multiplicative())
+    while (true) {
+      if (this.match(TokenType.STAR)) {
+        result = new BinaryExpression(BinaryExpression.Operator.MULTIPLY, result, this.multiplicative())
+        continue
+      }
+      if (this.match(TokenType.SLASH)) {
+        result = new BinaryExpression(BinaryExpression.Operator.DIVIDE, result, this.multiplicative())
+        continue
+      }
+      if (this.match(TokenType.PERCENT)) {
+        result = new BinaryExpression(BinaryExpression.Operator.REMAINDER, result, this.multiplicative())
+        continue
+      }
+      break
+    }
 
     return result
   }
@@ -361,10 +386,10 @@ export default class Parser {
     // DELETE
     // VOID
     // TYPEOF
-    if (this.match(TokenType.PLUS)) return new UnaryExpression(UnaryExpression.Operator.PLUS, this.unary())
-    if (this.match(TokenType.MINUS)) return new UnaryExpression(UnaryExpression.Operator.NEGATION, this.unary())
-    if (this.match(TokenType.TILDE)) return new UnaryExpression(UnaryExpression.Operator.BITWISE_NOT, this.unary())
-    if (this.match(TokenType.EXCL)) return new UnaryExpression(UnaryExpression.Operator.LOGICAL_NOT, this.unary())
+    if (this.match(TokenType.PLUS)) return new UnaryExpression(UnaryExpression.Operator.PLUS, this.primary())
+    if (this.match(TokenType.MINUS)) return new UnaryExpression(UnaryExpression.Operator.NEGATION, this.primary())
+    if (this.match(TokenType.TILDE)) return new UnaryExpression(UnaryExpression.Operator.BITWISE_NOT, this.primary())
+    if (this.match(TokenType.EXCL)) return new UnaryExpression(UnaryExpression.Operator.LOGICAL_NOT, this.primary())
     // AWAIT
 
     return this.primary()

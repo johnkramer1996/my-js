@@ -2,7 +2,7 @@ import IStatement from '@ast/IStatement'
 import IExpression from '@ast/IExpression'
 import IVisitor from './IVisitor'
 
-const process = {
+export const process = {
   stdout: {
     write: (str: string) => console.log(str),
   },
