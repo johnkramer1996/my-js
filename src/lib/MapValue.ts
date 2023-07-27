@@ -14,7 +14,6 @@ export default class MapValue extends Value<Object> implements Iterable<[string,
   }
 
   public get(key: string): IValue {
-    console.log(this.value, key)
     if (!this.value[key]) throw new Error('error')
     return this.value[key] as IValue
   }

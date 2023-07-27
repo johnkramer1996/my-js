@@ -2,6 +2,12 @@ import IStatement from '@ast/IStatement'
 import IExpression from '@ast/IExpression'
 import IVisitor from './IVisitor'
 
+const process = {
+  stdout: {
+    write: (str: string) => console.log(str),
+  },
+}
+
 export default class LogStatement implements IStatement {
   constructor(public expression: IExpression, public newLine: boolean = false) {}
 
