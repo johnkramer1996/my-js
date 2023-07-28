@@ -26,6 +26,7 @@ import WhileStatement from '@ast/WhileStatement'
 import IVisitor from '@ast/IVisitor'
 import MapExpression from '@ast/MapExpression'
 import ForeachArrayStatement from '@ast/ForeachStatement'
+import AssignmentExpression from '@ast/AssignmentExpression'
 
 export default abstract class AbstractVisitor implements IVisitor {
   public visit(s: IStatement | IExpression): void {
@@ -41,6 +42,8 @@ export default abstract class AbstractVisitor implements IVisitor {
         index.accept(this)
       }
     } else if (s instanceof AssignmentStatement) {
+      s.expression.accept(this)
+    } else if (s instanceof AssignmentExpression) {
       s.expression.accept(this)
     } else if (s instanceof BinaryExpression) {
       s.expr1.accept(this)

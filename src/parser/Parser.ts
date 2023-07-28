@@ -31,19 +31,22 @@ import UserDefinedFunction from '@lib/UserDefinedFunction'
 import MapExpression from '@ast/MapExpression'
 import FunctionReferenceExpression from '@ast/FunctionReferenceExpression'
 import ForeachStatement from '@ast/ForeachStatement'
+import AssignmentExpression from '@ast/AssignmentExpression'
 
-type ConditionalExpressionConsturctor = new (expr1: IExpression, expr2: IExpression) => ConditionalExpression
-type BinaryExpressionConsturctor = new (expr1: IExpression, expr2: IExpression) => BinaryExpression
+// TODO add AssignInicialization
+
+type ConditionalExpressionWithoutOperatorConsturctor = new (expr1: IExpression, expr2: IExpression) => ConditionalExpression
+type BinaryExpressionWithoutOperatorConsturctor = new (expr1: IExpression, expr2: IExpression) => BinaryExpression
 
 type Binary =
   | {
       name: string
-      list: { token: TokenType; class: ConditionalExpressionConsturctor }[]
+      list: { token: TokenType; class: ConditionalExpressionWithoutOperatorConsturctor }[]
     }
   | {
       name: string
-      list: { token: TokenType; class: BinaryExpressionConsturctor }[]
-    }
+      list: { token: TokenType; class: BinaryExpressionWithoutOperatorConsturctor }[]
+    } // TODO make a general class
 
 export default class Parser {
   private tokens: IToken[]
@@ -94,6 +97,7 @@ export default class Parser {
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function())
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
+
     throw this.error('Unknown statement ' + this.get())
   }
 
@@ -252,13 +256,14 @@ export default class Parser {
   }
 
   private expression(): IExpression {
-    return this.ternary()
+    return this.comma()
   }
 
   private comma(): IExpression {
     const result = this.ternary()
 
-    if (this.lookMatch(0, TokenType.COMMA) && !(this.lookMatch(-2, TokenType.LPAREN) && this.lookMatch(-3, TokenType.WORD))) {
+    if (this.lookMatch(0, TokenType.COMMA) && this.lookMatch(1, TokenType.COMMA)) {
+      this.consume(TokenType.COMMA)
       this.consume(TokenType.COMMA)
       const right = this.expression()
       return new CommaExpression(result, right)
@@ -379,8 +384,15 @@ export default class Parser {
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.elementObject()
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
+      const variable = this.consume(TokenType.WORD).getText()
+      this.consume(TokenType.EQ)
+      return new AssignmentExpression(variable, this.expression())
+    }
+
     if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
     if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
+
     if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.COLONCOLON)) return new FunctionReferenceExpression(this.consume(TokenType.WORD).getText())
