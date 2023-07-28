@@ -32,6 +32,19 @@ import MapExpression from '@ast/MapExpression'
 import FunctionReferenceExpression from '@ast/FunctionReferenceExpression'
 import ForeachStatement from '@ast/ForeachStatement'
 
+type ConditionalExpressionConsturctor = new (expr1: IExpression, expr2: IExpression) => ConditionalExpression
+type BinaryExpressionConsturctor = new (expr1: IExpression, expr2: IExpression) => BinaryExpression
+
+type Binary =
+  | {
+      name: string
+      list: { token: TokenType; class: ConditionalExpressionConsturctor }[]
+    }
+  | {
+      name: string
+      list: { token: TokenType; class: BinaryExpressionConsturctor }[]
+    }
+
 export default class Parser {
   private tokens: IToken[]
   private position = 0
@@ -255,8 +268,7 @@ export default class Parser {
   }
 
   private ternary(): IExpression {
-    console.log('one')
-    const result = this.logicalOr()
+    const result = this.binary()
 
     if (this.match(TokenType.QUESTION)) {
       const trueExpr = this.expression()
@@ -268,114 +280,80 @@ export default class Parser {
     return result
   }
 
-  private logicalOr(): IExpression {
-    const result = this.logicalAnd()
-
-    if (this.match(TokenType.BARBAR)) return new ConditionalExpression(ConditionalExpression.Operator.OR, result, this.logicalOr())
-
-    return result
-  }
-
-  private logicalAnd(): IExpression {
-    const result = this.bitwiseOr()
-
-    if (this.match(TokenType.AMPAMP)) return new ConditionalExpression(ConditionalExpression.Operator.AND, result, this.logicalAnd())
-
-    return result
-  }
-
-  private bitwiseOr(): IExpression {
-    const result = this.bitwiseXor()
-
-    if (this.match(TokenType.BAR)) return new BinaryExpression(BinaryExpression.Operator.OR, result, this.bitwiseOr())
-
-    return result
-  }
-
-  private bitwiseXor(): IExpression {
-    const result = this.bitwiseAnd()
-
-    if (this.match(TokenType.CARET)) return new BinaryExpression(BinaryExpression.Operator.XOR, result, this.bitwiseXor())
-
-    return result
-  }
-
-  private bitwiseAnd(): IExpression {
-    const result = this.equality()
-
-    if (this.match(TokenType.AMP)) return new BinaryExpression(BinaryExpression.Operator.AND, result, this.bitwiseAnd())
-
-    return result
-  }
-
-  private equality(): IExpression {
-    const result = this.conditional()
-
-    if (this.match(TokenType.EQEQ)) return new ConditionalExpression(ConditionalExpression.Operator.EQUALS, result, this.equality())
-    if (this.match(TokenType.EXCLEQ)) return new ConditionalExpression(ConditionalExpression.Operator.NOT_EQUALS, result, this.equality())
-
-    return result
-  }
-
-  private conditional(): IExpression {
-    const result = this.shift()
-
-    if (this.match(TokenType.LT)) return new ConditionalExpression(ConditionalExpression.Operator.LT, result, this.conditional())
-    if (this.match(TokenType.LTEQ)) return new ConditionalExpression(ConditionalExpression.Operator.LTEQ, result, this.conditional())
-    if (this.match(TokenType.GT)) return new ConditionalExpression(ConditionalExpression.Operator.GT, result, this.conditional())
-    if (this.match(TokenType.GTEQ)) return new ConditionalExpression(ConditionalExpression.Operator.GTEQ, result, this.conditional())
-
-    return result
-  }
-
-  private shift(): IExpression {
-    const result = this.additive()
-
-    if (this.match(TokenType.LTLT)) return new BinaryExpression(BinaryExpression.Operator.LSHIFT, result, this.shift())
-    if (this.match(TokenType.GTGT)) return new BinaryExpression(BinaryExpression.Operator.RSHIFT, result, this.shift())
-    if (this.match(TokenType.GTGTGT)) return new BinaryExpression(BinaryExpression.Operator.URSHIFT, result, this.shift())
-
-    return result
-  }
-
-  private additive(): IExpression {
-    let result = this.multiplicative()
+  private binary(priority: number = 0): IExpression {
+    const currentPriority = priority++
+    const binary: Binary[] = [
+      {
+        name: 'logicalOr',
+        list: [{ token: TokenType.BARBAR, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.OR) }],
+      },
+      {
+        name: 'logicalAnd',
+        list: [{ token: TokenType.AMPAMP, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.AND) }],
+      },
+      {
+        name: 'bitwiseOr',
+        list: [{ token: TokenType.BAR, class: BinaryExpression.bind(null, BinaryExpression.Operator.OR) }],
+      },
+      {
+        name: 'bitwiseXor',
+        list: [{ token: TokenType.CARET, class: BinaryExpression.bind(null, BinaryExpression.Operator.XOR) }],
+      },
+      {
+        name: 'bitwiseAnd',
+        list: [{ token: TokenType.AMP, class: BinaryExpression.bind(null, BinaryExpression.Operator.AND) }],
+      },
+      {
+        name: 'equality',
+        list: [
+          { token: TokenType.EQEQ, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.EQUALS) },
+          { token: TokenType.EXCLEQ, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.NOT_EQUALS) },
+        ],
+      },
+      {
+        name: 'conditional',
+        list: [
+          { token: TokenType.LT, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.LT) },
+          { token: TokenType.LTEQ, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.LTEQ) },
+          { token: TokenType.GT, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.GT) },
+          { token: TokenType.GTEQ, class: ConditionalExpression.bind(null, ConditionalExpression.Operator.GTEQ) },
+        ],
+      },
+      {
+        name: 'shift',
+        list: [
+          { token: TokenType.LTLT, class: BinaryExpression.bind(null, BinaryExpression.Operator.LSHIFT) },
+          { token: TokenType.GTGT, class: BinaryExpression.bind(null, BinaryExpression.Operator.RSHIFT) },
+          { token: TokenType.GTGTGT, class: BinaryExpression.bind(null, BinaryExpression.Operator.URSHIFT) },
+        ],
+      },
+      {
+        name: 'additive',
+        list: [
+          { token: TokenType.PLUS, class: BinaryExpression.bind(null, BinaryExpression.Operator.ADD) },
+          { token: TokenType.MINUS, class: BinaryExpression.bind(null, BinaryExpression.Operator.SUBTRACT) },
+          { token: TokenType.COLONCOLON, class: BinaryExpression.bind(null, BinaryExpression.Operator.PUSH) },
+        ],
+      },
+      {
+        name: 'multiplicative',
+        list: [
+          { token: TokenType.STAR, class: BinaryExpression.bind(null, BinaryExpression.Operator.MULTIPLY) },
+          { token: TokenType.SLASH, class: BinaryExpression.bind(null, BinaryExpression.Operator.DIVIDE) },
+          { token: TokenType.PERCENT, class: BinaryExpression.bind(null, BinaryExpression.Operator.REMAINDER) },
+        ],
+      },
+    ]
+    const current = binary[currentPriority]
+    const isLast = currentPriority === binary.length - 1
+    const next = !isLast ? this.binary.bind(this, priority) : this.unary.bind(this)
+    let result = next()
 
     while (true) {
-      if (this.match(TokenType.PLUS)) {
-        result = new BinaryExpression(BinaryExpression.Operator.ADD, result, this.multiplicative())
-        continue
-      }
-      if (this.match(TokenType.MINUS)) {
-        result = new BinaryExpression(BinaryExpression.Operator.SUBTRACT, result, this.multiplicative())
-        continue
-      }
-      if (this.match(TokenType.COLONCOLON)) {
-        result = new BinaryExpression(BinaryExpression.Operator.PUSH, result, this.multiplicative())
-        continue
-      }
-      break
-    }
-
-    return result
-  }
-
-  private multiplicative(): IExpression {
-    let result = this.unary()
-
-    while (true) {
-      if (this.match(TokenType.STAR)) {
-        result = new BinaryExpression(BinaryExpression.Operator.MULTIPLY, result, this.multiplicative())
-        continue
-      }
-      if (this.match(TokenType.SLASH)) {
-        result = new BinaryExpression(BinaryExpression.Operator.DIVIDE, result, this.multiplicative())
-        continue
-      }
-      if (this.match(TokenType.PERCENT)) {
-        result = new BinaryExpression(BinaryExpression.Operator.REMAINDER, result, this.multiplicative())
-        continue
-      }
+      const coincidence = current.list.some((i) => {
+        return this.match(i.token) ? ((result = new i.class(result, next())), true) : false
+      })
+      if (coincidence) continue
       break
     }
 
@@ -411,6 +389,7 @@ export default class Parser {
 
     if (this.match(TokenType.DEF)) {
       this.consume(TokenType.LPAREN)
+
       const argNames: string[] = []
       while (!this.match(TokenType.RPAREN)) {
         argNames.push(this.consume(TokenType.WORD).getText())
@@ -432,7 +411,7 @@ export default class Parser {
 
   private consume(type: TokenType): IToken {
     const current = this.get()
-    if (current.getType() !== type) throw this.error('Token ' + TokenType[current.getType()] + " doesn't match " + TokenType[type])
+    if (current.getType() !== type) throw this.error('Token ' + current + " doesn't match " + TokenType[type])
     ++this.position
     return current
   }
@@ -448,7 +427,6 @@ export default class Parser {
   private get(relativePosition: number = 0): IToken {
     const position = this.position + relativePosition
     if (position >= this.size) return new Token(TokenType.EOF, '', -1, -1)
-
     return this.tokens[position]
   }
 

@@ -4,9 +4,8 @@ import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 import StringValue from '@lib/StringValue'
 import ArrayValue from '@lib/ArrayValue'
-import Value from '@lib/Value'
 
-enum Operator {
+enum BinaryOperator {
   ADD = '+',
   SUBTRACT = '-',
   MULTIPLY = '*',
@@ -22,9 +21,9 @@ enum Operator {
 }
 
 export default class BinaryExpression implements IExpression {
-  public static Operator = Operator
+  public static Operator = BinaryOperator
 
-  constructor(public operation: Operator, public expr1: IExpression, public expr2: IExpression) {}
+  constructor(public operation: BinaryOperator, public expr1: IExpression, public expr2: IExpression) {}
 
   public eval(): IValue {
     const value1 = this.expr1.eval()
@@ -33,10 +32,10 @@ export default class BinaryExpression implements IExpression {
     if (value1 instanceof StringValue || value2 instanceof StringValue) {
       const string1 = value1.asString()
       switch (this.operation) {
-        case Operator.MULTIPLY: {
+        case BinaryOperator.MULTIPLY: {
           return new StringValue(string1.repeat(value2.asNumber()))
         }
-        case Operator.ADD:
+        case BinaryOperator.ADD:
         default:
           return new StringValue(string1 + value2.asString())
       }
@@ -44,10 +43,10 @@ export default class BinaryExpression implements IExpression {
 
     if (value1 instanceof ArrayValue) {
       switch (this.operation) {
-        case Operator.LSHIFT:
+        case BinaryOperator.LSHIFT:
           if (!(value2 instanceof ArrayValue)) throw new Error('Cannot merge non array value to array')
           return ArrayValue.merge(value1, value2)
-        case Operator.PUSH:
+        case BinaryOperator.PUSH:
         default:
           return ArrayValue.add(value1, value2)
       }
@@ -58,27 +57,27 @@ export default class BinaryExpression implements IExpression {
 
     const result = (() => {
       switch (this.operation) {
-        case Operator.ADD:
+        case BinaryOperator.ADD:
           return number1 + number2
-        case Operator.SUBTRACT:
+        case BinaryOperator.SUBTRACT:
           return number1 - number2
-        case Operator.MULTIPLY:
+        case BinaryOperator.MULTIPLY:
           return number1 * number2
-        case Operator.DIVIDE:
+        case BinaryOperator.DIVIDE:
           return number1 / number2
-        case Operator.REMAINDER:
+        case BinaryOperator.REMAINDER:
           return number1 % number2
-        case Operator.AND:
+        case BinaryOperator.AND:
           return number1 & number2
-        case Operator.XOR:
+        case BinaryOperator.XOR:
           return number1 ^ number2
-        case Operator.OR:
+        case BinaryOperator.OR:
           return number1 | number2
-        case Operator.LSHIFT:
+        case BinaryOperator.LSHIFT:
           return number1 << number2
-        case Operator.RSHIFT:
+        case BinaryOperator.RSHIFT:
           return number1 >> number2
-        case Operator.URSHIFT:
+        case BinaryOperator.URSHIFT:
           return number1 >>> number2
         default:
           throw new Error('Operation ' + this.operation + ' is not supported')

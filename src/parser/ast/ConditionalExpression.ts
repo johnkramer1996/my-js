@@ -4,7 +4,7 @@ import BooleanValue from '@lib/BooleanValue'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 
-enum Operator {
+enum ConditionOperator {
   EQUALS = '==',
   NOT_EQUALS = '!=',
   LT = '<',
@@ -16,9 +16,9 @@ enum Operator {
 }
 
 export default class ConditionalExpression implements IExpression {
-  public static Operator = Operator
+  public static Operator = ConditionOperator
 
-  constructor(public operation: Operator, public expr1: IExpression, public expr2: IExpression) {}
+  constructor(public operation: ConditionOperator, public expr1: IExpression, public expr2: IExpression) {}
 
   public eval(): IValue {
     const value1 = this.expr1.eval()
@@ -31,21 +31,21 @@ export default class ConditionalExpression implements IExpression {
 
     const result = (() => {
       switch (this.operation) {
-        case Operator.EQUALS:
+        case ConditionOperator.EQUALS:
           return number1 == number2
-        case Operator.NOT_EQUALS:
+        case ConditionOperator.NOT_EQUALS:
           return number1 != number2
-        case Operator.LT:
+        case ConditionOperator.LT:
           return number1 < number2
-        case Operator.LTEQ:
+        case ConditionOperator.LTEQ:
           return number1 <= number2
-        case Operator.GT:
+        case ConditionOperator.GT:
           return number1 > number2
-        case Operator.GTEQ:
+        case ConditionOperator.GTEQ:
           return number1 >= number2
-        case Operator.AND:
+        case ConditionOperator.AND:
           return number1 != 0 && number2 != 0
-        case Operator.OR:
+        case ConditionOperator.OR:
           return number1 != 0 || number2 != 0
         default:
           throw new Error('Operation ' + this.operation + ' is not supported')
