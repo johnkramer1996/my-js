@@ -1,16 +1,23 @@
 import IValue from './IValue'
+import NumberValue from './NumberValue'
 import Types from './Types'
 import Value from './Value'
 
 export type Object = { [index: string]: IValue }
 
 export default class MapValue extends Value<Object> implements Iterable<[string, IValue]> {
+  public static EMPTY: MapValue = new MapValue()
+
   constructor() {
     super({}, Types.OBJECT)
   }
 
   public size(): number {
     return Object.keys(this.value).length
+  }
+
+  public containsKey(key: string): boolean {
+    return key in this.value
   }
 
   public get(key: string): IValue {
@@ -39,6 +46,11 @@ export default class MapValue extends Value<Object> implements Iterable<[string,
   }
 
   public asString(): string {
-    return String(`[${JSON.stringify(this.value)}]`)
+    return String(
+      `{${Object.entries(this.value).map(([key, value]) => {
+        const primitive = value instanceof NumberValue ? value.asNumber() : `"${value.asString()}"`
+        return `"${key}": ${primitive}`
+      })}}`
+    )
   }
 }

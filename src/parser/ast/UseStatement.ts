@@ -7,6 +7,7 @@ import Std from '@lib/modules/Std'
 import Types from '@lib/modules/Types'
 import Functional from '@lib/modules/Functional'
 import Canvas from '@lib/modules/Canvas'
+import Http from '@lib/modules/Http'
 
 type ModuleConstroctor = new () => IModule
 
@@ -17,6 +18,7 @@ export default class UseStatement implements IStatement {
     ['types', Types],
     ['functional', Functional],
     ['canvas', Canvas],
+    ['http', Http],
   ])
 
   constructor(public expression: IExpression) {}
@@ -25,7 +27,7 @@ export default class UseStatement implements IStatement {
     try {
       const moduleName = this.expression.eval().asString()
       const Module = UseStatement.MODULES.get(moduleName)
-      if (!Module) return
+      if (!Module) throw new Error(`Module ${moduleName} not found`)
 
       new Module().init()
     } catch (err) {

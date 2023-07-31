@@ -1,9 +1,12 @@
+import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import IValue from './IValue'
 import Types from './Types'
 import Value from './Value'
 
 export default class FunctionValue extends Value<Function> implements IValue {
+  public static EMPTY: FunctionValue = new FunctionValue({ execute: () => BooleanValue.FALSE })
+
   constructor(value: Function) {
     super(value, Types.FUNCTION)
   }

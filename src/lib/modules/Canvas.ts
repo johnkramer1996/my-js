@@ -5,8 +5,6 @@ import IModule from '@lib/IModule'
 import IValue from '@lib/IValue'
 import NumberValue from '@lib/NumberValue'
 
-// body.appendChild(canvas)
-
 export default class Canvas implements IModule {
   private canvas!: HTMLCanvasElement
   private ctx!: CanvasRenderingContext2D

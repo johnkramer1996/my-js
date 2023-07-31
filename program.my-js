@@ -139,3 +139,17 @@ print myArr;
 thread(::inthread)
 def inthread() = echo("this is a thread")
 thread(def (str) { println str }, "this is a thread with arguments")
+
+
+use "http"
+
+http("https://jsonplaceholder.typicode.com/users", "POST", { 'title': 'foo', 'body': 'bar', 'userId': 1}, def(v) {
+  println "Added: " 
+  foreach(v, ::echo)
+  http("https://jsonplaceholder.typicode.com/users/11", "PATCH", {"title": "Patched Name"}, ::http_get_demo)
+})
+
+def http_get_demo(v) {
+  println "Updated: " + v
+  http("http://jsonplaceholder.typicode.com/users", ::echo)
+}
