@@ -1,10 +1,5 @@
 import Functions, { Function } from '@lib/Functions'
 import IModule from '@lib/IModule'
-import StdRand from './functions/StdRand'
-import StdMultiArray from './functions/StdMultiArray'
-import StdArray from './functions/StdArray'
-import StdEcho from './functions/StdEcho'
-import StdNewArray from './functions/StdNewArray'
 import IValue from '@lib/IValue'
 import Types from '@lib/Types'
 import ArrayValue from '@lib/ArrayValue'
@@ -13,7 +8,13 @@ import StringValue from '@lib/StringValue'
 import FunctionValue from '@lib/FunctionValue'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import NumberValue from '@lib/NumberValue'
-import StdNextFrame from './functions/stdNextFrame'
+import StdRand from './functions/StdRand'
+import StdMultiArray from './functions/StdMultiArray'
+import StdArray from './functions/StdArray'
+import StdEcho from './functions/StdEcho'
+import StdNewArray from './functions/StdNewArray'
+import StdNextFrame from './functions/StdNextFrame'
+import StdThread from './functions/StdThread'
 
 class StdLength implements Function {
   public execute(...args: IValue[]): IValue {
@@ -51,5 +52,6 @@ export default class Std implements IModule {
     Functions.set('length', new StdLength())
     Functions.set('rand', new StdRand())
     Functions.set('nextFrame', new StdNextFrame())
+    Functions.set('thread', new StdThread())
   }
 }

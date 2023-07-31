@@ -23,7 +23,6 @@ export default class Canvas implements IModule {
     Functions.set('rect', this.rect())
     Functions.set('frect', this.frect())
     // Functions.set('clip', this.clip())
-    // Functions.set("drawstring", new DrawString());
     Functions.set('drawstring', this.drawstring())
     Functions.set('color', this.color())
     Functions.set('sleep', this.repaint())

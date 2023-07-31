@@ -135,3 +135,7 @@ myArr = [1,2,3]
 print (myArr[1] = myArr[2] = 30)
 
 print myArr;
+
+thread(::inthread)
+def inthread() = echo("this is a thread")
+thread(def (str) { println str }, "this is a thread with arguments")

@@ -1,6 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-var TsConfigPathsPlugin = require('awesome-typescript-loader').TsConfigPathsPlugin
+const TsConfigPathsPlugin = require('awesome-typescript-loader').TsConfigPathsPlugin
 
 module.exports = {
   plugins: [new HtmlWebpackPlugin()],

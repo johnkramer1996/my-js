@@ -11,8 +11,6 @@ export default class StdNextFrame implements Function {
       func.execute()
     })
 
-    // setTimeout(() => {}, 25)
-
     return BooleanValue.TRUE
   }
 }
