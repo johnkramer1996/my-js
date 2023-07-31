@@ -269,6 +269,11 @@ export default class Parser {
       return new CommaExpression(result, right)
     }
 
+    if (result instanceof ArrayAccessExpression && this.match(TokenType.EQ)) {
+      const expression = this.expression()
+      return new AssignmentExpression(result, expression)
+    }
+
     return result
   }
 
@@ -383,6 +388,7 @@ export default class Parser {
 
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
+
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.elementObject()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
       const variable = this.consume(TokenType.WORD).getText()

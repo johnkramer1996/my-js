@@ -26,8 +26,8 @@ export default class BinaryExpression implements IExpression {
   constructor(public operation: BinaryOperator, public expr1: IExpression, public expr2: IExpression) {}
 
   public eval(): IValue {
-    const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
+    const value1 = this.expr1.eval()
 
     if (value1 instanceof StringValue || value2 instanceof StringValue) {
       const string1 = value1.asString()
@@ -70,6 +70,7 @@ export default class BinaryExpression implements IExpression {
         case BinaryOperator.AND:
           return number1 & number2
         case BinaryOperator.XOR:
+          console.log(number1, number2)
           return number1 ^ number2
         case BinaryOperator.OR:
           return number1 | number2

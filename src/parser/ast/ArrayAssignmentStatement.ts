@@ -1,9 +1,7 @@
-import Variables from '@lib/Variables'
 import ArrayAccessExpression from './ArrayAccessExpression'
 import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
-import ArrayValue from '@lib/ArrayValue'
 
 export default class ArrayAssignmentStatement implements IStatement {
   constructor(public array: ArrayAccessExpression, public expression: IExpression) {}
