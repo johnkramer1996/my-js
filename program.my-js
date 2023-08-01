@@ -158,7 +158,7 @@ def http_get_demo(v) {
 use "json"
 println "json"
 
-println jsonencode({
+obj1 =  jsondecode(jsonencode({
   "name": "JSON Example",
   "version": 1,
   "arrayData": [
@@ -168,4 +168,6 @@ println jsonencode({
     "key": "value",
     10: "1000"
   }
-})
+}))
+
+print obj1.name

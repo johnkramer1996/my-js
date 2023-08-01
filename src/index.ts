@@ -18,7 +18,6 @@ ast.accept(new AssignValidator())
 try {
   ast.execute()
 } catch (e) {
-  debugger
   console.log(e)
 }
 
