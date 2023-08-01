@@ -5,23 +5,30 @@ import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import FunctionValue from '@lib/FunctionValue'
+import { UnknownFunctionException, VariableDoesNotExistsException } from 'exceptions/ArgumentsMismatchException'
 
 export default class FunctionalExpression implements IExpression {
-  constructor(public name: string, public args: IExpression[]) {}
+  constructor(public functionExpr: IExpression, public args: IExpression[]) {}
 
   public eval(): IValue {
-    const values = this.args.map((v) => v.eval())
+    return this.consumeFunction(this.functionExpr).execute(...this.args.map((v) => v.eval()))
+  }
 
-    return this.getFunction(this.name).execute(...values)
+  private consumeFunction(expr: IExpression): Function {
+    try {
+      const value = expr.eval()
+      return value instanceof FunctionValue ? value.getValue() : this.getFunction(value.asString())
+    } catch (e) {
+      if (e instanceof VariableDoesNotExistsException) return this.getFunction(e.getVariable())
+      throw e
+    }
   }
 
   private getFunction(key: string): Function {
     if (Functions.isExists(key)) return Functions.get(key)
-    if (Variables.isExists(key)) {
-      const value = Variables.get(key)
-      if (value instanceof FunctionValue) return value.getValue()
-    }
-    throw new Error('Unknown function ' + key)
+    const variable = Variables.get(key)
+    if (variable instanceof FunctionValue) return variable.getValue()
+    throw new UnknownFunctionException(key)
   }
 
   public accept(visitor: IVisitor): void {
@@ -29,6 +36,6 @@ export default class FunctionalExpression implements IExpression {
   }
 
   public toString(): string {
-    return this.name + '(' + this.args.toString() + ')'
+    return this.functionExpr + '(' + this.args.toString() + ')'
   }
 }

@@ -1,7 +1,6 @@
 import { UnknownFunctionException } from 'exceptions/ArgumentsMismatchException'
 import IValue from './IValue'
 
-// (...args: IValue[]) => IValue |
 export type Function = { execute: (...args: IValue[]) => IValue }
 
 export default class Functions {

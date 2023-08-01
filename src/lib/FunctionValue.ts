@@ -27,7 +27,7 @@ export default class FunctionValue extends Value<Function> implements IValue {
   }
 
   public asString(): string {
-    return String(this.value + ' 1')
+    return String(this.value)
   }
 
   public toString(): string {

@@ -37,6 +37,6 @@ export default class UserDefinedFunction implements Function {
   }
 
   toString() {
-    return this.body.toString()
+    return `(${this.argNames}) ${this.body}`
   }
 }

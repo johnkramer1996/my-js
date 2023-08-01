@@ -22,7 +22,6 @@ class JsonDecode implements Function {
 
 class JsonEncode implements Function {
   public execute(...args: IValue[]): IValue {
-    debugger
     if (args.length != 1) throw new ArgumentsMismatchException('One argument expected')
     try {
       return new StringValue(JSON.stringify(encode(args[0])))

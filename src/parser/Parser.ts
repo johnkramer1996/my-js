@@ -65,7 +65,6 @@ export default class Parser {
     const mainBlock = new BlockStatement()
     while (!this.match(TokenType.EOF)) {
       mainBlock.add(this.statement())
-      // this.consume(TokenType.SEMIKOLON)
       while (this.match(TokenType.SEMIKOLON));
     }
     return mainBlock
@@ -98,7 +97,7 @@ export default class Parser {
     if (this.match(TokenType.DEF)) return this.functionDefine()
     if (this.match(TokenType.RETURN)) return new ReturnStatement(this.expression())
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function())
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function(this.qualifiedName()))
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
 
     throw this.error('Unknown statement ' + this.get())
@@ -180,7 +179,7 @@ export default class Parser {
       return new AssignmentStatement(variable, this.expression())
     }
     if (this.lookMatch(1, TokenType.LBRACKET)) {
-      const array = this.elementArray()
+      const array = this.bracketNotation()
       this.consume(TokenType.EQ)
       return new ArrayAssignmentStatement(array, this.expression())
     }
@@ -190,28 +189,17 @@ export default class Parser {
 
   private functionDefine(): FunctionDefineStatement {
     const name = this.consume(TokenType.WORD).getText()
-    this.consume(TokenType.LPAREN)
-    const argNames: string[] = []
-    while (!this.match(TokenType.RPAREN)) {
-      argNames.push(this.consume(TokenType.WORD).getText())
-      this.match(TokenType.COMMA)
-    }
-    if (this.lookMatch(0, TokenType.EQ)) {
-      this.match(TokenType.EQ)
-      return new FunctionDefineStatement(name, argNames, new ReturnStatement(this.expression()))
-    }
-    return new FunctionDefineStatement(name, argNames, this.statementOrBlock())
+    return new FunctionDefineStatement(name, new UserDefinedFunction(this.getArguments(), this.getBody()))
   }
 
-  private function(): FunctionalExpression {
-    const name: string = this.consume(TokenType.WORD).getText()
+  private function(qualifiedNameExpr: IExpression): FunctionalExpression {
     this.consume(TokenType.LPAREN)
     const args: IExpression[] = []
     while (!this.match(TokenType.RPAREN)) {
       args.push(this.expression())
       this.match(TokenType.COMMA)
     }
-    return new FunctionalExpression(name, args)
+    return new FunctionalExpression(qualifiedNameExpr, args)
   }
 
   private array(): IExpression {
@@ -226,19 +214,19 @@ export default class Parser {
 
   private map(): IExpression {
     this.consume(TokenType.LBRACE)
-    const elements: Map<IExpression, IExpression> = new Map()
+    const elements: Map<string, IExpression> = new Map()
     while (!this.match(TokenType.RBRACE)) {
       const current = this.get()
-      const key = this.match(TokenType.WORD) || this.match(TokenType.TEXT) ? new ValueExpression(current.getText()) : new ValueExpression(0)
+      if (!(this.match(TokenType.WORD) || this.match(TokenType.TEXT))) throw new Error('expect word or text')
+      const key = current.getText()
       this.consume(TokenType.COLON)
-      const value = this.expression()
-      elements.set(key, value)
+      elements.set(key, this.expression())
       this.match(TokenType.COMMA)
     }
     return new MapExpression(elements)
   }
 
-  private elementArray(): ArrayAccessExpression {
+  private bracketNotation(): ArrayAccessExpression {
     const variable = this.consume(TokenType.WORD).getText()
     const indices: IExpression[] = []
     do {
@@ -249,7 +237,7 @@ export default class Parser {
     return new ArrayAccessExpression(variable, indices)
   }
 
-  private elementObject(): ArrayAccessExpression {
+  private dotNotation(): ArrayAccessExpression {
     const variable = this.consume(TokenType.WORD).getText()
     const indices: IExpression[] = []
     while (this.match(TokenType.DOT)) {
@@ -415,48 +403,41 @@ export default class Parser {
   }
 
   private primary(): IExpression {
-    if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
-    if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
     if (this.match(TokenType.COLONCOLON)) return new FunctionReferenceExpression(this.consume(TokenType.WORD).getText())
     if (this.match(TokenType.MATCH)) return this.matchExpression()
-    if (this.match(TokenType.DEF)) {
-      this.consume(TokenType.LPAREN)
-
-      const argNames: string[] = []
-      while (!this.match(TokenType.RPAREN)) {
-        argNames.push(this.consume(TokenType.WORD).getText())
-        this.match(TokenType.COMMA)
-      }
-
-      const statement: IStatement = this.lookMatch(0, TokenType.EQ) ? (this.match(TokenType.EQ), new ReturnStatement(this.expression())) : this.statementOrBlock()
-      return new ValueExpression(new UserDefinedFunction(argNames, statement))
-    }
-
-    if (this.match(TokenType.LPAREN)) {
-      const result = this.expression()
-      this.match(TokenType.RPAREN)
-      return result
-    }
+    if (this.match(TokenType.DEF)) return new ValueExpression(new UserDefinedFunction(this.getArguments(), this.getBody()))
+    if (this.lookMatch(0, TokenType.LPAREN)) return this.nested()
 
     return this.variable()
   }
 
   private variable(): IExpression {
-    const current = this.get()
+    // variable(args)
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function(new ValueExpression(this.consume(TokenType.WORD).getText()))
 
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
+    if (this.lookMatch(0, TokenType.WORD)) {
+      // arr["key"](args) || obj.key(args) || arr || obj
+      const qualifiedNameExpr = this.qualifiedName()
+      return this.lookMatch(0, TokenType.LPAREN) ? this.function(qualifiedNameExpr) : qualifiedNameExpr
+    }
 
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.elementObject()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
       const variable = this.consume(TokenType.WORD).getText()
       this.consume(TokenType.EQ)
       return new AssignmentExpression(variable, this.expression())
     }
 
-    if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
+    if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
+    if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
 
     return this.value()
+  }
+
+  private qualifiedName(): IExpression {
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.bracketNotation()
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.dotNotation()
+    const variable = this.consume(TokenType.WORD).getText()
+    return new VariableExpression(variable)
   }
 
   private value(): IExpression {
@@ -467,6 +448,27 @@ export default class Parser {
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
 
     throw this.error('Unknown expression ' + current)
+  }
+
+  private nested(): IExpression {
+    this.consume(TokenType.LPAREN)
+    const result = this.expression()
+    this.consume(TokenType.RPAREN)
+    return result
+  }
+
+  private getArguments(): string[] {
+    this.consume(TokenType.LPAREN)
+    const argNames: string[] = []
+    while (!this.match(TokenType.RPAREN)) {
+      argNames.push(this.consume(TokenType.WORD).getText())
+      this.match(TokenType.COMMA)
+    }
+    return argNames
+  }
+
+  private getBody(): IStatement {
+    return this.lookMatch(0, TokenType.EQ) ? (this.match(TokenType.EQ), new ReturnStatement(this.expression())) : this.statementOrBlock()
   }
 
   private consume(type: TokenType): IToken {

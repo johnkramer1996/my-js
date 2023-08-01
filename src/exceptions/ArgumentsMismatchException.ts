@@ -15,7 +15,7 @@ export class UnknownFunctionException extends Error {
 
 export class VariableDoesNotExistsException extends Error {
   constructor(private variable: string) {
-    super('Unknown function ' + variable)
+    super('Unknown variable ' + variable)
   }
 
   public getVariable(): string {

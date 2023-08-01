@@ -72,10 +72,11 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.container.accept(this)
       s.body.accept(this)
     } else if (s instanceof FunctionDefineStatement) {
-      s.body.accept(this)
+      // s.func.accept(this)
     } else if (s instanceof FunctionStatement) {
       s.func.accept(this)
     } else if (s instanceof FunctionalExpression) {
+      s.functionExpr.accept(this)
       for (const arg of s.args) {
         arg.accept(this)
       }
@@ -105,7 +106,7 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.expression.accept(this)
     } else if (s instanceof MapExpression) {
       for (const [key, value] of s.elements.entries()) {
-        key.accept(this)
+        // key.accept(this)
         value.accept(this)
       }
     } else if (s instanceof MatchExpression) {

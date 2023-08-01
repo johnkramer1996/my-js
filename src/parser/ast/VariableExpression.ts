@@ -9,7 +9,7 @@ export default class VariableExpression implements IExpression {
 
   public eval(): IValue {
     if (Variables.isExists(this.name)) return Variables.get(this.name)
-    throw new VariableDoesNotExistsException('Variable does not exists: ' + this.name)
+    throw new VariableDoesNotExistsException(this.name)
   }
 
   public accept(visitor: IVisitor): void {

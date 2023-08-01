@@ -85,8 +85,6 @@ export class HttpHttp implements Function {
 
       return BooleanValue.TRUE
     } catch (e) {
-      debugger
-      console.log(e)
       return BooleanValue.FALSE
     }
   }
