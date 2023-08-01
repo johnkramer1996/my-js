@@ -14,6 +14,8 @@ export enum KeyWord {
   def,
   return,
   use,
+  match,
+  case,
 }
 
 export interface IToken {

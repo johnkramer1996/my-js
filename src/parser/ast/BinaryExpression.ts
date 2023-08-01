@@ -27,8 +27,8 @@ export default class BinaryExpression implements IExpression {
   constructor(public operation: BinaryOperator, public expr1: IExpression, public expr2: IExpression) {}
 
   public eval(): IValue {
-    const value2 = this.expr2.eval()
     const value1 = this.expr1.eval()
+    const value2 = this.expr2.eval()
 
     if (value1 instanceof StringValue || value2 instanceof StringValue) {
       const string1 = value1.asString()

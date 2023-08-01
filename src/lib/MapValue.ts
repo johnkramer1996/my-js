@@ -42,6 +42,12 @@ export default class MapValue extends Value<Object> implements Iterable<[string,
     }
   }
 
+  public equals(value: IValue): boolean {
+    if (this === value) return true
+    if (!(value instanceof MapValue)) return false
+    return this.value === value.value
+  }
+
   public asNumber(): number {
     throw new TypeException('Cannot cast array to number')
   }

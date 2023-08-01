@@ -32,6 +32,9 @@ import MapExpression from '@ast/MapExpression'
 import FunctionReferenceExpression from '@ast/FunctionReferenceExpression'
 import ForeachStatement from '@ast/ForeachStatement'
 import AssignmentExpression from '@ast/AssignmentExpression'
+import MatchExpression, { ConstantPattern, Pattern, VariablePattern } from '@ast/MatchExpression'
+import NumberValue from '@lib/NumberValue'
+import StringValue from '@lib/StringValue'
 
 // TODO add AssignInicialization
 
@@ -256,6 +259,33 @@ export default class Parser {
     return new ArrayAccessExpression(variable, indices)
   }
 
+  private matchExpression(): MatchExpression {
+    // match expression {
+    //  case pattern1: result1
+    //  case pattern2 if extr: result2
+    // }
+    const expression = this.expression()
+    this.consume(TokenType.LBRACE)
+    const patterns: Pattern[] = []
+    do {
+      this.consume(TokenType.CASE)
+      let pattern: Pattern | null = null
+      const current = this.get(0)
+      if (this.match(TokenType.NUMBER)) pattern = new ConstantPattern(new NumberValue(Number(current.getText())))
+      else if (this.match(TokenType.HEX_NUMBER)) pattern = new ConstantPattern(new NumberValue(Number.parseInt(current.getText(), 16)))
+      else if (this.match(TokenType.TEXT)) pattern = new ConstantPattern(new StringValue(current.getText()))
+      else if (this.match(TokenType.WORD)) pattern = new VariablePattern(current.getText())
+      if (pattern === null) throw new ParserException('Wrong pattern in match expression: ' + current)
+      if (this.match(TokenType.IF)) pattern.optCondition = this.expression()
+
+      this.consume(TokenType.COLON)
+      pattern.result = new ReturnStatement(this.expression())
+      patterns.push(pattern)
+    } while (!this.match(TokenType.RBRACE))
+
+    return new MatchExpression(expression, patterns)
+  }
+
   private expression(): IExpression {
     return this.comma()
   }
@@ -385,27 +415,10 @@ export default class Parser {
   }
 
   private primary(): IExpression {
-    const current = this.get()
-
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
-
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.elementObject()
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
-      const variable = this.consume(TokenType.WORD).getText()
-      this.consume(TokenType.EQ)
-      return new AssignmentExpression(variable, this.expression())
-    }
-
     if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
     if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
-
-    if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
-    if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
     if (this.match(TokenType.COLONCOLON)) return new FunctionReferenceExpression(this.consume(TokenType.WORD).getText())
-    if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
-    if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
-
+    if (this.match(TokenType.MATCH)) return this.matchExpression()
     if (this.match(TokenType.DEF)) {
       this.consume(TokenType.LPAREN)
 
@@ -424,6 +437,34 @@ export default class Parser {
       this.match(TokenType.RPAREN)
       return result
     }
+
+    return this.variable()
+  }
+
+  private variable(): IExpression {
+    const current = this.get()
+
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function()
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.elementArray()
+
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.elementObject()
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
+      const variable = this.consume(TokenType.WORD).getText()
+      this.consume(TokenType.EQ)
+      return new AssignmentExpression(variable, this.expression())
+    }
+
+    if (this.match(TokenType.WORD)) return new VariableExpression(current.getText())
+
+    return this.value()
+  }
+
+  private value(): IExpression {
+    const current = this.get()
+
+    if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
+    if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
+    if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
 
     throw this.error('Unknown expression ' + current)
   }

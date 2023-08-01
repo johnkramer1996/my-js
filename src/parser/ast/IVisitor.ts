@@ -18,6 +18,7 @@ import FunctionStatement from './FunctionStatement'
 import IfStatement from './IfStatement'
 import LogStatement from './LogStatement'
 import MapExpression from './MapExpression'
+import MatchExpression from './MatchExpression'
 import ReturnStatement from './ReturnStatement'
 import TernaryExpression from './TernarExpression'
 import UnaryExpression from './UnaryExpression'
@@ -46,6 +47,7 @@ export default interface IVisitor {
   visit(s: FunctionalExpression): void
   visit(s: IfStatement): void
   visit(s: MapExpression): void
+  visit(s: MatchExpression): void
   visit(s: LogStatement): void
   visit(s: ReturnStatement): void
   visit(s: TernaryExpression): void

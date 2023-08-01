@@ -28,4 +28,8 @@ export default class Variables {
   public static set(key: string, value: IValue) {
     Variables.variables.set(key, value)
   }
+
+  public static remove(key: string) {
+    Variables.variables.delete(key)
+  }
 }

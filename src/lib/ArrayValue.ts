@@ -1,3 +1,4 @@
+import { TypeException } from 'exceptions/ArgumentsMismatchException'
 import IValue from './IValue'
 import Types from './Types'
 import Value from './Value'
@@ -37,6 +38,12 @@ export default class ArrayValue extends Value<IValue[]> {
 
   public [Symbol.iterator](): Iterator<IValue> {
     return this.value[Symbol.iterator]()
+  }
+
+  public equals(value: IValue): boolean {
+    if (this === value) return true
+    if (!(value instanceof ArrayValue)) return false
+    return this.value === value.value
   }
 
   public asNumber(): number {

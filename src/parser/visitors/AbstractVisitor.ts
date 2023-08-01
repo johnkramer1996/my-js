@@ -27,6 +27,7 @@ import IVisitor from '@ast/IVisitor'
 import MapExpression from '@ast/MapExpression'
 import ForeachArrayStatement from '@ast/ForeachStatement'
 import AssignmentExpression from '@ast/AssignmentExpression'
+import MatchExpression from '@ast/MatchExpression'
 
 export default abstract class AbstractVisitor implements IVisitor {
   public visit(s: IStatement | IExpression): void {
@@ -107,6 +108,8 @@ export default abstract class AbstractVisitor implements IVisitor {
         key.accept(this)
         value.accept(this)
       }
+    } else if (s instanceof MatchExpression) {
+      s.expression.accept(this)
     }
   }
 }

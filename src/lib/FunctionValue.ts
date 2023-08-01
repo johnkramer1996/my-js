@@ -1,3 +1,4 @@
+import { TypeException } from 'exceptions/ArgumentsMismatchException'
 import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import IValue from './IValue'
@@ -13,6 +14,12 @@ export default class FunctionValue extends Value<Function> implements IValue {
 
   public getValue(): Function {
     return this.value
+  }
+
+  public equals(value: IValue): boolean {
+    if (this === value) return true
+    if (!(value instanceof FunctionValue)) return false
+    return this.value === value.value
   }
 
   public asNumber(): number {

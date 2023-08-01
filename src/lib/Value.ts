@@ -10,6 +10,8 @@ export default abstract class Value<T extends string | number | boolean | IValue
     return this.typeValue
   }
 
+  public abstract equals(value: IValue): boolean
+
   public asNumber(): number {
     return Number(this.value)
   }

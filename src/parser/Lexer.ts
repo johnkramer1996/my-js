@@ -58,6 +58,8 @@ export default class Lexer implements ILexer {
     [KeyWord[KeyWord.def], TokenType.DEF],
     [KeyWord[KeyWord.return], TokenType.RETURN],
     [KeyWord[KeyWord.use], TokenType.USE],
+    [KeyWord[KeyWord.match], TokenType.MATCH],
+    [KeyWord[KeyWord.case], TokenType.CASE],
   ])
 
   private tokens: IToken[] = []
@@ -77,7 +79,7 @@ export default class Lexer implements ILexer {
       const char = this.peek()
       if (this.isWhiteSpace(char)) this.next()
       else if (this.isSemikolon(char)) this.tokenizeSemikolon()
-      else if (this.isLetter(char)) this.tokenizeWord()
+      else if (this.isLetter(char) || ['_', '$'].includes(char)) this.tokenizeWord()
       else if (this.isDigit(char)) this.tokenizeNumber()
       else if (this.isOctothorp(char)) this.tokenizeHexNumber()
       else if (this.isQuote(char)) this.tokenizeText()

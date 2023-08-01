@@ -1,3 +1,4 @@
+import IValue from './IValue'
 import Types from './Types'
 import Value from './Value'
 
@@ -10,6 +11,12 @@ export default class StringValue extends Value<string> {
 
   public length(): number {
     return this.value.length
+  }
+
+  public equals(value: IValue): boolean {
+    if (this === value) return true
+    if (!(value instanceof StringValue)) return false
+    return this.value === value.value
   }
 
   public asNumber(): number {
