@@ -143,7 +143,7 @@ thread(def (str) { println str }, "this is a thread with arguments")
 
 use "http"
 
-http("https://jsonplaceholder.typicode.com/users", "POST", { 'title': 'foo', 'body': 'bar', 'userId': 1}, def(v) {
+/*http("https://jsonplaceholder.typicode.com/users", "POST", { 'title': 'foo', 'body': 'bar', 'userId': 1}, def(v) {
   println "Added: " 
   foreach(v, ::echo)
   http("https://jsonplaceholder.typicode.com/users/11", "PATCH", {"title": "Patched Name"}, ::http_get_demo)
@@ -152,4 +152,20 @@ http("https://jsonplaceholder.typicode.com/users", "POST", { 'title': 'foo', 'bo
 def http_get_demo(v) {
   println "Updated: " + v
   http("http://jsonplaceholder.typicode.com/users", ::echo)
-}
+}*/
+
+
+use "json"
+println "json"
+
+println jsonencode({
+  "name": "JSON Example",
+  "version": 1,
+  "arrayData": [
+     1, 2, 3, 4
+  ],
+  "objectData": {
+    "key": "value",
+    10: "1000"
+  }
+})

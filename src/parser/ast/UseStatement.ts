@@ -8,6 +8,7 @@ import Types from '@lib/modules/Types'
 import Functional from '@lib/modules/Functional'
 import Canvas from '@lib/modules/Canvas'
 import Http from '@lib/modules/Http'
+import Json from '@lib/modules/Json'
 
 type ModuleConstroctor = new () => IModule
 
@@ -19,6 +20,7 @@ export default class UseStatement implements IStatement {
     ['functional', Functional],
     ['canvas', Canvas],
     ['http', Http],
+    ['json', Json],
   ])
 
   constructor(public expression: IExpression) {}

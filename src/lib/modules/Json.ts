@@ -1,0 +1,38 @@
+import ArrayValue from '@lib/ArrayValue'
+import BooleanValue from '@lib/BooleanValue'
+import Functions, { Function } from '@lib/Functions'
+import IModule from '@lib/IModule'
+import IValue from '@lib/IValue'
+import MapValue from '@lib/MapValue'
+import NumberValue from '@lib/NumberValue'
+import StringValue from '@lib/StringValue'
+import { decode, encode } from './functions/HttpHttp'
+
+class JsonDecode implements Function {
+  public execute(...args: IValue[]): IValue {
+    if (args.length != 1) throw new Error('One argument expected')
+    try {
+      return decode(JSON.parse(args[0].asString()))
+    } catch (er) {
+      throw new Error('Error while parsing json' + er)
+    }
+  }
+}
+
+class JsonEncode implements Function {
+  public execute(...args: IValue[]): IValue {
+    if (args.length != 1) throw new Error('One argument expected')
+    try {
+      return new StringValue(JSON.stringify(encode(args[0])))
+    } catch (er) {
+      throw new Error('Error while creating json' + er)
+    }
+  }
+}
+
+export default class Json implements IModule {
+  public init(): void {
+    Functions.set('jsonencode', new JsonEncode())
+    Functions.set('jsondecode', new JsonDecode())
+  }
+}

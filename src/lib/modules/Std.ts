@@ -24,19 +24,17 @@ class StdLength implements Function {
     let length = 0
     switch (val.type()) {
       case Types.ARRAY:
-        length = (<ArrayValue>val).size()
+        length = (val as ArrayValue).size()
         break
       case Types.MAP:
-        length = (<MapValue>val).size()
+        length = (val as MapValue).size()
         break
       case Types.STRING:
-        length = (<StringValue>val).length()
+        length = (val as StringValue).length()
         break
       case Types.FUNCTION:
-        const func = (<FunctionValue>val).getValue()
-        if (func instanceof UserDefinedFunction) {
-          length = func.getArgsCount()
-        }
+        const func = (val as FunctionValue).getValue()
+        if (func instanceof UserDefinedFunction) length = func.getArgsCount()
         break
     }
     return new NumberValue(length)
