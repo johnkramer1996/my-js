@@ -2,6 +2,7 @@ import IValue from '@lib/IValue'
 import IExpression from './IExpression'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
+import { OperationIsNotSupportedException } from 'exceptions/ArgumentsMismatchException'
 
 enum Operator {
   DELETE = 'delete',
@@ -31,7 +32,7 @@ export default class UnaryExpression implements IExpression {
       case Operator.BITWISE_NOT:
         return new NumberValue(~value)
       default:
-        throw new Error('Operation ' + this.operation + ' is not supported')
+        throw new OperationIsNotSupportedException('Operation ' + this.operation + ' is not supported')
     }
   }
 

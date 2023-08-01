@@ -3,6 +3,7 @@ import IModule from '@lib/IModule'
 import IValue from '@lib/IValue'
 import NumberValue from '@lib/NumberValue'
 import Variables from '@lib/Variables'
+import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
 
 export default class Mathematics implements IModule {
   public init(): void {
@@ -14,7 +15,7 @@ export default class Mathematics implements IModule {
       if (typeof item === 'function') {
         Functions.set(key, {
           execute: (...args: IValue[]) => {
-            if (args.length != countArgs) throw new Error('Invalid number of arguments, expected ' + countArgs)
+            if (args.length != countArgs) throw new ArgumentsMismatchException('Invalid number of arguments, expected ' + countArgs)
 
             return new NumberValue(!isBinary ? item(args[0].asNumber()) : item(args[0].asNumber(), args[1].asNumber()))
           },

@@ -1,3 +1,4 @@
+import { UnknownFunctionException } from 'exceptions/ArgumentsMismatchException'
 import IValue from './IValue'
 
 // (...args: IValue[]) => IValue |
@@ -12,7 +13,7 @@ export default class Functions {
 
   public static get(key: string): Function {
     if (this.isExists(key)) return Functions.functions.get(key) as Function
-    throw new Error('Unknown function ' + key)
+    throw new UnknownFunctionException(key)
   }
 
   public static set(key: string, value: Function) {

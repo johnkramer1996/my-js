@@ -225,7 +225,8 @@ export default class Parser {
     this.consume(TokenType.LBRACE)
     const elements: Map<IExpression, IExpression> = new Map()
     while (!this.match(TokenType.RBRACE)) {
-      const key = this.primary()
+      const current = this.get()
+      const key = this.match(TokenType.WORD) || this.match(TokenType.TEXT) ? new ValueExpression(current.getText()) : new ValueExpression(0)
       this.consume(TokenType.COLON)
       const value = this.expression()
       elements.set(key, value)

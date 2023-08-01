@@ -2,6 +2,8 @@ import Types from './Types'
 import Value from './Value'
 
 export default class StringValue extends Value<string> {
+  static EMPTY = new StringValue('')
+
   constructor(value: string) {
     super(value, Types.STRING)
   }

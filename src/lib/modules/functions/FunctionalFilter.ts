@@ -6,18 +6,19 @@ import ArrayValue from '@lib/ArrayValue'
 import BooleanValue from '@lib/BooleanValue'
 import FunctionValue from '@lib/FunctionValue'
 import MapValue from '@lib/MapValue'
+import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
 
 export default class FunctionalFilter implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length < 2) throw new Error('At least two args expected')
-    if (args[1].type() != Types.FUNCTION) throw new Error('Function expected in second arg')
+    if (args.length < 2) throw new ArgumentsMismatchException('At least two args expected')
+    if (args[1].type() != Types.FUNCTION) throw new TypeException('Function expected in second arg')
 
     const container = args[0]
     const consumer = (args[1] as FunctionValue).getValue()
     if (container instanceof ArrayValue) return this.filterArray(container, consumer)
     if (container instanceof MapValue) return this.filterMap(container, consumer)
 
-    throw new Error('Invalid first argument. Array or map exprected')
+    throw new TypeException('Invalid first argument. Array or map exprected')
   }
 
   private filterArray(array: ArrayValue, predicate: Function): IValue {

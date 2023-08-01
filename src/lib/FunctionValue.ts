@@ -16,7 +16,7 @@ export default class FunctionValue extends Value<Function> implements IValue {
   }
 
   public asNumber(): number {
-    throw new Error('Cannot cast function to number')
+    throw new TypeException('Cannot cast function to number')
   }
 
   public asString(): string {

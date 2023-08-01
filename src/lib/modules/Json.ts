@@ -7,25 +7,27 @@ import MapValue from '@lib/MapValue'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import { decode, encode } from './functions/HttpHttp'
+import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
 
 class JsonDecode implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length != 1) throw new Error('One argument expected')
+    if (args.length != 1) throw new ArgumentsMismatchException('One argument expected')
     try {
       return decode(JSON.parse(args[0].asString()))
     } catch (er) {
-      throw new Error('Error while parsing json' + er)
+      return MapValue.EMPTY
     }
   }
 }
 
 class JsonEncode implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length != 1) throw new Error('One argument expected')
+    debugger
+    if (args.length != 1) throw new ArgumentsMismatchException('One argument expected')
     try {
       return new StringValue(JSON.stringify(encode(args[0])))
     } catch (er) {
-      throw new Error('Error while creating json' + er)
+      return StringValue.EMPTY
     }
   }
 }

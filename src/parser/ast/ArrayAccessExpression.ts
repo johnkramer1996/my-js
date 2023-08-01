@@ -5,6 +5,7 @@ import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import MapValue from '@lib/MapValue'
 import BooleanValue from '@lib/BooleanValue'
+import { TypeException } from 'exceptions/ArgumentsMismatchException'
 
 export default class ArrayAccessExpression implements IExpression {
   constructor(public variable: string, public indices: IExpression[]) {}
@@ -19,7 +20,7 @@ export default class ArrayAccessExpression implements IExpression {
     const variable = Variables.get(this.variable)
     if (variable instanceof ArrayValue) return this.getArray(variable)
     if (variable instanceof MapValue) return this.getObj(variable)
-    throw new Error('expect map or array')
+    throw new TypeException('Expect map or array')
   }
 
   public setValue(value: IValue): void {
@@ -48,12 +49,12 @@ export default class ArrayAccessExpression implements IExpression {
 
   private isArrayValue(value: IValue): ArrayValue {
     if (value instanceof ArrayValue) return value
-    throw new Error('Array expected')
+    throw new TypeException('Array expected')
   }
 
   private isMapValue(value: IValue): MapValue {
     if (value instanceof MapValue) return value
-    throw new Error('Map expected')
+    throw new TypeException('Map expected')
   }
 
   public accept(visitor: IVisitor): void {

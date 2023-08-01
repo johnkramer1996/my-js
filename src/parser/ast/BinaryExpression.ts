@@ -4,6 +4,7 @@ import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 import StringValue from '@lib/StringValue'
 import ArrayValue from '@lib/ArrayValue'
+import { OperationIsNotSupportedException, TypeException } from 'exceptions/ArgumentsMismatchException'
 
 enum BinaryOperator {
   ADD = '+',
@@ -44,7 +45,7 @@ export default class BinaryExpression implements IExpression {
     if (value1 instanceof ArrayValue) {
       switch (this.operation) {
         case BinaryOperator.LSHIFT:
-          if (!(value2 instanceof ArrayValue)) throw new Error('Cannot merge non array value to array')
+          if (!(value2 instanceof ArrayValue)) throw new TypeException('Cannot merge non array value to array')
           return ArrayValue.merge(value1, value2)
         case BinaryOperator.PUSH:
         default:
@@ -81,7 +82,7 @@ export default class BinaryExpression implements IExpression {
         case BinaryOperator.URSHIFT:
           return number1 >>> number2
         default:
-          throw new Error('Operation ' + this.operation + ' is not supported')
+          throw new OperationIsNotSupportedException('Operation ' + this.operation + ' is not supported')
       }
     })()
 

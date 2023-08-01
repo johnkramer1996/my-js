@@ -4,6 +4,7 @@ import IValue from './IValue'
 import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import Variables from './Variables'
+import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
 
 export default class UserDefinedFunction implements Function {
   constructor(private argNames: string[], private body: IStatement) {}
@@ -19,7 +20,7 @@ export default class UserDefinedFunction implements Function {
 
   public execute(...values: IValue[]): IValue {
     try {
-      if (values.length != this.getArgsCount()) throw new Error('Args count mismatch')
+      if (values.length != this.getArgsCount()) throw new ArgumentsMismatchException('Arguments count mismatch')
       // Variables.push()
       // console.log(Variables)
 

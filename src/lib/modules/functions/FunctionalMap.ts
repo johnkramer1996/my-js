@@ -5,10 +5,11 @@ import Types from '@lib/Types'
 import ArrayValue from '@lib/ArrayValue'
 import FunctionValue from '@lib/FunctionValue'
 import MapValue from '@lib/MapValue'
+import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
 
 export default class FunctionalMap implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length < 2) throw new Error('At least two args expected')
+    if (args.length < 2) throw new ArgumentsMismatchException('At least two args expected')
     if (args[1].type() != Types.FUNCTION) throw new Error('Function expected in second arg')
 
     const container = args[0]

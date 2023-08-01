@@ -40,7 +40,7 @@ export default class ArrayValue extends Value<IValue[]> {
   }
 
   public asNumber(): number {
-    throw new Error('Cannot cast array to number')
+    throw new TypeException('Cannot cast array to number')
   }
 
   public asString(): string {

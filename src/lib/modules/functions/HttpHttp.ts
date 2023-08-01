@@ -6,14 +6,17 @@ import BooleanValue from '@lib/BooleanValue'
 import FunctionValue from '@lib/FunctionValue'
 import MapValue from '@lib/MapValue'
 import ArrayValue from '@lib/ArrayValue'
+import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
 
 export const decode = (data: any): IValue => {
   if (typeof data === 'string') return new StringValue(data)
   if (typeof data === 'number') return new NumberValue(data)
   if (data instanceof Array) return data.reduce((prev, el, i) => (prev.set(i, decode(el)), prev), new ArrayValue(data.length))
   if (data && typeof data === 'object') return Object.entries(data).reduce((prev, [key, value]) => (prev.set(key, decode(value)), prev), new MapValue())
+  if (data === true) return BooleanValue.TRUE
+  if (data === false) return BooleanValue.FALSE
   if (data === null) return BooleanValue.FALSE
-  throw new Error('not expect data')
+  throw new TypeException('not expect data' + data)
 }
 
 export const encode = (data: IValue): any => {
@@ -21,7 +24,7 @@ export const encode = (data: IValue): any => {
   if (data instanceof NumberValue) return data.asNumber()
   if (data instanceof ArrayValue) return new Array(data.size()).fill(null).map((_, i) => encode(data.get(i)))
   if (data instanceof MapValue) return [...data].reduce((prev, [key, value]) => ((prev[key] = encode(value)), prev), {} as { [key: string]: any })
-  throw new Error('not expect data')
+  throw new TypeException('not expect data' + data)
 }
 
 export class HttpHttp implements Function {
@@ -39,22 +42,22 @@ export class HttpHttp implements Function {
 
       case 3: // http(url, method, params) || http(url, method, callback)
         if (args[2] instanceof FunctionValue) return this.process(url, method, MapValue.EMPTY, MapValue.EMPTY, args[2])
-        if (!(args[2] instanceof MapValue)) throw new Error('Second arg must be a map')
+        if (!(args[2] instanceof MapValue)) throw new TypeException('Second arg must be a map')
         return this.process(url, method, args[2])
 
       case 4: // http(url, method, params, callback)
-        if (!(args[2] instanceof MapValue)) throw new Error('Second arg must be a map')
-        if (!(args[3] instanceof FunctionValue)) throw new Error('Fourth arg must be a function callback')
+        if (!(args[2] instanceof MapValue)) throw new TypeException('Second arg must be a map')
+        if (!(args[3] instanceof FunctionValue)) throw new TypeException('Fourth arg must be a function callback')
         return this.process(url, method, args[2], MapValue.EMPTY, args[3])
 
       case 5: // http(url, method, params, headerParams, callback)
-        if (!(args[2] instanceof MapValue)) throw new Error('Second arg must be a map')
-        if (!(args[3] instanceof MapValue)) throw new Error('Third arg must be a map')
-        if (!(args[4] instanceof FunctionValue)) throw new Error('Fifth arg must be a function callback')
+        if (!(args[2] instanceof MapValue)) throw new TypeException('Second arg must be a map')
+        if (!(args[3] instanceof MapValue)) throw new TypeException('Third arg must be a map')
+        if (!(args[4] instanceof FunctionValue)) throw new TypeException('Fifth arg must be a function callback')
         return this.process(url, method, args[2], args[3], args[4])
 
       default:
-        throw new Error('Wrong number of arguments')
+        throw new ArgumentsMismatchException('Wrong number of arguments')
     }
   }
 

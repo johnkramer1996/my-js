@@ -3,6 +3,7 @@ import IExpression from './IExpression'
 import BooleanValue from '@lib/BooleanValue'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
+import { OperationIsNotSupportedException } from 'exceptions/ArgumentsMismatchException'
 
 enum ConditionOperator {
   EQUALS = '==',
@@ -48,7 +49,7 @@ export default class ConditionalExpression implements IExpression {
         case ConditionOperator.OR:
           return number1 != 0 || number2 != 0
         default:
-          throw new Error('Operation ' + this.operation + ' is not supported')
+          throw new OperationIsNotSupportedException('Operation ' + this.operation + ' is not supported')
       }
     })()
 

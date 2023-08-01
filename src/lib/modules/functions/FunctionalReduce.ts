@@ -6,11 +6,12 @@ import ArrayValue from '@lib/ArrayValue'
 import BooleanValue from '@lib/BooleanValue'
 import FunctionValue from '@lib/FunctionValue'
 import MapValue from '@lib/MapValue'
+import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
 
 export default class FunctionalReduce implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length !== 3) throw new Error('At least two args expected')
-    if (args[2].type() != Types.FUNCTION) throw new Error('Function expected in second arg')
+    if (args.length !== 3) throw new ArgumentsMismatchException('At least two args expected')
+    if (args[2].type() != Types.FUNCTION) throw new TypeException('Function expected in second arg')
 
     const [container, identity] = args
     const consumer = (args[2] as FunctionValue).getValue()
