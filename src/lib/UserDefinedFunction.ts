@@ -22,8 +22,6 @@ export default class UserDefinedFunction implements Function {
     try {
       if (values.length != this.getArgsCount()) throw new ArgumentsMismatchException(`Arguments count mismatch ${this.getArgsCount()}. Expect ${values.length}`)
       // Variables.push()
-      // console.log(Variables)
-
       values.forEach((v: IValue, i: number) => Variables.set(this.getArgsName(i), v))
       this.body.execute()
     } catch (rt) {

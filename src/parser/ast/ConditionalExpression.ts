@@ -25,17 +25,18 @@ export default class ConditionalExpression implements IExpression {
     const value1 = this.expr1.eval()
     const value2 = this.expr2.eval()
 
+    const isBoolean = value1 instanceof BooleanValue || value2 instanceof BooleanValue
     const isNumber = value1 instanceof NumberValue || value2 instanceof NumberValue
     const compareString = isNumber ? 0 : value1.asString().localeCompare(value2.asString())
-    const number1 = isNumber ? value1.asNumber() : compareString
-    const number2 = isNumber ? value2.asNumber() : 0
+    const number1 = isBoolean || isNumber ? value1.asNumber() : compareString
+    const number2 = isBoolean || isNumber ? value2.asNumber() : 0
 
     const result = (() => {
       switch (this.operation) {
         case ConditionOperator.EQUALS:
-          return number1 == number2
+          return number1 === number2
         case ConditionOperator.NOT_EQUALS:
-          return number1 != number2
+          return number1 !== number2
         case ConditionOperator.LT:
           return number1 < number2
         case ConditionOperator.LTEQ:

@@ -2,7 +2,7 @@ import AssignValidator from 'parser/visitors/AssignValidator'
 import FunctionAdder from 'parser/visitors/FunctionAdder'
 import Lexer from 'parser/Lexer'
 import Parser from 'parser/Parser'
-import program from '../program.my-js'
+import program from '../example/games/pipes.my-js'
 
 // for node.js
 // import { readFileSync } from 'fs'

@@ -71,7 +71,6 @@ export default class BinaryExpression implements IExpression {
         case BinaryOperator.AND:
           return number1 & number2
         case BinaryOperator.XOR:
-          console.log(number1, number2)
           return number1 ^ number2
         case BinaryOperator.OR:
           return number1 | number2

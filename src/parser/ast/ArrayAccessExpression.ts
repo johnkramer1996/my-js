@@ -49,6 +49,7 @@ export default class ArrayAccessExpression implements IExpression {
 
   private isArrayValue(value: IValue): ArrayValue {
     if (value instanceof ArrayValue) return value
+    debugger
     throw new TypeException('Array expected')
   }
 
