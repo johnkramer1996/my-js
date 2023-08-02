@@ -18,7 +18,10 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "declaration": true,
+    "noEmit": true,
+    "isolatedModules": true
   },
   "include": ["src/**/*"]
 }

@@ -11,6 +11,7 @@ export default abstract class Value<T extends string | number | boolean | IValue
   }
 
   public abstract equals(value: IValue): boolean
+  public abstract compareTo(o: IValue): number
 
   public asNumber(): number {
     return Number(this.value)

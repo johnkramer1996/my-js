@@ -20,7 +20,7 @@ export class FunctionalSortBy implements Function {
     if (!(args[0] instanceof ArrayValue)) throw new TypeException('Array expected in first argument')
     if (!(args[1] instanceof FunctionValue)) throw new TypeException('Function expected in second argument')
 
-    const elements: IValue[] = args[0].getCopyElements()
+    const elements = args[0].getCopyElements()
     const comparator = args[1].getValue()
 
     elements.sort((a, b) => comparator.execute(a).compareTo(comparator.execute(b)))

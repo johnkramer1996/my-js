@@ -13,6 +13,7 @@ import NumberValue from '@lib/NumberValue'
 import ArrayValue from '@lib/ArrayValue'
 import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
 import FunctionValue from '@lib/FunctionValue'
+import BooleanValue from '@lib/BooleanValue'
 
 export class StdSort implements Function {
   public execute(...args: IValue[]): IValue {

@@ -1,3 +1,4 @@
+import IValue from './IValue'
 import Types from './Types'
 import Value from './Value'
 
@@ -7,6 +8,16 @@ export default class BooleanValue extends Value<boolean> {
 
   constructor(value: boolean) {
     super(value, Types.BOOLEAN)
+  }
+
+  public compareTo(o: IValue): number {
+    return this.asString().localeCompare(o.asString())
+  }
+
+  public equals(value: IValue): boolean {
+    if (this === value) return true
+    if (!(value instanceof BooleanValue)) return false
+    return this.value === value.value
   }
 
   public asNumber(): number {

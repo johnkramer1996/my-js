@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon",
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "tscheck": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -15,9 +16,11 @@
     "@babel/preset-env": "^7.22.9",
     "@babel/preset-typescript": "^7.22.5",
     "awesome-typescript-loader": "^5.2.1",
+    "babel-cli": "^6.26.0",
     "babel-loader": "^9.1.3",
     "html-webpack-plugin": "^5.5.3",
     "nodemon": "^3.0.1",
+    "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "webpack": "^5.88.2",
