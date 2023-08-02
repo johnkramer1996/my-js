@@ -30,6 +30,11 @@ export default class MapValue extends Value<Object> implements Iterable<[string,
     this.value[key] = value
   }
 
+  public compareTo(o: IValue): number {
+    if (o instanceof MapValue) return this.size() >= o.size() ? this.size() - o.size() : o.size() - this.size()
+    return this.asString().localeCompare(o.asString())
+  }
+
   public [Symbol.iterator](): Iterator<[string, IValue]> {
     const entries = Object.entries(this.value)
 

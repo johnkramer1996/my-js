@@ -6,7 +6,7 @@ import IValue from '@lib/IValue'
 export default class StdEcho implements Function {
   execute(...args: IValue[]): IValue {
     process.stdout.write(args.map((val) => val.asString()).join(' '))
-    process.stdout.write('\n')
+    // process.stdout.write('\n')
     return BooleanValue.FALSE
   }
 }

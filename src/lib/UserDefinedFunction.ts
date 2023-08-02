@@ -20,7 +20,7 @@ export default class UserDefinedFunction implements Function {
 
   public execute(...values: IValue[]): IValue {
     try {
-      if (values.length != this.getArgsCount()) throw new ArgumentsMismatchException('Arguments count mismatch')
+      if (values.length != this.getArgsCount()) throw new ArgumentsMismatchException(`Arguments count mismatch ${this.getArgsCount()}. Expect ${values.length}`)
       // Variables.push()
       // console.log(Variables)
 

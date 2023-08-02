@@ -13,6 +13,10 @@ export default class StringValue extends Value<string> {
     return this.value.length
   }
 
+  public compareTo(o: IValue): number {
+    return this.asString().localeCompare(o.asString())
+  }
+
   public equals(value: IValue): boolean {
     if (this === value) return true
     if (!(value instanceof StringValue)) return false

@@ -126,10 +126,12 @@ squares = map(nums, def(x) = x * x)
 foreach(squares, ::echo)
 println "Sum: " + reduce(squares, 0, def(x, y) = x + y)
 
-nums = [[1, 2], [3], [], [4, 5]]
+nums = [[1, 2], [3], [11], [4, 5]]
 nums = flatmap(nums, IDENTITY)
 println "flatmap"
 foreach(nums, ::echo)
+println "sort"
+foreach(sort(nums, def(a,b) = b - a), ::echo)
 
 use "http"
 

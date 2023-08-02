@@ -214,11 +214,9 @@ export default class Parser {
 
   private map(): IExpression {
     this.consume(TokenType.LBRACE)
-    const elements: Map<string, IExpression> = new Map()
+    const elements: Map<IExpression, IExpression> = new Map()
     while (!this.match(TokenType.RBRACE)) {
-      const current = this.get()
-      if (!(this.match(TokenType.WORD) || this.match(TokenType.TEXT))) throw new Error('expect word or text')
-      const key = current.getText()
+      const key = this.value()
       this.consume(TokenType.COLON)
       elements.set(key, this.expression())
       this.match(TokenType.COMMA)
@@ -446,6 +444,7 @@ export default class Parser {
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
+    if (this.match(TokenType.WORD)) return new ValueExpression(current.getText())
 
     throw this.error('Unknown expression ' + current)
   }

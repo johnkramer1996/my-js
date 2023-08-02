@@ -10,6 +10,14 @@ export class MyArray<T extends IValue> extends Array<T> implements Iterable<IVal
 }
 
 export default class ArrayValue extends Value<IValue[]> {
+  public static add(array: ArrayValue, value: IValue): ArrayValue {
+    return new ArrayValue([...array, value])
+  }
+
+  public static merge(array1: ArrayValue, array2: ArrayValue): ArrayValue {
+    return new ArrayValue([...array1, ...array2])
+  }
+
   constructor(value: number)
   constructor(size: IValue[])
   constructor(value: number | IValue[]) {
@@ -28,12 +36,13 @@ export default class ArrayValue extends Value<IValue[]> {
     this.value[index] = value
   }
 
-  public static add(array: ArrayValue, value: IValue): ArrayValue {
-    return new ArrayValue([...array, value])
+  public getCopyElements(): IValue[] {
+    return [...new ArrayValue([...this.value]).value]
   }
 
-  public static merge(array1: ArrayValue, array2: ArrayValue): ArrayValue {
-    return new ArrayValue([...array1, ...array2])
+  public compareTo(o: IValue): number {
+    if (o instanceof ArrayValue) return this.size() >= o.size() ? this.size() - o.size() : o.size() - this.size()
+    return this.asString().localeCompare(o.asString())
   }
 
   public [Symbol.iterator](): Iterator<IValue> {

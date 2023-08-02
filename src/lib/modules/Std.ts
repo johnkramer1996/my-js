@@ -1,13 +1,5 @@
 import Functions, { Function } from '@lib/Functions'
 import IModule from '@lib/IModule'
-import IValue from '@lib/IValue'
-import Types from '@lib/Types'
-import ArrayValue from '@lib/ArrayValue'
-import MapValue from '@lib/MapValue'
-import StringValue from '@lib/StringValue'
-import FunctionValue from '@lib/FunctionValue'
-import UserDefinedFunction from '@lib/UserDefinedFunction'
-import NumberValue from '@lib/NumberValue'
 import StdRand from './functions/StdRand'
 import StdMultiArray from './functions/StdMultiArray'
 import StdArray from './functions/StdArray'
@@ -15,29 +7,35 @@ import StdEcho from './functions/StdEcho'
 import StdNewArray from './functions/StdNewArray'
 import StdNextFrame from './functions/StdNextFrame'
 import StdThread from './functions/StdThread'
+import StdLength from './functions/StdLength'
+import IValue from '@lib/IValue'
+import NumberValue from '@lib/NumberValue'
+import ArrayValue from '@lib/ArrayValue'
+import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
+import FunctionValue from '@lib/FunctionValue'
 
-class StdLength implements Function {
+export class StdSort implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length == 0) throw new Error('At least one arg expected')
+    if (args.length < 1) throw new ArgumentsMismatchException('At least one argument expected')
+    if (!(args[0] instanceof ArrayValue)) throw new TypeException('Array expected in first argument')
 
-    const val = args[0]
-    let length = 0
-    switch (val.type()) {
-      case Types.ARRAY:
-        length = (val as ArrayValue).size()
+    const elements: IValue[] = args[0].getCopyElements()
+    switch (args.length) {
+      case 1:
+        elements.sort()
         break
-      case Types.MAP:
-        length = (val as MapValue).size()
+      case 2:
+        if (!(args[1] instanceof FunctionValue)) throw new TypeException('Function expected in second argument')
+        const comparator = args[1].getValue()
+        elements.sort((a, b) => {
+          return comparator.execute(a, b).asNumber()
+        })
         break
-      case Types.STRING:
-        length = (val as StringValue).length()
-        break
-      case Types.FUNCTION:
-        const func = (val as FunctionValue).getValue()
-        if (func instanceof UserDefinedFunction) length = func.getArgsCount()
-        break
+      default:
+        throw new ArgumentsMismatchException('Wrong number of arguments')
     }
-    return new NumberValue(length)
+
+    return new ArrayValue(elements)
   }
 }
 
@@ -51,5 +49,6 @@ export default class Std implements IModule {
     Functions.set('rand', new StdRand())
     Functions.set('nextFrame', new StdNextFrame())
     Functions.set('thread', new StdThread())
+    Functions.set('sort', new StdSort())
   }
 }

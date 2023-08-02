@@ -5,11 +5,11 @@ import IVisitor from './IVisitor'
 import MapValue from '@lib/MapValue'
 
 export default class MapExpression implements IExpression {
-  constructor(public elements: Map<string, IExpression>) {}
+  constructor(public elements: Map<IExpression, IExpression>) {}
 
   public eval(): IValue {
     const map = new MapValue()
-    for (const [key, value] of this.elements.entries()) map.set(key, value.eval())
+    for (const [key, value] of this.elements.entries()) map.set(key.eval().asString(), value.eval())
     return map
   }
 

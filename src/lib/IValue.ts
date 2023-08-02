@@ -5,4 +5,5 @@ export default interface IValue {
   asString(): string
   type(): Types
   equals(value: IValue): boolean
+  compareTo(o: IValue): number
 }

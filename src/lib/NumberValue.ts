@@ -7,6 +7,11 @@ export default class NumberValue extends Value<number> {
     super(value, Types.NUMBER)
   }
 
+  public compareTo(o: IValue): number {
+    if (o instanceof NumberValue) return this.value >= o.value ? this.value - o.value : o.value - this.value
+    return this.asString().localeCompare(o.asString())
+  }
+
   public equals(value: IValue): boolean {
     if (this === value) return true
     if (!(value instanceof NumberValue)) return false

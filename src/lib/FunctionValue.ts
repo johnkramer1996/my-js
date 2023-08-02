@@ -16,6 +16,10 @@ export default class FunctionValue extends Value<Function> implements IValue {
     return this.value
   }
 
+  public compareTo(o: IValue): number {
+    return this.asString().localeCompare(o.asString())
+  }
+
   public equals(value: IValue): boolean {
     if (this === value) return true
     if (!(value instanceof FunctionValue)) return false
