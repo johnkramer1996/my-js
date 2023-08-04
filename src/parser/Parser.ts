@@ -17,7 +17,7 @@ import ForStatement from '@ast/ForStatement'
 import AssignmentStatement from '@ast/AssignmentStatement'
 import BreakStatement from '@ast/BreakStatement'
 import ContinueStatement from '@ast/ContinueStatement'
-import FunctionDefineStatement from '@ast/FunctionDefineStatement'
+import FunctionDefineStatement, { Arguments } from '@ast/FunctionDefineStatement'
 import ExprStatement from '@ast/ExprStatement'
 import FunctionalExpression from '@ast/FunctionalExpression'
 import UseStatement from '@ast/UseStatement'
@@ -456,14 +456,28 @@ export default class Parser {
     return result
   }
 
-  private getArguments(): string[] {
+  private getArguments(): Arguments {
     this.consume(TokenType.LPAREN)
-    const argNames: string[] = []
+    const argNames = new Arguments()
+    let startsOptionalArgs = false
     while (!this.match(TokenType.RPAREN)) {
-      argNames.push(this.consume(TokenType.WORD).getText())
+      const variable = this.consume(TokenType.WORD).getText()
+      const expr = this.match(TokenType.EQ) ? this.expression() : null
+
+      if (!expr && startsOptionalArgs) throw this.error('Required argument cannot be after optional')
+      if (expr) startsOptionalArgs = true
+
+      argNames.add(variable, expr)
       this.match(TokenType.COMMA)
     }
     return argNames
+
+    // const argNames: string[] = []
+    // while (!this.match(TokenType.RPAREN)) {
+    //   argNames.push(this.consume(TokenType.WORD).getText())
+    //   this.match(TokenType.COMMA)
+    // }
+    // return argNames
   }
 
   private getBody(): IStatement {

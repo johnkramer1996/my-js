@@ -1,14 +1,6 @@
-a = 10
-b = 11
 
-def func(a, c) {
-    print a
-    a = 20
-    b = 21
-    print a
-}
+def funcWithOptionalArgs(str, count = 5, prefix = "<", suffix = ">") = prefix + (str * count) + suffix
 
-func(30, 10)
-
-print a;
-print b;
+println funcWithOptionalArgs("*")
+println funcWithOptionalArgs("+", 2)
+println funcWithOptionalArgs("*", 10, "<!")
