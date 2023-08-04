@@ -6,12 +6,18 @@ import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import FunctionValue from '@lib/FunctionValue'
 import { UnknownFunctionException, VariableDoesNotExistsException } from 'exceptions/ArgumentsMismatchException'
+import CallStack from '@lib/CallStack'
 
 export default class FunctionalExpression implements IExpression {
   constructor(public functionExpr: IExpression, public args: IExpression[]) {}
 
   public eval(): IValue {
-    return this.consumeFunction(this.functionExpr).execute(...this.args.map((v) => v.eval()))
+    const f = this.consumeFunction(this.functionExpr)
+    CallStack.enter(this.functionExpr.toString(), f)
+    const result = f.execute(...this.args.map((v) => v.eval()))
+    CallStack.exit()
+
+    return result
   }
 
   private consumeFunction(expr: IExpression): Function {

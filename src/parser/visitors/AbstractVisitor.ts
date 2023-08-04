@@ -12,7 +12,7 @@ import IExpression from '@ast/IExpression'
 import ForStatement from '@ast/ForStatement'
 import FunctionalExpression from '@ast/FunctionalExpression'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
-import FunctionStatement from '@ast/FunctionStatement'
+import ExprStatement from '@ast/ExprStatement'
 import IfStatement from '@ast/IfStatement'
 import LogStatement from '@ast/LogStatement'
 import ReturnStatement from '@ast/ReturnStatement'
@@ -73,8 +73,8 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.body.accept(this)
     } else if (s instanceof FunctionDefineStatement) {
       // s.func.accept(this)
-    } else if (s instanceof FunctionStatement) {
-      s.func.accept(this)
+    } else if (s instanceof ExprStatement) {
+      s.expr.accept(this)
     } else if (s instanceof FunctionalExpression) {
       s.functionExpr.accept(this)
       for (const arg of s.args) {

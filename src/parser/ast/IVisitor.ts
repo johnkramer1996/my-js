@@ -14,7 +14,6 @@ import ForStatement from './ForStatement'
 import FunctionalExpression from './FunctionalExpression'
 import FunctionDefineStatement from './FunctionDefineStatement'
 import FunctionReferenceExpression from './FunctionReferenceExpression'
-import FunctionStatement from './FunctionStatement'
 import IfStatement from './IfStatement'
 import LogStatement from './LogStatement'
 import MapExpression from './MapExpression'
@@ -26,6 +25,7 @@ import UseStatement from './UseStatement'
 import ValueExpression from './ValueExpression'
 import VariableExpression from './VariableExpression'
 import WhileStatement from './WhileStatement'
+import ExprStatement from './ExprStatement'
 
 export default interface IVisitor {
   visit(s: ArrayAccessExpression): void
@@ -43,7 +43,7 @@ export default interface IVisitor {
   visit(s: ForeachArrayStatement): void
   visit(s: FunctionDefineStatement): void
   visit(s: FunctionReferenceExpression): void
-  visit(s: FunctionStatement): void
+  visit(s: ExprStatement): void
   visit(s: FunctionalExpression): void
   visit(s: IfStatement): void
   visit(s: MapExpression): void

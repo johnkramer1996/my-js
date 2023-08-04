@@ -8,7 +8,7 @@ import Variables from '@lib/Variables'
 
 export abstract class Pattern {
   public result!: IStatement
-  public optCondition!: IExpression
+  public optCondition: IExpression | null = null
 }
 
 export class ConstantPattern extends Pattern {
@@ -38,24 +38,28 @@ export default class MatchExpression implements IExpression {
     const value = this.expression.eval()
 
     for (const pattern of this.patterns) {
+      // text | number
       if (pattern instanceof ConstantPattern) {
-        if (this.match(value, pattern.constant) && this.optMatches(pattern)) {
-          return this.evalResult(pattern.result)
-        }
+        if (this.match(value, pattern.constant) && this.optMatches(pattern)) return this.evalResult(pattern.result)
       }
       if (pattern instanceof VariablePattern) {
+        // default
         if (pattern.variable === '_') return this.evalResult(pattern.result)
+        // variable
+        // isExists
         if (Variables.isExists(pattern.variable)) {
           if (this.match(value, Variables.get(pattern.variable)) && this.optMatches(pattern)) return this.evalResult(pattern.result)
-        } else {
-          Variables.set(pattern.variable, value)
-          if (this.optMatches(pattern)) {
-            const result = this.evalResult(pattern.result)
-            Variables.remove(pattern.variable)
-            return result
-          }
-          Variables.remove(pattern.variable)
+          continue
         }
+        //default
+        // not isExists
+        Variables.set(pattern.variable, value)
+        if (this.optMatches(pattern)) {
+          const result = this.evalResult(pattern.result)
+          Variables.remove(pattern.variable)
+          return result
+        }
+        Variables.remove(pattern.variable)
       }
     }
     throw new Error('No pattern were matched')
@@ -66,7 +70,7 @@ export default class MatchExpression implements IExpression {
   }
 
   private optMatches(pattern: Pattern): boolean {
-    return !pattern.optCondition || pattern.optCondition.eval() != BooleanValue.FALSE
+    return !pattern.optCondition || pattern.optCondition.eval() !== BooleanValue.FALSE
   }
 
   private evalResult(s: IStatement): IValue {
@@ -79,7 +83,7 @@ export default class MatchExpression implements IExpression {
   }
 
   public accept(visitor: IVisitor): void {
-    // visitor.visit(this);
+    visitor.visit(this)
   }
 
   public toString(): string {

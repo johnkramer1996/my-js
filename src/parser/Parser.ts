@@ -18,7 +18,7 @@ import AssignmentStatement from '@ast/AssignmentStatement'
 import BreakStatement from '@ast/BreakStatement'
 import ContinueStatement from '@ast/ContinueStatement'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
-import FunctionStatement from '@ast/FunctionStatement'
+import ExprStatement from '@ast/ExprStatement'
 import FunctionalExpression from '@ast/FunctionalExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
@@ -97,7 +97,8 @@ export default class Parser {
     if (this.match(TokenType.DEF)) return this.functionDefine()
     if (this.match(TokenType.RETURN)) return new ReturnStatement(this.expression())
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new FunctionStatement(this.function(this.qualifiedName()))
+    if (this.match(TokenType.MATCH)) return new ExprStatement(this.matchExpression())
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new ExprStatement(this.function(this.qualifiedName()))
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
 
     throw this.error('Unknown statement ' + this.get())
@@ -263,7 +264,6 @@ export default class Parser {
       else if (this.match(TokenType.WORD)) pattern = new VariablePattern(current.getText())
       if (pattern === null) throw new ParserException('Wrong pattern in match expression: ' + current)
       if (this.match(TokenType.IF)) pattern.optCondition = this.expression()
-
       this.consume(TokenType.COLON)
       pattern.result = new ReturnStatement(this.expression())
       patterns.push(pattern)

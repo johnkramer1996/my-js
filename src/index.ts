@@ -2,7 +2,9 @@ import AssignValidator from 'parser/visitors/AssignValidator'
 import FunctionAdder from 'parser/visitors/FunctionAdder'
 import Lexer from 'parser/Lexer'
 import Parser from 'parser/Parser'
-import program from '../example/games/pipes.my-js'
+import program from '../program.my-js'
+import { Function } from '@lib/Functions'
+import CallStack from '@lib/CallStack'
 
 // for node.js
 // import { readFileSync } from 'fs'
@@ -18,5 +20,8 @@ ast.accept(new AssignValidator())
 try {
   ast.execute()
 } catch (e) {
-  console.log(e)
+  if (e instanceof Error) {
+    console.dir(`Error: ${e.message}`)
+    for (const call of CallStack.getCalls()) console.log(`\tat ${call}`)
+  }
 }
