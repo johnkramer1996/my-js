@@ -16,7 +16,6 @@ export default class FunctionalExpression implements IExpression {
     CallStack.enter(this.functionExpr.toString(), f)
     const result = f.execute(...this.args.map((v) => v.eval()))
     CallStack.exit()
-
     return result
   }
 

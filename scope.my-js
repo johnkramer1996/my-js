@@ -1,0 +1,14 @@
+a = 10
+b = 11
+
+def func(a, c) {
+    print a
+    a = 20
+    b = 21
+    print a
+}
+
+func(30, 10)
+
+print a;
+print b;
