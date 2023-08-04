@@ -4,7 +4,8 @@ import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 import StringValue from '@lib/StringValue'
 import ArrayValue from '@lib/ArrayValue'
-import { OperationIsNotSupportedException, TypeException } from 'exceptions/ArgumentsMismatchException'
+import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupportedException'
+import TypeException from '@exceptions/TypeException'
 
 enum BinaryOperator {
   ADD = '+',

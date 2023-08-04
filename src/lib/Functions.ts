@@ -1,4 +1,4 @@
-import { UnknownFunctionException } from 'exceptions/ArgumentsMismatchException'
+import { UnknownFunctionException } from '@exceptions/UnknownFunctionException'
 import IValue from './IValue'
 
 export type Function = { execute: (...args: IValue[]) => IValue }

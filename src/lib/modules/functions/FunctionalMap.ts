@@ -5,7 +5,7 @@ import Types from '@lib/Types'
 import ArrayValue from '@lib/ArrayValue'
 import FunctionValue from '@lib/FunctionValue'
 import MapValue from '@lib/MapValue'
-import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
 
 export default class FunctionalMap implements Function {
   public execute(...args: IValue[]): IValue {

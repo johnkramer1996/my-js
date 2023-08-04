@@ -3,7 +3,7 @@ import IModule from '@lib/IModule'
 import IValue from '@lib/IValue'
 import NumberValue from '@lib/NumberValue'
 import Variables from '@lib/Variables'
-import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
 
 export default class Mathematics implements IModule {
   public init(): void {

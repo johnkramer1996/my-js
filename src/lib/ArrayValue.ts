@@ -1,4 +1,4 @@
-import { TypeException } from 'exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 import IValue from './IValue'
 import Types from './Types'
 import Value from './Value'

@@ -1,7 +1,7 @@
 import { Function } from '@lib/Functions'
 import IValue from '@lib/IValue'
 import StringValue from '@lib/StringValue'
-import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
 
 export class HttpUrlencode implements Function {
   public execute(...args: IValue[]): IValue {

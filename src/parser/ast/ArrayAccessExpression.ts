@@ -5,7 +5,7 @@ import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import MapValue from '@lib/MapValue'
 import BooleanValue from '@lib/BooleanValue'
-import { TypeException } from 'exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 
 export default class ArrayAccessExpression implements IExpression {
   constructor(public variable: string, public indices: IExpression[]) {}

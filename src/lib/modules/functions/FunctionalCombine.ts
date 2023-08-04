@@ -1,7 +1,8 @@
 import { Function } from '@lib/Functions'
 import IValue from '@lib/IValue'
 import FunctionValue from '@lib/FunctionValue'
-import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 
 export default class FunctionalCombine implements Function {
   public execute(...args: IValue[]): IValue {

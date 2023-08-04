@@ -6,7 +6,8 @@ import ArrayValue from '@lib/ArrayValue'
 import BooleanValue from '@lib/BooleanValue'
 import FunctionValue from '@lib/FunctionValue'
 import MapValue from '@lib/MapValue'
-import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 
 export default class FunctionalFilter implements Function {
   public execute(...args: IValue[]): IValue {

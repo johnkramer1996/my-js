@@ -25,7 +25,7 @@ import ReturnStatement from '@ast/ReturnStatement'
 import ArrayExpression from '@ast/ArrayExpression'
 import ArrayAccessExpression from '@ast/ArrayAccessExpression'
 import ArrayAssignmentStatement from '@ast/ArrayAssignmentStatement'
-import ParserException from './ParserException'
+import ParseException from '@exceptions/ParseException'
 import CommaExpression from '@ast/CommaExpresstion'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import MapExpression from '@ast/MapExpression'
@@ -35,6 +35,7 @@ import AssignmentExpression from '@ast/AssignmentExpression'
 import MatchExpression, { ConstantPattern, Pattern, VariablePattern } from '@ast/MatchExpression'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
+import DestructuringAssignmentStatement from '@ast/DestructuringAssignmentStatement'
 
 // TODO add AssignInicialization
 
@@ -98,10 +99,22 @@ export default class Parser {
     if (this.match(TokenType.RETURN)) return new ReturnStatement(this.expression())
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.match(TokenType.MATCH)) return new ExprStatement(this.matchExpression())
+    if (this.match(TokenType.EXTRACT)) return this.destructuringAssignment()
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new ExprStatement(this.function(this.qualifiedName()))
     if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
 
     throw this.error('Unknown statement ' + this.get())
+  }
+
+  private destructuringAssignment(): DestructuringAssignmentStatement {
+    this.consume(TokenType.LPAREN)
+    const variables: string[] = []
+    while (!this.match(TokenType.RPAREN)) {
+      variables.push(this.lookMatch(0, TokenType.WORD) ? this.consume(TokenType.WORD).getText() : '')
+      this.match(TokenType.COMMA)
+    }
+    this.consume(TokenType.EQ)
+    return new DestructuringAssignmentStatement(variables, this.expression())
   }
 
   private ifElseStatement(): IStatement {
@@ -262,7 +275,7 @@ export default class Parser {
       else if (this.match(TokenType.HEX_NUMBER)) pattern = new ConstantPattern(new NumberValue(Number.parseInt(current.getText(), 16)))
       else if (this.match(TokenType.TEXT)) pattern = new ConstantPattern(new StringValue(current.getText()))
       else if (this.match(TokenType.WORD)) pattern = new VariablePattern(current.getText())
-      if (pattern === null) throw new ParserException('Wrong pattern in match expression: ' + current)
+      if (pattern === null) throw this.error('Wrong pattern in match expression: ' + current)
       if (this.match(TokenType.IF)) pattern.optCondition = this.expression()
       this.consume(TokenType.COLON)
       pattern.result = new ReturnStatement(this.expression())
@@ -471,17 +484,10 @@ export default class Parser {
       this.match(TokenType.COMMA)
     }
     return argNames
-
-    // const argNames: string[] = []
-    // while (!this.match(TokenType.RPAREN)) {
-    //   argNames.push(this.consume(TokenType.WORD).getText())
-    //   this.match(TokenType.COMMA)
-    // }
-    // return argNames
   }
 
   private getBody(): IStatement {
-    return this.lookMatch(0, TokenType.EQ) ? (this.match(TokenType.EQ), new ReturnStatement(this.expression())) : this.statementOrBlock()
+    return this.match(TokenType.EQ) ? new ReturnStatement(this.expression()) : this.statementOrBlock()
   }
 
   private consume(type: TokenType): IToken {
@@ -506,6 +512,6 @@ export default class Parser {
   }
 
   private error(text: string): Error {
-    return new ParserException(text)
+    return new ParseException(text)
   }
 }

@@ -2,7 +2,7 @@ import BooleanValue from '@lib/BooleanValue'
 import FunctionValue from '@lib/FunctionValue'
 import Functions, { Function } from '@lib/Functions'
 import IValue from '@lib/IValue'
-import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
 
 export default class StdThread implements Function {
   execute(...args: IValue[]): IValue {

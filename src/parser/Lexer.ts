@@ -1,4 +1,4 @@
-import LexerException from './LexerException'
+import LexerException from '@exceptions/LexerException'
 import Token, { IToken, KeyWord } from './Token'
 import TokenType from './TokenType'
 
@@ -60,6 +60,7 @@ export default class Lexer implements ILexer {
     [KeyWord[KeyWord.use], TokenType.USE],
     [KeyWord[KeyWord.match], TokenType.MATCH],
     [KeyWord[KeyWord.case], TokenType.CASE],
+    [KeyWord[KeyWord.extract], TokenType.EXTRACT],
   ])
 
   private tokens: IToken[] = []

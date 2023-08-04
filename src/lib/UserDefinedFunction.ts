@@ -4,7 +4,7 @@ import IValue from './IValue'
 import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import Variables from './Variables'
-import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
 import { Arguments } from '@ast/FunctionDefineStatement'
 
 export default class UserDefinedFunction implements Function {

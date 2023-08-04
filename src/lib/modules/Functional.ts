@@ -11,7 +11,8 @@ import FunctionalForEach from './functions/FunctionalForEach'
 import FunctionalMap from './functions/FunctionalMap'
 import FunctionalFlatMap from './functions/FunctionalFlatMap'
 import FunctionalCombine from './functions/FunctionalCombine'
-import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 import ArrayValue from '@lib/ArrayValue'
 
 export class FunctionalSortBy implements Function {

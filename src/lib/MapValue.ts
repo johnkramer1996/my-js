@@ -1,4 +1,4 @@
-import { TypeException } from 'exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 import IValue from './IValue'
 import NumberValue from './NumberValue'
 import Types from './Types'
@@ -9,8 +9,8 @@ export type Object = { [index: string]: IValue }
 export default class MapValue extends Value<Object> implements Iterable<[string, IValue]> {
   public static EMPTY: MapValue = new MapValue()
 
-  constructor() {
-    super({}, Types.OBJECT)
+  constructor(obj: Object = {}) {
+    super(obj, Types.OBJECT)
   }
 
   public size(): number {

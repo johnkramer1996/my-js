@@ -2,7 +2,7 @@ import IValue from '@lib/IValue'
 import IExpression from './IExpression'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
-import { OperationIsNotSupportedException } from 'exceptions/ArgumentsMismatchException'
+import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupportedException'
 
 enum Operator {
   DELETE = 'delete',

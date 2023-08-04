@@ -1,6 +1,7 @@
+use 'std'
+var1 = 20
+var2 = 10
 
-def funcWithOptionalArgs(str, count = 5, prefix = "<", suffix = ">") = prefix + (str * count) + suffix
-
-println funcWithOptionalArgs("*")
-println funcWithOptionalArgs("+", 2)
-println funcWithOptionalArgs("*", 10, "<!")
+extract(var1, var2) = [var2, var1]
+println var1
+println var2

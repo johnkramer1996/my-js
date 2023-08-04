@@ -19,6 +19,7 @@ enum TokenType {
   USE,
   MATCH,
   CASE,
+  EXTRACT,
 
   PLUS, // +
   MINUS, // -

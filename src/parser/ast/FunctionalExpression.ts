@@ -1,11 +1,11 @@
 import Functions, { Function } from '@lib/Functions'
 import IValue from '@lib/IValue'
-import UserDefinedFunction from '@lib/UserDefinedFunction'
 import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import FunctionValue from '@lib/FunctionValue'
-import { UnknownFunctionException, VariableDoesNotExistsException } from 'exceptions/ArgumentsMismatchException'
+import { UnknownFunctionException } from '@exceptions/UnknownFunctionException'
+import VariableDoesNotExistsException from '@exceptions/VariableDoesNotExistsException'
 import CallStack from '@lib/CallStack'
 
 export default class FunctionalExpression implements IExpression {

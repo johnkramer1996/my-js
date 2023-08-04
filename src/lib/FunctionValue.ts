@@ -1,4 +1,4 @@
-import { TypeException } from 'exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import IValue from './IValue'

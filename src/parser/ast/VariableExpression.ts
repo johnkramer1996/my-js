@@ -2,7 +2,7 @@ import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IValue from '@lib/IValue'
 import IVisitor from './IVisitor'
-import { VariableDoesNotExistsException } from 'exceptions/ArgumentsMismatchException'
+import VariableDoesNotExistsException from '@exceptions/VariableDoesNotExistsException'
 
 export default class VariableExpression implements IExpression {
   constructor(public name: string) {}

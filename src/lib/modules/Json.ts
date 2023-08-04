@@ -7,7 +7,7 @@ import MapValue from '@lib/MapValue'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import { decode, encode } from './functions/HttpHttp'
-import { ArgumentsMismatchException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
 
 class JsonDecode implements Function {
   public execute(...args: IValue[]): IValue {

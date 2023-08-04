@@ -6,7 +6,8 @@ import BooleanValue from '@lib/BooleanValue'
 import FunctionValue from '@lib/FunctionValue'
 import MapValue from '@lib/MapValue'
 import ArrayValue from '@lib/ArrayValue'
-import { ArgumentsMismatchException, TypeException } from 'exceptions/ArgumentsMismatchException'
+import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
+import TypeException from '@exceptions/TypeException'
 
 export const decode = (data: any): IValue => {
   if (typeof data === 'string') return new StringValue(data)

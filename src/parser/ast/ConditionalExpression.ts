@@ -3,7 +3,7 @@ import IExpression from './IExpression'
 import BooleanValue from '@lib/BooleanValue'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
-import { OperationIsNotSupportedException } from 'exceptions/ArgumentsMismatchException'
+import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupportedException'
 
 enum ConditionOperator {
   EQUALS = '==',

@@ -12,7 +12,8 @@
     "paths": {
       "@ast/*": ["./parser/ast/*"],
       "@visitors/*": ["./parser/visitors/*"],
-      "@lib/*": ["./lib/*"]
+      "@lib/*": ["./lib/*"],
+      "@exceptions/*": ["./exceptions/*"]
     },
     "strict": true,
     "esModuleInterop": true,
