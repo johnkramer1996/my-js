@@ -5,37 +5,36 @@ import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import Variables from './Variables'
 import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
-import { Arguments } from '@ast/FunctionDefineStatement'
+import { ArrayPattern, AssignmentPattern, Identifier, Params } from '@ast/FunctionDefineStatement'
+import ArrayValue from './ArrayValue'
 
 export default class UserDefinedFunction implements Function {
-  constructor(private args: Arguments, private body: IStatement) {}
+  constructor(private args: Params, private body: IStatement) {}
 
-  public getArgsCount(): number {
+  public getParamsCount(): number {
     return this.args.size()
   }
 
-  public getArgsName(index: number): string {
-    if (index < 0 || index >= this.getArgsCount()) return ''
-    return this.args.get(index).getName()
+  public getParam(index: number) {
+    if (index < 0 || index >= this.getParamsCount()) return ''
+    return this.args.get(index)
   }
 
   public execute(...values: IValue[]): IValue {
     const size = values.length
     const requiredArgsCount = this.args.getRequiredArgumentsCount()
-    const totalArgsCount = this.getArgsCount()
+    const totalArgsCount = this.getParamsCount()
 
     if (size < requiredArgsCount) throw new ArgumentsMismatchException(`Arguments count mismatch. ${size} < ${requiredArgsCount}`)
     if (size > totalArgsCount) throw new ArgumentsMismatchException(`Arguments count mismatch. ${size} > ${totalArgsCount}`)
 
     try {
       Variables.push()
-      values.forEach((v: IValue, i: number) => Variables.define(this.getArgsName(i), v))
-
-      // Optional args if exists
-      for (let i = size; i < totalArgsCount; i++) {
-        const arg = this.args.get(i)
-        const defaultExpr = arg.getValueExpr()
-        if (defaultExpr) Variables.set(arg.getName(), defaultExpr.eval())
+      let i = 0
+      for (const identifier of this.args.params) {
+        if (!identifier) continue
+        const defaultExpr = identifier instanceof AssignmentPattern ? identifier.getValueExpr() : null
+        this.setValue(identifier, values[i++] ?? defaultExpr?.eval())
       }
 
       this.body.execute()
@@ -47,6 +46,19 @@ export default class UserDefinedFunction implements Function {
     }
 
     return BooleanValue.FALSE
+  }
+
+  private setValue(identifier: Identifier | AssignmentPattern | ArrayPattern, result: IValue) {
+    if (identifier instanceof Identifier || identifier instanceof AssignmentPattern) {
+      Variables.set(identifier.getName(), result)
+      return
+    }
+    if (!(result instanceof ArrayValue)) throw new Error('expect array')
+    identifier.elements.forEach((variable, i) => {
+      const defaultExpr = variable instanceof AssignmentPattern ? variable.getValueExpr() : null
+      const value = result.get(i) ?? defaultExpr?.eval()
+      this.setValue(variable, value)
+    })
   }
 
   toString() {

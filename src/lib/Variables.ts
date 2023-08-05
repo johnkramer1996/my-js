@@ -39,7 +39,7 @@ export default class Variables {
     return BooleanValue.FALSE
   }
 
-  public static set(key: string, value: IValue): void {
+  public static set(key: string, value: IValue = BooleanValue.FALSE): void {
     this.findScope(key).scope.variables.set(key, value)
   }
 

@@ -1,3 +1,8 @@
-arr = 123;
+def function([a,b = 20], c = 20) {
+    log a
+    log b
+    log c
+}
 
-arr
+
+function([1, ], 2)

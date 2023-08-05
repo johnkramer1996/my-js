@@ -10,22 +10,16 @@ export default class DestructuringAssignmentStatement implements IStatement {
 
   public execute(): void {
     const container = this.containerExpression.eval()
-    if (container instanceof ArrayValue) {
-      const size = this.variables.length
-      for (let i = 0; i < size; i++) {
-        const variable = this.variables[i]
-        if (variable) Variables.set(variable, container.get(i))
-      }
-      return
+    let i = 0
+    const isArray = container instanceof ArrayValue
+    const isObj = container instanceof MapValue
+    if (!(isArray || isObj)) throw new Error('Expect array or object')
+
+    for (const variable of this.variables) {
+      if (!variable) continue
+      const value = isArray ? container.get(i++) : container.get(variable)
+      Variables.set(variable, value)
     }
-    if (container instanceof MapValue) {
-      for (const [key, value] of container) {
-        const variable = this.variables.find((el) => el === key)
-        if (variable) Variables.set(variable, value)
-      }
-      return
-    }
-    throw new Error('Expect array or object')
   }
 
   public accept(visitor: IVisitor): void {

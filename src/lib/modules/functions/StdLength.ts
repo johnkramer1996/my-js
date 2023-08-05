@@ -26,7 +26,7 @@ export default class StdLength implements Function {
         break
       case Types.FUNCTION:
         const func = (val as FunctionValue).getValue()
-        if (func instanceof UserDefinedFunction) length = func.getArgsCount()
+        if (func instanceof UserDefinedFunction) length = func.getParamsCount()
         break
     }
     return new NumberValue(length)
