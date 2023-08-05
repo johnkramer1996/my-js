@@ -1,5 +1,5 @@
-import ArrayAccessExpression from '@ast/ArrayAccessExpression'
-import ArrayAssignmentStatement from '@ast/ArrayAssignmentStatement'
+import ArrayAccessExpression from '@ast/ContainerAccessExpression'
+import ArrayAssignmentStatement from '@ast/ContainerAssignmentStatement'
 import ArrayExpression from '@ast/ArrayExpression'
 import AssignmentStatement from '@ast/AssignmentStatement'
 import BinaryExpression from '@ast/BinaryExpression'
@@ -28,6 +28,7 @@ import MapExpression from '@ast/MapExpression'
 import ForeachArrayStatement from '@ast/ForeachStatement'
 import AssignmentExpression from '@ast/AssignmentExpression'
 import MatchExpression from '@ast/MatchExpression'
+import DestructuringAssignmentStatement from '@ast/DestructuringAssignmentStatement'
 
 export default abstract class AbstractVisitor implements IVisitor {
   public visit(s: IStatement | IExpression): void {
@@ -60,6 +61,8 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.expr2.accept(this)
       // eslint-disable-next-line
     } else if (s instanceof ContinueStatement) {
+    } else if (s instanceof DestructuringAssignmentStatement) {
+      s.containerExpression.accept(this)
     } else if (s instanceof DoWhileStatement) {
       s.condition.accept(this)
       s.statement.accept(this)
@@ -92,12 +95,9 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.condition.accept(this)
       s.trueExpr.accept(this)
       s.falseExpr.accept(this)
-      // eslint-disable-next-line
     } else if (s instanceof UnaryExpression) {
       s.expression.accept(this)
-      // eslint-disable-next-line
     } else if (s instanceof ValueExpression) {
-      // eslint-disable-next-line
     } else if (s instanceof VariableExpression) {
     } else if (s instanceof WhileStatement) {
       s.condition.accept(this)
@@ -106,7 +106,7 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.expression.accept(this)
     } else if (s instanceof MapExpression) {
       for (const [key, value] of s.elements.entries()) {
-        // key.accept(this)
+        key.accept(this)
         value.accept(this)
       }
     } else if (s instanceof MatchExpression) {

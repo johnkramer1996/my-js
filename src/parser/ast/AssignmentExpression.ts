@@ -3,7 +3,7 @@ import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 import IValue from '@lib/IValue'
-import ArrayAccessExpression from './ArrayAccessExpression'
+import ArrayAccessExpression from './ContainerAccessExpression'
 
 export default class AssignmentExpression implements IExpression {
   constructor(public variable: string | ArrayAccessExpression, public expression: IExpression) {}

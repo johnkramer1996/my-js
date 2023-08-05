@@ -4,7 +4,6 @@ import IStatement from './IStatement'
 import MapValue from '@lib/MapValue'
 import IVisitor from './IVisitor'
 import Variables from '@lib/Variables'
-import StringValue from '@lib/StringValue'
 
 export default class DestructuringAssignmentStatement implements IStatement {
   constructor(public variables: string[], public containerExpression: IExpression) {}

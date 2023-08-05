@@ -23,8 +23,8 @@ import FunctionalExpression from '@ast/FunctionalExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
 import ArrayExpression from '@ast/ArrayExpression'
-import ArrayAccessExpression from '@ast/ArrayAccessExpression'
-import ArrayAssignmentStatement from '@ast/ArrayAssignmentStatement'
+import ArrayAccessExpression from '@ast/ContainerAccessExpression'
+import ArrayAssignmentStatement from '@ast/ContainerAssignmentStatement'
 import ParseException from '@exceptions/ParseException'
 import CommaExpression from '@ast/CommaExpresstion'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
@@ -36,6 +36,8 @@ import MatchExpression, { ConstantPattern, Pattern, VariablePattern } from '@ast
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import DestructuringAssignmentStatement from '@ast/DestructuringAssignmentStatement'
+import ContainerAccessExpression from '@ast/ContainerAccessExpression'
+import ContainerAssignmentStatement from '@ast/ContainerAssignmentStatement'
 
 // TODO add AssignInicialization
 
@@ -88,7 +90,9 @@ export default class Parser {
   private statement(): IStatement {
     if (this.match(TokenType.LOG)) return new LogStatement(this.expression())
     if (this.match(TokenType.PRINT)) return new LogStatement(this.expression())
-    if (this.match(TokenType.PRINTLN)) return new LogStatement(this.expression(), true)
+    if (this.match(TokenType.PRINTLN)) {
+      return new LogStatement(this.expression(), true)
+    }
     if (this.match(TokenType.IF)) return this.ifElseStatement()
     if (this.match(TokenType.WHILE)) return this.whileStatement()
     if (this.match(TokenType.DO)) return this.doWhileStatement()
@@ -187,18 +191,18 @@ export default class Parser {
   }
 
   private assignmentStatement(): IStatement {
-    if (this.lookMatch(1, TokenType.EQ)) {
+    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
       const variable = this.consume(TokenType.WORD).getText()
       this.consume(TokenType.EQ)
       return new AssignmentStatement(variable, this.expression())
     }
-    if (this.lookMatch(1, TokenType.LBRACKET)) {
-      const array = this.bracketNotation()
+    const qualifiedNameExpr = this.qualifiedName()
+    if (this.lookMatch(0, TokenType.EQ) && qualifiedNameExpr instanceof ContainerAccessExpression) {
       this.consume(TokenType.EQ)
-      return new ArrayAssignmentStatement(array, this.expression())
+      return new ContainerAssignmentStatement(qualifiedNameExpr, this.expression())
     }
-    const variable = this.consume(TokenType.WORD).getText()
-    return new AssignmentStatement(variable, new ValueExpression(0))
+
+    return new ExprStatement(qualifiedNameExpr)
   }
 
   private functionDefine(): FunctionDefineStatement {
@@ -238,25 +242,19 @@ export default class Parser {
     return new MapExpression(elements)
   }
 
-  private bracketNotation(): ArrayAccessExpression {
-    const variable = this.consume(TokenType.WORD).getText()
+  private dotOrBracketNotation(): IExpression[] {
     const indices: IExpression[] = []
-    do {
-      this.consume(TokenType.LBRACKET)
-      indices.push(this.expression())
-      this.consume(TokenType.RBRACKET)
-    } while (this.lookMatch(0, TokenType.LBRACKET))
-    return new ArrayAccessExpression(variable, indices)
-  }
-
-  private dotNotation(): ArrayAccessExpression {
-    const variable = this.consume(TokenType.WORD).getText()
-    const indices: IExpression[] = []
-    while (this.match(TokenType.DOT)) {
-      const key = new ValueExpression(this.consume(TokenType.WORD).getText())
-      indices.push(key)
+    while (this.lookMatch(0, TokenType.DOT) || this.lookMatch(0, TokenType.LBRACKET)) {
+      if (this.match(TokenType.DOT)) {
+        const key = new ValueExpression(this.consume(TokenType.WORD).getText())
+        indices.push(key)
+      }
+      if (this.match(TokenType.LBRACKET)) {
+        indices.push(this.expression())
+        this.consume(TokenType.RBRACKET)
+      }
     }
-    return new ArrayAccessExpression(variable, indices)
+    return indices
   }
 
   private matchExpression(): MatchExpression {
@@ -425,7 +423,6 @@ export default class Parser {
   private variable(): IExpression {
     // variable(args)
     if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function(new ValueExpression(this.consume(TokenType.WORD).getText()))
-
     if (this.lookMatch(0, TokenType.WORD)) {
       // arr["key"](args) || obj.key(args) || arr || obj
       const qualifiedNameExpr = this.qualifiedName()
@@ -445,10 +442,9 @@ export default class Parser {
   }
 
   private qualifiedName(): IExpression {
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LBRACKET)) return this.bracketNotation()
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.DOT)) return this.dotNotation()
-    const variable = this.consume(TokenType.WORD).getText()
-    return new VariableExpression(variable)
+    if (this.lookMatch(0, TokenType.WORD) && (this.lookMatch(1, TokenType.LBRACKET) || this.lookMatch(1, TokenType.DOT)))
+      return new ContainerAccessExpression(this.consume(TokenType.WORD).getText(), this.dotOrBracketNotation())
+    return new VariableExpression(this.consume(TokenType.WORD).getText())
   }
 
   private value(): IExpression {

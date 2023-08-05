@@ -1,5 +1,5 @@
-import ArrayAccessExpression from './ArrayAccessExpression'
-import ArrayAssignmentStatement from './ArrayAssignmentStatement'
+import ArrayAccessExpression from './ContainerAccessExpression'
+import ArrayAssignmentStatement from './ContainerAssignmentStatement'
 import ArrayExpression from './ArrayExpression'
 import AssignmentExpression from './AssignmentExpression'
 import AssignmentStatement from './AssignmentStatement'
@@ -26,6 +26,7 @@ import ValueExpression from './ValueExpression'
 import VariableExpression from './VariableExpression'
 import WhileStatement from './WhileStatement'
 import ExprStatement from './ExprStatement'
+import DestructuringAssignmentStatement from './DestructuringAssignmentStatement'
 
 export default interface IVisitor {
   visit(s: ArrayAccessExpression): void
@@ -38,6 +39,7 @@ export default interface IVisitor {
   visit(s: BreakStatement): void
   visit(s: ConditionalExpression1): void
   visit(s: ContinueStatement): void
+  visit(s: DestructuringAssignmentStatement): void
   visit(s: DoWhileStatement): void
   visit(s: ForStatement): void
   visit(s: ForeachArrayStatement): void

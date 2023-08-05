@@ -7,20 +7,21 @@ import MapValue from '@lib/MapValue'
 import BooleanValue from '@lib/BooleanValue'
 import TypeException from '@exceptions/TypeException'
 
-export default class ArrayAccessExpression implements IExpression {
+export default class ContainerAccessExpression implements IExpression {
   constructor(public variable: string, public indices: IExpression[]) {}
 
   public eval(): IValue {
     const value = this.getValue()
-    if (value instanceof ArrayValue) return value.get(this.lastIndex().asNumber())
-    return value.get(this.lastIndex().asString())
+    const item = this.getItem(value)
+    return item
   }
 
   public getValue(): ArrayValue | MapValue {
     const variable = Variables.get(this.variable)
-    if (variable instanceof ArrayValue) return this.getArray(variable)
-    if (variable instanceof MapValue) return this.getObj(variable)
-    throw new TypeException('Expect map or array')
+    this.isArrayOrMapValue(variable)
+    const container = this.getContainer(variable)
+    this.isArrayOrMapValue(container)
+    return container
   }
 
   public setValue(value: IValue): void {
@@ -29,14 +30,15 @@ export default class ArrayAccessExpression implements IExpression {
     arrOrObj.set(this.lastIndex().asString(), value)
   }
 
-  private getArray(array: ArrayValue, i: number = 0): ArrayValue {
-    if (i === this.indices.length - 1) return array
-    return this.getArray(this.isArrayValue(array.get(this.index(i).asNumber())), ++i)
+  private getContainer(container: ArrayValue | MapValue, i: number = 0): ArrayValue | MapValue {
+    if (i === this.indices.length - 1) return container
+    const value = this.getItem(container, i)
+    this.isArrayOrMapValue(value)
+    return this.getContainer(value, ++i)
   }
 
-  private getObj(map: MapValue, i: number = 0): MapValue {
-    if (i === this.indices.length - 1) return map
-    return this.getObj(this.isMapValue(map.get(this.index(i).asString())), ++i)
+  private getItem(container: ArrayValue | MapValue, i: number = this.indices.length - 1) {
+    return container instanceof ArrayValue ? container.get(this.index(i).asNumber()) : container.get(this.index(i).asString())
   }
 
   private lastIndex(): IValue {
@@ -47,15 +49,8 @@ export default class ArrayAccessExpression implements IExpression {
     return this.indices[index].eval()
   }
 
-  private isArrayValue(value: IValue): ArrayValue {
-    if (value instanceof ArrayValue) return value
-    debugger
-    throw new TypeException('Array expected')
-  }
-
-  private isMapValue(value: IValue): MapValue {
-    if (value instanceof MapValue) return value
-    throw new TypeException('Map expected')
+  private isArrayOrMapValue(value: IValue): asserts value is ArrayValue | MapValue {
+    if (!(value instanceof ArrayValue || value instanceof MapValue)) throw new TypeException('Expect map or array')
   }
 
   public accept(visitor: IVisitor): void {
