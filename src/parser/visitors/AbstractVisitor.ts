@@ -36,9 +36,6 @@ export default abstract class AbstractVisitor implements IVisitor {
       for (const index of s.indices) {
         index.accept(this)
       }
-    } else if (s instanceof ArrayAssignmentStatement) {
-      s.array.accept(this)
-      s.expression.accept(this)
     } else if (s instanceof ArrayExpression) {
       for (const index of s.elements) {
         index.accept(this)

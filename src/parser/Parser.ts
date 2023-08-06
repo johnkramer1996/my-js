@@ -17,14 +17,13 @@ import ForStatement from '@ast/ForStatement'
 import AssignmentStatement from '@ast/AssignmentStatement'
 import BreakStatement from '@ast/BreakStatement'
 import ContinueStatement from '@ast/ContinueStatement'
-import FunctionDefineStatement, { ArrayPattern, AssignmentPattern, Identifier, Params } from '@ast/FunctionDefineStatement'
+import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 import ExprStatement from '@ast/ExprStatement'
 import FunctionalExpression from '@ast/FunctionalExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
 import ArrayExpression from '@ast/ArrayExpression'
-import ContainerAccessExpression from '@ast/ContainerAccessExpression'
-import ContainerAssignmentStatement from '@ast/ContainerAssignmentStatement'
+import ContainerAccessExpression, { ArrayPattern, IIdentifier, Identifier, Params } from '@ast/ContainerAccessExpression'
 import ParseException from '@exceptions/ParseException'
 import CommaExpression from '@ast/CommaExpresstion'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
@@ -125,23 +124,6 @@ export default class Parser {
     }
   }
 
-  private destructuringAssignment(): DestructuringAssignmentStatement {
-    const variables = this.variableNames()
-    this.consume(TokenType.EQ)
-    return new DestructuringAssignmentStatement(variables, this.expression())
-  }
-
-  private variableNames(): string[] {
-    this.consume(TokenType.LPAREN)
-    const variables: string[] = []
-    while (!this.match(TokenType.RPAREN)) {
-      variables.push(this.lookMatch(0, TokenType.WORD) ? this.consume(TokenType.WORD).getText() : '')
-      this.match(TokenType.COMMA)
-    }
-
-    return variables
-  }
-
   private ifElseStatement(): IStatement {
     const condition = this.expression()
     const ifStatement = this.statementOrBlock()
@@ -212,18 +194,35 @@ export default class Parser {
   }
 
   private assignmentStatement(): IStatement {
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
-      const variable = this.consume(TokenType.WORD).getText()
-      this.consume(TokenType.EQ)
-      return new AssignmentStatement(variable, this.expression())
-    }
+    // if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
+    //   const variable = this.consume(TokenType.WORD).getText()
+    //   this.consume(TokenType.EQ)
+    //   return new AssignmentStatement(variable, this.expression())
+    // }
     const qualifiedNameExpr = this.qualifiedName()
-    if (this.lookMatch(0, TokenType.EQ) && qualifiedNameExpr instanceof ContainerAccessExpression) {
+    if (this.lookMatch(0, TokenType.EQ)) {
       this.consume(TokenType.EQ)
-      return new ContainerAssignmentStatement(qualifiedNameExpr, this.expression())
+      return new AssignmentStatement(qualifiedNameExpr, this.expression())
     }
 
     return new ExprStatement(qualifiedNameExpr)
+  }
+
+  private destructuringAssignment(): DestructuringAssignmentStatement {
+    const variables = this.variableNames()
+    this.consume(TokenType.EQ)
+    return new DestructuringAssignmentStatement(variables, this.expression())
+  }
+
+  private variableNames(): string[] {
+    this.consume(TokenType.LPAREN)
+    const variables: string[] = []
+    while (!this.match(TokenType.RPAREN)) {
+      variables.push(this.lookMatch(0, TokenType.WORD) ? this.consume(TokenType.WORD).getText() : '')
+      this.match(TokenType.COMMA)
+    }
+
+    return variables
   }
 
   private functionDefine(): FunctionDefineStatement {
@@ -257,7 +256,7 @@ export default class Parser {
     return new AssignmentExpression(arrayPattern, arrayExprestion)
   }
 
-  private arrayPattern() {
+  private arrayPattern(): ArrayPattern {
     this.consume(TokenType.LBRACKET)
     const arrayPattern = new ArrayPattern()
     while (!this.match(TokenType.RBRACKET)) {
@@ -268,7 +267,7 @@ export default class Parser {
     return arrayPattern
   }
 
-  private identifier(): Identifier | ArrayPattern {
+  private identifier(): IIdentifier {
     if (this.lookMatch(0, TokenType.WORD)) return new Identifier(this.consume(TokenType.WORD).getText())
     return this.arrayPattern()
   }

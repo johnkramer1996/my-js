@@ -2,12 +2,13 @@ import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
+import { IIdentifier } from './ContainerAccessExpression'
 
 export default class AssignmentStatement implements IStatement {
-  constructor(public variable: string, public expression: IExpression) {}
+  constructor(public identifier: IIdentifier, public expression: IExpression) {}
 
   public execute(): void {
-    Variables.set(this.variable, this.expression.eval())
+    return this.identifier.setValue(this.expression.eval())
   }
 
   public accept(visitor: IVisitor): void {
@@ -15,6 +16,6 @@ export default class AssignmentStatement implements IStatement {
   }
 
   public toString() {
-    return `${this.variable} = ${this.expression}`
+    return `${this.identifier} = ${this.expression}`
   }
 }

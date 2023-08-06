@@ -1,5 +1,4 @@
 import ArrayAccessExpression from './ContainerAccessExpression'
-import ArrayAssignmentStatement from './ContainerAssignmentStatement'
 import ArrayExpression from './ArrayExpression'
 import AssignmentExpression from './AssignmentExpression'
 import AssignmentStatement from './AssignmentStatement'
@@ -30,7 +29,6 @@ import DestructuringAssignmentStatement from './DestructuringAssignmentStatement
 
 export default interface IVisitor {
   visit(s: ArrayAccessExpression): void
-  visit(s: ArrayAssignmentStatement): void
   visit(s: ArrayExpression): void
   visit(s: AssignmentStatement): void
   visit(s: AssignmentExpression): void

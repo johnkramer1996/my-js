@@ -5,8 +5,7 @@ import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import Variables from './Variables'
 import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
-import { ArrayPattern, AssignmentPattern, IIdentifier, Identifier, Params } from '@ast/FunctionDefineStatement'
-import ArrayValue from './ArrayValue'
+import { Params } from '@ast/ContainerAccessExpression'
 
 export default class UserDefinedFunction implements Function {
   constructor(private args: Params, private body: IStatement) {}

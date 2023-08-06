@@ -3,10 +3,10 @@ import IExpression from './IExpression'
 import IValue from '@lib/IValue'
 import IVisitor from './IVisitor'
 import VariableDoesNotExistsException from '@exceptions/VariableDoesNotExistsException'
-import { Identifier } from './FunctionDefineStatement'
+import { IIdentifier } from './ContainerAccessExpression'
 
 export default class VariableExpression implements IExpression {
-  constructor(public name: Identifier) {}
+  constructor(public name: IIdentifier) {}
 
   public eval(): IValue {
     if (Variables.isExists(this.name.getName())) {
