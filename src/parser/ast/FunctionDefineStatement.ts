@@ -3,9 +3,21 @@ import UserDefinedFunction from '@lib/UserDefinedFunction'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 import IExpression from './IExpression'
+import Variables from '@lib/Variables'
+import IValue from '@lib/IValue'
+import ArrayValue from '@lib/ArrayValue'
 
-export class Identifier {
+export interface IIdentifier {
+  setValue(value: IValue): void
+  getName(): string
+}
+
+export class Identifier implements IIdentifier {
   constructor(public name: string) {}
+
+  public setValue(value: IValue): void {
+    Variables.set(this.getName(), value)
+  }
 
   public getName(): string {
     return this.name
@@ -16,14 +28,19 @@ export class Identifier {
   }
 }
 
-export class AssignmentPattern {
-  constructor(public identifier: Identifier | ArrayPattern, public valueExpr: IExpression) {}
+export class AssignmentPattern implements IIdentifier {
+  constructor(public identifier: IIdentifier, public valueExpr: IExpression) {}
+
+  public setValue(value: IValue): void {
+    const defaultExpr = this.getValueExpr().eval()
+    Variables.set(this.getName(), value || defaultExpr)
+  }
 
   public getName(): string {
     return this.identifier.getName()
   }
 
-  public getValueExpr(): IExpression | null {
+  public getValueExpr(): IExpression {
     return this.valueExpr
   }
 
@@ -32,10 +49,15 @@ export class AssignmentPattern {
   }
 }
 
-export class ArrayPattern implements Iterable<Identifier | AssignmentPattern | ArrayPattern> {
-  public elements: (Identifier | AssignmentPattern | ArrayPattern)[] = []
+export class ArrayPattern implements IIdentifier, Iterable<IIdentifier> {
+  public elements: IIdentifier[] = []
 
-  public add(name: Identifier | ArrayPattern, expr: IExpression | null): void {
+  public setValue(value: IValue): void {
+    if (!(value instanceof ArrayValue)) throw new Error('expect array')
+    this.elements.forEach((variable, i) => variable.setValue(value.get(i)))
+  }
+
+  public add(name: IIdentifier, expr: IExpression | null): void {
     this.elements.push(expr ? new AssignmentPattern(name, expr) : name)
   }
 
@@ -43,17 +65,17 @@ export class ArrayPattern implements Iterable<Identifier | AssignmentPattern | A
     return ''
   }
 
-  public [Symbol.iterator](): Iterator<Identifier | AssignmentPattern | ArrayPattern> {
+  public [Symbol.iterator](): Iterator<IIdentifier> {
     return this.elements[Symbol.iterator]()
   }
 }
 
-export class Params implements Iterable<Identifier | AssignmentPattern | ArrayPattern> {
-  public params: (Identifier | AssignmentPattern | ArrayPattern)[] = []
+export class Params implements Iterable<IIdentifier> {
+  public params: IIdentifier[] = []
   public requiredArgumentsCount = 0
   public hasOptionalParams = false
 
-  public add(name: Identifier | ArrayPattern, expr: IExpression | null): void {
+  public add(name: IIdentifier, expr: IExpression | null): void {
     this.params.push(expr ? new AssignmentPattern(name, expr) : name)
     !expr && ++this.requiredArgumentsCount
 
@@ -61,7 +83,7 @@ export class Params implements Iterable<Identifier | AssignmentPattern | ArrayPa
     if (expr) this.hasOptionalParams = true
   }
 
-  public get(index: number): Identifier | AssignmentPattern | ArrayPattern {
+  public get(index: number): IIdentifier {
     return this.params[index]
   }
 
@@ -73,19 +95,19 @@ export class Params implements Iterable<Identifier | AssignmentPattern | ArrayPa
     return this.params.length
   }
 
-  public iterator(): Iterator<Identifier | AssignmentPattern | ArrayPattern> {
+  public iterator(): Iterator<IIdentifier> {
     return this[Symbol.iterator]()
   }
 
-  public [Symbol.iterator](): Iterator<Identifier | AssignmentPattern | ArrayPattern> {
+  public [Symbol.iterator](): Iterator<IIdentifier> {
     return this.params[Symbol.iterator]()
   }
 
   public toString(): string {
-    const result: (Identifier | string)[] = []
+    const result: (IIdentifier | string)[] = []
     result.push('(')
     for (const arg of this.params) {
-      // result.push(arg)
+      result.push(arg)
       result.push(', ')
     }
     result.push(')')

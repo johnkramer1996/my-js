@@ -5,7 +5,7 @@ import BooleanValue from './BooleanValue'
 import { Function } from './Functions'
 import Variables from './Variables'
 import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
-import { ArrayPattern, AssignmentPattern, Identifier, Params } from '@ast/FunctionDefineStatement'
+import { ArrayPattern, AssignmentPattern, IIdentifier, Identifier, Params } from '@ast/FunctionDefineStatement'
 import ArrayValue from './ArrayValue'
 
 export default class UserDefinedFunction implements Function {
@@ -33,8 +33,7 @@ export default class UserDefinedFunction implements Function {
       let i = 0
       for (const identifier of this.args.params) {
         if (!identifier) continue
-        const defaultExpr = identifier instanceof AssignmentPattern ? identifier.getValueExpr() : null
-        this.setValue(identifier, values[i++] ?? defaultExpr?.eval())
+        identifier.setValue(values[i++])
       }
 
       this.body.execute()
@@ -46,19 +45,6 @@ export default class UserDefinedFunction implements Function {
     }
 
     return BooleanValue.FALSE
-  }
-
-  private setValue(identifier: Identifier | AssignmentPattern | ArrayPattern, result: IValue) {
-    if (identifier instanceof Identifier || identifier instanceof AssignmentPattern) {
-      Variables.set(identifier.getName(), result)
-      return
-    }
-    if (!(result instanceof ArrayValue)) throw new Error('expect array')
-    identifier.elements.forEach((variable, i) => {
-      const defaultExpr = variable instanceof AssignmentPattern ? variable.getValueExpr() : null
-      const value = result.get(i) ?? defaultExpr?.eval()
-      this.setValue(variable, value)
-    })
   }
 
   toString() {

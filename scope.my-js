@@ -1,8 +1,8 @@
-def function([a,b = 20], c = 20) {
+def function([[a], b = 20], c = 20) {
     log a
     log b
     log c
 }
 
 
-function([1, ], 2)
+function([[1], ], 2)
