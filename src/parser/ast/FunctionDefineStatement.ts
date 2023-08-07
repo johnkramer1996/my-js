@@ -2,16 +2,15 @@ import Functions, { Function } from '@lib/Functions'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
-import IExpression from './IExpression'
-import Variables from '@lib/Variables'
-import IValue from '@lib/IValue'
-import ArrayValue from '@lib/ArrayValue'
+import { Identifier } from './ContainerAccessExpression'
+import Variables, { Scope } from '@lib/Variables'
+import FunctionValue from '@lib/FunctionValue'
 
 export default class FunctionDefineStatement implements IStatement {
-  constructor(public name: string, public func: UserDefinedFunction) {}
+  constructor(public name: Identifier, public func: UserDefinedFunction) {}
 
   public execute(): void {
-    Functions.set(this.name, this.func)
+    Variables.set(this.name.getName(), new FunctionValue(this.func))
   }
 
   public accept(visitor: IVisitor): void {

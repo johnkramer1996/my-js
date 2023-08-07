@@ -9,10 +9,7 @@ export default class VariableExpression implements IExpression {
   constructor(public name: IIdentifier) {}
 
   public eval(): IValue {
-    if (Variables.isExists(this.name.getName())) {
-      const value = Variables.get(this.name.getName())
-      return value
-    }
+    if (Variables.isExists(this.name.getName())) return Variables.get(this.name.getName())
     throw new VariableDoesNotExistsException(this.name.getName())
   }
 

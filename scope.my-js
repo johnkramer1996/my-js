@@ -1,8 +1,7 @@
-def function([[a], b = 20], c = 20) {
+{
+    const a = 10
+    a = 20
     log a
-    log b
-    log c
 }
-
-
-function([[1], ], 2)
+const a = 30
+log a

@@ -17,6 +17,8 @@ export enum KeyWord {
   match,
   case,
   extract,
+  const,
+  let,
 }
 
 export interface IToken {

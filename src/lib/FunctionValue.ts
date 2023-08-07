@@ -4,6 +4,8 @@ import { Function } from './Functions'
 import IValue from './IValue'
 import Types from './Types'
 import Value from './Value'
+import UserDefinedFunction from './UserDefinedFunction'
+import { Scope } from './Variables'
 
 export default class FunctionValue extends Value<Function> implements IValue {
   public static EMPTY: FunctionValue = new FunctionValue({ execute: () => BooleanValue.FALSE })
@@ -14,6 +16,10 @@ export default class FunctionValue extends Value<Function> implements IValue {
 
   public getValue(): Function {
     return this.value
+  }
+
+  public setScope(scope: Scope) {
+    if (this.value instanceof UserDefinedFunction) this.value.setScope(scope)
   }
 
   public compareTo(o: IValue): number {

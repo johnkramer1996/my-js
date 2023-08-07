@@ -1,8 +1,9 @@
-import NumberValue from './NumberValue'
 import IValue from './IValue'
 import BooleanValue from './BooleanValue'
+import FunctionValue from './FunctionValue'
+import StringValue from './StringValue'
 
-class Scope {
+export class Scope {
   public variables: Map<String, IValue> = new Map()
 
   constructor(public parent: Scope | null = null) {}
@@ -13,7 +14,7 @@ class ScopeFindData {
 }
 
 export default class Variables {
-  private static scope: Scope = new Scope()
+  public static scope: Scope = new Scope()
 
   static {
     this.scope.variables.clear()
@@ -21,8 +22,8 @@ export default class Variables {
     this.scope.variables.set('false', BooleanValue.FALSE)
   }
 
-  public static push(): void {
-    this.scope = new Scope(this.scope)
+  public static push(scope?: Scope): void {
+    this.scope = scope ?? new Scope(this.scope)
   }
 
   public static pop(): void {
@@ -39,11 +40,16 @@ export default class Variables {
     return BooleanValue.FALSE
   }
 
-  public static set(key: string, value: IValue = BooleanValue.FALSE): void {
-    this.findScope(key).scope.variables.set(key, value)
+  public static set(key: string, value: IValue): void {
+    const scopeData = this.findScope(key)
+    if (!scopeData.isFound) throw new Error('Varaible undefined')
+    scopeData.scope.variables.set(key, value)
+    if (value instanceof FunctionValue) value.setScope(new Scope(Variables.scope))
   }
 
   public static define(key: string, value: IValue): void {
+    if (this.scope.variables.get(key) && (this.scope.variables.get(key) !== StringValue.EMPTY || value === StringValue.EMPTY)) throw new Error(`Cannot redeclare block-scoped variable '${key}'`)
+    if (value instanceof FunctionValue) value.setScope(new Scope(Variables.scope))
     this.scope.variables.set(key, value)
   }
 

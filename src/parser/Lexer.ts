@@ -61,6 +61,8 @@ export default class Lexer implements ILexer {
     [KeyWord[KeyWord.match], TokenType.MATCH],
     [KeyWord[KeyWord.case], TokenType.CASE],
     [KeyWord[KeyWord.extract], TokenType.EXTRACT],
+    [KeyWord[KeyWord.const], TokenType.CONST],
+    [KeyWord[KeyWord.let], TokenType.LET],
   ])
 
   private tokens: IToken[] = []

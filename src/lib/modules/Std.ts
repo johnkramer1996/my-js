@@ -17,6 +17,7 @@ import FunctionValue from '@lib/FunctionValue'
 import BooleanValue from '@lib/BooleanValue'
 import StringValue from '@lib/StringValue'
 import StdSort from './functions/StdSort'
+import Variables from '@lib/Variables'
 
 class StdSprintf implements Function {
   execute(...args: IValue[]): IValue {
@@ -160,7 +161,7 @@ export class stdTrim implements Function {
 
 export default class Std implements IModule {
   public init(): void {
-    Functions.set('echo', new StdEcho())
+    Variables.set('echo', new FunctionValue(new StdEcho()))
     Functions.set('array', new StdArray())
     Functions.set('newarray', new StdNewArray())
     Functions.set('multiArray', new StdMultiArray())

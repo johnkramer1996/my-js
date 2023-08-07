@@ -9,17 +9,15 @@ import BinaryExpression from '@ast/BinaryExpression'
 import UnaryExpression from '@ast/UnaryExpression'
 import TernaryExpression from '@ast/TernarExpression'
 import ConditionalExpression from '@ast/ConditionalExpression'
-import VariableExpression from '@ast/VariableExpression'
 import IfStatement from '@ast/IfStatement'
 import WhileStatement from '@ast/WhileStatement'
 import DoWhileStatement from '@ast/DoWhileStatement'
 import ForStatement from '@ast/ForStatement'
-import AssignmentStatement from '@ast/AssignmentStatement'
 import BreakStatement from '@ast/BreakStatement'
 import ContinueStatement from '@ast/ContinueStatement'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 import ExprStatement from '@ast/ExprStatement'
-import FunctionalExpression from '@ast/FunctionalExpression'
+import CallExpression from '@ast/CallExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
 import ArrayExpression from '@ast/ArrayExpression'
@@ -30,7 +28,7 @@ import UserDefinedFunction from '@lib/UserDefinedFunction'
 import MapExpression from '@ast/MapExpression'
 import FunctionReferenceExpression from '@ast/FunctionReferenceExpression'
 import ForeachStatement from '@ast/ForeachStatement'
-import AssignmentExpression from '@ast/AssignmentExpression'
+import AssignmentExpression, { VaraibleDeclaration, VariableDeclarator } from '@ast/AssignmentExpression'
 import MatchExpression, { ConstantPattern, Pattern, VariablePattern } from '@ast/MatchExpression'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
@@ -78,7 +76,7 @@ export default class Parser {
   public parse(): IStatement {
     const mainBlock = new BlockStatement()
     while (!this.match(TokenType.EOF)) {
-      mainBlock.add(this.statement())
+      mainBlock.add(this.statementOrBlock())
       while (this.match(TokenType.SEMIKOLON));
     }
     return mainBlock
@@ -92,7 +90,7 @@ export default class Parser {
     const block = new BlockStatement()
     this.consume(TokenType.LBRACE)
     while (!this.match(TokenType.RBRACE)) {
-      block.add(this.statement())
+      block.add(this.statementOrBlock())
       while (this.match(TokenType.SEMIKOLON));
     }
     return block
@@ -113,8 +111,14 @@ export default class Parser {
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.match(TokenType.MATCH)) return new ExprStatement(this.matchExpression())
     if (this.match(TokenType.EXTRACT)) return this.destructuringAssignment()
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return new ExprStatement(this.function(this.qualifiedName()))
-    if (this.lookMatch(0, TokenType.WORD)) return this.assignmentStatement()
+    if (this.match(TokenType.CONST) || this.match(TokenType.LET)) return this.variableDeclaration()
+    if (this.lookMatch(0, TokenType.WORD)) {
+      const id = this.qualifiedName()
+
+      if (this.lookMatch(0, TokenType.LPAREN)) return new ExprStatement(this.callExpression(id))
+      if (this.lookMatch(0, TokenType.EQ)) return this.assignmentStatement(id)
+      return new ExprStatement(id)
+    }
     const current = this.get()
     try {
       return new ExprStatement(this.expression())
@@ -122,6 +126,31 @@ export default class Parser {
       console.error(e)
       throw this.error('Unknown statement ' + current)
     }
+  }
+
+  public variableDeclaration() {
+    const kind = this.get(-1).getText()
+    const declarations: VariableDeclarator[] = []
+    do {
+      const identifier = new Identifier(this.consume(TokenType.WORD).getText())
+      this.consume(TokenType.EQ)
+      const expr = this.expression()
+      declarations.push(new VariableDeclarator(identifier, expr))
+    } while (this.match(TokenType.COMMA))
+
+    return new VaraibleDeclaration(declarations, kind)
+  }
+
+  private callExpression(qualifiedNameExpr: IExpression): CallExpression {
+    this.consume(TokenType.LPAREN)
+    const args: IExpression[] = []
+    while (!this.match(TokenType.RPAREN)) {
+      args.push(this.expression())
+      this.match(TokenType.COMMA)
+    }
+
+    const call = new CallExpression(qualifiedNameExpr, args)
+    return this.lookMatch(0, TokenType.LPAREN) ? this.callExpression(call) : call
   }
 
   private ifElseStatement(): IStatement {
@@ -193,19 +222,9 @@ export default class Parser {
     return new ForStatement(initialization, termination, increment, statement)
   }
 
-  private assignmentStatement(): IStatement {
-    // if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
-    //   const variable = this.consume(TokenType.WORD).getText()
-    //   this.consume(TokenType.EQ)
-    //   return new AssignmentStatement(variable, this.expression())
-    // }
-    const qualifiedNameExpr = this.qualifiedName()
-    if (this.lookMatch(0, TokenType.EQ)) {
-      this.consume(TokenType.EQ)
-      return new AssignmentStatement(qualifiedNameExpr, this.expression())
-    }
-
-    return new ExprStatement(qualifiedNameExpr)
+  private assignmentStatement(qualifiedNameExpr: IIdentifier = this.qualifiedName()): IStatement {
+    this.consume(TokenType.EQ)
+    return new ExprStatement(new AssignmentExpression(qualifiedNameExpr, this.expression()))
   }
 
   private destructuringAssignment(): DestructuringAssignmentStatement {
@@ -226,18 +245,8 @@ export default class Parser {
   }
 
   private functionDefine(): FunctionDefineStatement {
-    const name = this.consume(TokenType.WORD).getText()
+    const name = new Identifier(this.consume(TokenType.WORD).getText())
     return new FunctionDefineStatement(name, new UserDefinedFunction(this.params(), this.body()))
-  }
-
-  private function(qualifiedNameExpr: IExpression): FunctionalExpression {
-    this.consume(TokenType.LPAREN)
-    const args: IExpression[] = []
-    while (!this.match(TokenType.RPAREN)) {
-      args.push(this.expression())
-      this.match(TokenType.COMMA)
-    }
-    return new FunctionalExpression(qualifiedNameExpr, args)
   }
 
   private array(): IExpression {
@@ -337,11 +346,12 @@ export default class Parser {
   }
 
   private expression(): IExpression {
-    return this.comma()
+    const expr = this.comma()
+    return expr
   }
 
   private comma(): IExpression {
-    const result = this.ternary()
+    const result = this.assignment()
 
     if (this.lookMatch(0, TokenType.COMMA) && this.lookMatch(1, TokenType.COMMA)) {
       this.consume(TokenType.COMMA)
@@ -351,6 +361,17 @@ export default class Parser {
     }
 
     return result
+  }
+
+  private assignment(): IExpression {
+    const pos = this.position
+    if (this.lookMatch(0, TokenType.WORD)) {
+      const identifier = this.qualifiedName()
+      if (this.match(TokenType.EQ)) return new AssignmentExpression(identifier, this.expression())
+    }
+    this.position = pos
+
+    return this.ternary()
   }
 
   private ternary(): IExpression {
@@ -462,48 +483,41 @@ export default class Parser {
   private primary(): IExpression {
     if (this.match(TokenType.COLONCOLON)) return new FunctionReferenceExpression(this.consume(TokenType.WORD).getText())
     if (this.match(TokenType.MATCH)) return this.matchExpression()
-    if (this.match(TokenType.DEF)) return new ValueExpression(new UserDefinedFunction(this.params(), this.body()))
-    if (this.lookMatch(0, TokenType.LPAREN)) return this.nested()
+    if (this.lookMatch(0, TokenType.LPAREN)) {
+      return this.nested()
+    }
 
     return this.variable()
   }
 
   private variable(): IExpression {
     // variable(args)
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.LPAREN)) return this.function(new ValueExpression(this.consume(TokenType.WORD).getText()))
-    if (this.lookMatch(0, TokenType.WORD) && this.lookMatch(1, TokenType.EQ)) {
-      const variable = this.consume(TokenType.WORD).getText()
-      this.consume(TokenType.EQ)
-      return new AssignmentExpression(new Identifier(variable), this.expression())
-    }
-
     if (this.lookMatch(0, TokenType.WORD)) {
       // arr["key"](args) || obj.key(args) || arr || obj
       const qualifiedNameExpr = this.qualifiedName()
-      return this.lookMatch(0, TokenType.LPAREN) ? this.function(qualifiedNameExpr) : qualifiedNameExpr
+      return this.lookMatch(0, TokenType.LPAREN) ? this.callExpression(qualifiedNameExpr) : qualifiedNameExpr
     }
 
-    if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
-    if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
-
     return this.value()
-  }
-
-  private qualifiedName(): IExpression {
-    if (this.lookMatch(0, TokenType.WORD) && (this.lookMatch(1, TokenType.LBRACKET) || this.lookMatch(1, TokenType.DOT)))
-      return new ContainerAccessExpression(this.consume(TokenType.WORD).getText(), this.dotOrBracketNotation())
-    return new VariableExpression(new Identifier(this.consume(TokenType.WORD).getText()))
   }
 
   private value(): IExpression {
     const current = this.get()
 
+    if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
+    if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
+    if (this.match(TokenType.DEF)) return new ValueExpression(new UserDefinedFunction(this.params(), this.body()))
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
-    if (this.match(TokenType.WORD)) return new ValueExpression(current.getText())
 
     throw this.error('Unknown expression ' + current)
+  }
+
+  private qualifiedName(): IIdentifier {
+    if (this.lookMatch(0, TokenType.WORD) && (this.lookMatch(1, TokenType.LBRACKET) || this.lookMatch(1, TokenType.DOT)))
+      return new ContainerAccessExpression(this.consume(TokenType.WORD).getText(), this.dotOrBracketNotation())
+    return new Identifier(this.consume(TokenType.WORD).getText())
   }
 
   private nested(): IExpression {

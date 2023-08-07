@@ -6,21 +6,36 @@ import IVisitor from './IVisitor'
 import MapValue from '@lib/MapValue'
 import BooleanValue from '@lib/BooleanValue'
 import TypeException from '@exceptions/TypeException'
+import FunctionValue from '@lib/FunctionValue'
+import CallStack from '@lib/CallStack'
 
-export interface IIdentifier {
+export interface IIdentifier extends IExpression {
   setValue(value: IValue): void
+  defineValue(value: IValue): void
   getName(): string
 }
 
-export class Identifier implements IIdentifier {
+export class Identifier implements IExpression, IIdentifier {
   constructor(public name: string) {}
+
+  public eval(): IValue {
+    return Variables.get(this.getName())
+  }
 
   public setValue(value: IValue): void {
     Variables.set(this.getName(), value)
   }
 
+  public defineValue(value: IValue): void {
+    Variables.define(this.getName(), value)
+  }
+
   public getName(): string {
     return this.name
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public toString(): string {
@@ -31,9 +46,17 @@ export class Identifier implements IIdentifier {
 export class AssignmentPattern implements IIdentifier {
   constructor(public identifier: IIdentifier, public valueExpr: IExpression) {}
 
+  public eval(): IValue {
+    return Variables.get(this.getName())
+  }
+
   public setValue(value: IValue): void {
     const defaultExpr = this.getValueExpr().eval()
     Variables.set(this.getName(), value || defaultExpr)
+  }
+
+  public defineValue(value: IValue): void {
+    Variables.define(this.getName(), value)
   }
 
   public getName(): string {
@@ -44,6 +67,10 @@ export class AssignmentPattern implements IIdentifier {
     return this.valueExpr
   }
 
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
+  }
+
   public toString(): string {
     return this.identifier + (this.valueExpr == null ? '' : ' = ' + this.valueExpr)
   }
@@ -52,9 +79,18 @@ export class AssignmentPattern implements IIdentifier {
 export class ArrayPattern implements IIdentifier, Iterable<IIdentifier> {
   public elements: IIdentifier[] = []
 
+  public eval(): IValue {
+    return Variables.get(this.getName())
+  }
+
   public setValue(value: IValue): void {
     if (!(value instanceof ArrayValue)) throw new Error('expect array')
     this.elements.forEach((variable, i) => variable.setValue(value.get(i)))
+  }
+
+  public defineValue(value: IValue): void {
+    if (!(value instanceof ArrayValue)) throw new Error('expect array')
+    this.elements.forEach((variable, i) => variable.defineValue(value.get(i)))
   }
 
   public add(name: IIdentifier, expr: IExpression | null): void {
@@ -63,6 +99,10 @@ export class ArrayPattern implements IIdentifier, Iterable<IIdentifier> {
 
   public getName(): string {
     return ''
+  }
+
+  public accept(visitor: IVisitor): void {
+    visitor.visit(this)
   }
 
   public [Symbol.iterator](): Iterator<IIdentifier> {
@@ -119,9 +159,7 @@ export default class ContainerAccessExpression implements IIdentifier, IExpressi
   constructor(public variable: string, public indices: IExpression[]) {}
 
   public eval(): IValue {
-    const value = this.getValue()
-    const item = this.getItem(value)
-    return item
+    return this.getItem(this.getValue())
   }
 
   public getValue(): ArrayValue | MapValue {
@@ -140,6 +178,10 @@ export default class ContainerAccessExpression implements IIdentifier, IExpressi
     const arrOrObj = this.getValue()
     if (arrOrObj instanceof ArrayValue) return arrOrObj.set(this.lastIndex().asNumber(), value)
     arrOrObj.set(this.lastIndex().asString(), value)
+  }
+
+  public defineValue(value: IValue): void {
+    throw new Error('the container member cannot be defined')
   }
 
   private getContainer(container: ArrayValue | MapValue, i: number = 0): ArrayValue | MapValue {

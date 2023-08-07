@@ -14,12 +14,11 @@ try {
   const tokens = lexer.tokenize()
   const parser = new Parser(tokens)
   const ast = parser.parse()
-  ast.accept(new FunctionAdder())
-  ast.accept(new AssignValidator())
+  // ast.accept(new FunctionAdder())
+  // ast.accept(new AssignValidator())
   ast.execute()
 } catch (e) {
   if (e instanceof Error) {
-    console.log(e)
     console.dir(`Error: ${e.message}`)
     for (const call of CallStack.getCalls()) console.log(`\tat ${call}`)
   }

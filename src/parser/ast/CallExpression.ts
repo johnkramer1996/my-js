@@ -1,16 +1,11 @@
-import Functions, { Function } from '@lib/Functions'
 import IValue from '@lib/IValue'
-import Variables from '@lib/Variables'
 import IExpression from './IExpression'
 import IVisitor from './IVisitor'
 import FunctionValue from '@lib/FunctionValue'
-import { UnknownFunctionException } from '@exceptions/UnknownFunctionException'
-import VariableDoesNotExistsException from '@exceptions/VariableDoesNotExistsException'
 import CallStack from '@lib/CallStack'
-import { IIdentifier } from './ContainerAccessExpression'
 
-export default class FunctionalExpression implements IExpression {
-  constructor(public functionExpr: IIdentifier, public args: IExpression[]) {}
+export default class CallExpression implements IExpression {
+  constructor(public functionExpr: IExpression, public args: IExpression[]) {}
 
   public eval(): IValue {
     const value = this.functionExpr.eval()
@@ -23,7 +18,7 @@ export default class FunctionalExpression implements IExpression {
   }
 
   public accept(visitor: IVisitor): void {
-    visitor.visit(this)
+    // visitor.visit(this)
   }
 
   public toString(): string {

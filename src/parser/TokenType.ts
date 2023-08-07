@@ -20,6 +20,8 @@ enum TokenType {
   MATCH,
   CASE,
   EXTRACT,
+  CONST,
+  LET,
 
   PLUS, // +
   MINUS, // -
