@@ -12,6 +12,7 @@ export enum KeyWord {
   break,
   continue,
   def,
+  function,
   return,
   use,
   match,

@@ -9,7 +9,7 @@ export default class CallExpression implements IExpression {
 
   public eval(): IValue {
     const value = this.functionExpr.eval()
-    if (!(value instanceof FunctionValue)) throw new Error('expect function' + value)
+    if (!(value instanceof FunctionValue)) throw new Error('expect function ' + value)
     const f = value.getValue()
     CallStack.enter(this.functionExpr.toString(), f)
     const result = f.execute(...this.args.map((v) => v.eval()))

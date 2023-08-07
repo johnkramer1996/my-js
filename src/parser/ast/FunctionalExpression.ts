@@ -7,10 +7,10 @@ import FunctionValue from '@lib/FunctionValue'
 import { UnknownFunctionException } from '@exceptions/UnknownFunctionException'
 import VariableDoesNotExistsException from '@exceptions/VariableDoesNotExistsException'
 import CallStack from '@lib/CallStack'
-import { IIdentifier } from './ContainerAccessExpression'
+import { Accessible } from './ContainerAccessExpression'
 
 export default class FunctionalExpression implements IExpression {
-  constructor(public functionExpr: IIdentifier, public args: IExpression[]) {}
+  constructor(public functionExpr: Accessible, public args: IExpression[]) {}
 
   public eval(): IValue {
     const value = this.functionExpr.eval()

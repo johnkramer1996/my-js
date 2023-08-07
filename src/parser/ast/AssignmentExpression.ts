@@ -3,19 +3,25 @@ import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 import IValue from '@lib/IValue'
-import ContainerAccessExpression, { IIdentifier, Identifier } from './ContainerAccessExpression'
+import ContainerAccessExpression, { Accessible, Identifier } from './ContainerAccessExpression'
 import BooleanValue from '@lib/BooleanValue'
+import BinaryExpression, { BinaryOperator } from './BinaryExpression'
+import ValueExpression from './ValueExpression'
 
 export class VariableDeclarator implements IStatement {
-  constructor(public identifier: Identifier, public expression: IExpression) {}
+  constructor(public target: Identifier, public expression: IExpression) {}
 
   public execute(): void {
     const result = this.expression.eval()
-    this.identifier.defineValue(result)
+    this.target.define(result)
   }
 
   public accept(visitor: IVisitor): void {
     visitor.visit(this)
+  }
+
+  public toString() {
+    return `${this.target} = ${this.expression}`
   }
 }
 
@@ -23,6 +29,7 @@ export class VaraibleDeclaration implements IStatement {
   constructor(public declarations: VariableDeclarator[], public kind: string) {}
 
   public execute(): void {
+    Variables.setKind(this.kind)
     for (const decl of this.declarations) decl.execute()
   }
 
@@ -36,11 +43,11 @@ export class VaraibleDeclaration implements IStatement {
 }
 
 export default class AssignmentExpression implements IExpression {
-  constructor(public identifier: IIdentifier, public expression: IExpression) {}
+  constructor(public operation: BinaryOperator | null, public target: Accessible, public expression: IExpression) {}
 
   public eval(): IValue {
-    const result = this.expression.eval()
-    return this.identifier.setValue(result), result
+    if (this.operation === null) return this.target.set(this.expression.eval())
+    return this.target.set(new BinaryExpression(this.operation, new ValueExpression(this.target.get()), new ValueExpression(this.expression.eval())).eval())
   }
 
   public accept(visitor: IVisitor): void {
@@ -48,6 +55,6 @@ export default class AssignmentExpression implements IExpression {
   }
 
   public toString() {
-    return `${this.identifier} = ${this.expression}`
+    return `${this.target} = ${this.expression}`
   }
 }

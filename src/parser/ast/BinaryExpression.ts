@@ -7,7 +7,7 @@ import ArrayValue from '@lib/ArrayValue'
 import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupportedException'
 import TypeException from '@exceptions/TypeException'
 
-enum BinaryOperator {
+export enum BinaryOperator {
   ADD = '+',
   SUBTRACT = '-',
   MULTIPLY = '*',

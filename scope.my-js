@@ -1,10 +1,7 @@
-const a = 10
-echo()
-
-
-
-{
-    def echo() {
-       log a
-    }
+function myFunc(a) {
+    log a 
 }
+
+
+const a = 20
+myFunc(a)

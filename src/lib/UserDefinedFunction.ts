@@ -40,7 +40,7 @@ export default class UserDefinedFunction implements Function {
       let i = 0
       for (const identifier of this.args.params) {
         if (!identifier) continue
-        identifier.setValue(values[i++])
+        identifier.set(values[i++])
       }
 
       this.body.execute()

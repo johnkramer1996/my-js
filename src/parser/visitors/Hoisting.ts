@@ -21,22 +21,11 @@ export default class Hoisting extends AbstractVisitor {
     super.visit(s)
 
     if (s instanceof VariableDeclarator) {
-      if (this.declarations.find((i) => i === s)) {
-        const identifier = s.identifier.getName()
-        Variables.define(identifier)
-      }
+      if (this.declarations.find((i) => i === s)) Variables.hoisting(s.target.getName())
     }
 
     if (s instanceof FunctionDefineStatement) {
-      s.execute()
+      if (this.functionDeclarations.find((i) => i === s)) s.execute()
     }
-
-    // if (s instanceof AssignmentExpression) {
-    //   if (Variables.isExists(s.identifier.getName())) {
-    //     throw new Error('Cannot assign value to constant')
-    //   }
-    // }
   }
 }
-
-//

@@ -5,7 +5,7 @@ import IExpression from '@ast/IExpression'
 import LogStatement from '@ast/LogStatement'
 import ValueExpression from '@ast/ValueExpression'
 import BlockStatement from '@ast/BlockStatement'
-import BinaryExpression from '@ast/BinaryExpression'
+import BinaryExpression, { BinaryOperator } from '@ast/BinaryExpression'
 import UnaryExpression from '@ast/UnaryExpression'
 import TernaryExpression from '@ast/TernarExpression'
 import ConditionalExpression from '@ast/ConditionalExpression'
@@ -21,7 +21,7 @@ import CallExpression from '@ast/CallExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
 import ArrayExpression from '@ast/ArrayExpression'
-import ContainerAccessExpression, { ArrayPattern, IIdentifier, Identifier, Params } from '@ast/ContainerAccessExpression'
+import ContainerAccessExpression, { Accessible, ArrayPattern, Identifier, Params } from '@ast/ContainerAccessExpression'
 import ParseException from '@exceptions/ParseException'
 import CommaExpression from '@ast/CommaExpresstion'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
@@ -67,6 +67,21 @@ export default class Parser {
       closeParent: TokenType.RBRACE,
     },
   ]
+  private assignOperator = new Map([
+    [TokenType.EQ, null],
+    [TokenType.PLUSEQ, BinaryExpression.Operator.ADD],
+    [TokenType.MINUSEQ, BinaryExpression.Operator.SUBTRACT],
+    [TokenType.STAREQ, BinaryExpression.Operator.MULTIPLY],
+    [TokenType.SLASHEQ, BinaryExpression.Operator.DIVIDE],
+    [TokenType.PERCENTEQ, BinaryExpression.Operator.REMAINDER],
+    [TokenType.AMPEQ, BinaryExpression.Operator.AND],
+    [TokenType.CARETEQ, BinaryExpression.Operator.XOR],
+    [TokenType.BAREQ, BinaryExpression.Operator.OR],
+    [TokenType.COLONCOLONEQ, BinaryExpression.Operator.PUSH],
+    [TokenType.LTLTEQ, BinaryExpression.Operator.LSHIFT],
+    [TokenType.GTGTEQ, BinaryExpression.Operator.RSHIFT],
+    [TokenType.GTGTGTEQ, BinaryExpression.Operator.URSHIFT],
+  ])
 
   constructor(tokens: IToken[]) {
     this.tokens = tokens
@@ -107,23 +122,17 @@ export default class Parser {
     if (this.match(TokenType.BREAK)) return new BreakStatement()
     if (this.match(TokenType.CONTINUE)) return new ContinueStatement()
     if (this.match(TokenType.DEF)) return this.functionDefine()
+    if (this.match(TokenType.FUNCTION)) return this.functionDefine()
     if (this.match(TokenType.RETURN)) return new ReturnStatement(this.expression())
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.match(TokenType.MATCH)) return new ExprStatement(this.matchExpression())
     if (this.match(TokenType.EXTRACT)) return this.destructuringAssignment()
     if (this.match(TokenType.CONST) || this.match(TokenType.LET)) return this.variableDeclaration()
-    if (this.lookMatch(0, TokenType.WORD)) {
-      const id = this.qualifiedName()
-
-      if (this.lookMatch(0, TokenType.LPAREN)) return new ExprStatement(this.callExpression(id))
-      if (this.lookMatch(0, TokenType.EQ)) return this.assignmentStatement(id)
-      return new ExprStatement(id)
-    }
     const current = this.get()
     try {
       return new ExprStatement(this.expression())
     } catch (e) {
-      console.error(e)
+      // console.error(e)
       throw this.error('Unknown statement ' + current)
     }
   }
@@ -133,9 +142,11 @@ export default class Parser {
     const declarations: VariableDeclarator[] = []
     do {
       const identifier = new Identifier(this.consume(TokenType.WORD).getText())
-      this.consume(TokenType.EQ)
-      const expr = this.expression()
-      declarations.push(new VariableDeclarator(identifier, expr))
+      if (this.match(TokenType.EQ)) {
+        declarations.push(new VariableDeclarator(identifier, this.expression()))
+      } else if (kind === 'let') {
+        declarations.push(new VariableDeclarator(identifier, new ValueExpression(0)))
+      } else throw new SyntaxError('Missing initializer in const declaration')
     } while (this.match(TokenType.COMMA))
 
     return new VaraibleDeclaration(declarations, kind)
@@ -212,19 +223,22 @@ export default class Parser {
 
   private simpleForStatement(): ForStatement {
     const openParen = this.match(TokenType.LPAREN)
-    const initialization = this.assignmentStatement()
+    const initialization = new ExprStatement(this.assignmentExpression())
     this.consume(TokenType.COMMA)
     const termination = this.expression()
     this.consume(TokenType.COMMA)
-    const increment = this.assignmentStatement()
+    const increment = new ExprStatement(this.assignmentExpression())
     if (openParen) this.consume(TokenType.RPAREN)
     const statement = this.statementOrBlock()
     return new ForStatement(initialization, termination, increment, statement)
   }
 
-  private assignmentStatement(qualifiedNameExpr: IIdentifier = this.qualifiedName()): IStatement {
-    this.consume(TokenType.EQ)
-    return new ExprStatement(new AssignmentExpression(qualifiedNameExpr, this.expression()))
+  private assignmentExpression(qualifiedNameExpr: Accessible = this.qualifiedName()): IExpression {
+    // this.consume(TokenType.EQ)
+    const binary = this.assignOperator.get(this.get(0).getType())
+    if (binary === undefined) throw new Error('undefiner')
+    this.match(this.get(0).getType())
+    return new AssignmentExpression(binary, qualifiedNameExpr, this.expression())
   }
 
   private destructuringAssignment(): DestructuringAssignmentStatement {
@@ -262,7 +276,7 @@ export default class Parser {
     this.consume(TokenType.EQ)
 
     const arrayExprestion = this.expression()
-    return new AssignmentExpression(arrayPattern, arrayExprestion)
+    return new AssignmentExpression(null, arrayPattern, arrayExprestion)
   }
 
   private arrayPattern(): ArrayPattern {
@@ -276,7 +290,7 @@ export default class Parser {
     return arrayPattern
   }
 
-  private identifier(): IIdentifier {
+  private identifier(): Accessible {
     if (this.lookMatch(0, TokenType.WORD)) return new Identifier(this.consume(TokenType.WORD).getText())
     return this.arrayPattern()
   }
@@ -367,7 +381,7 @@ export default class Parser {
     const pos = this.position
     if (this.lookMatch(0, TokenType.WORD)) {
       const identifier = this.qualifiedName()
-      if (this.match(TokenType.EQ)) return new AssignmentExpression(identifier, this.expression())
+      if (this.assignOperator.has(this.get().getType())) return this.assignmentExpression(identifier)
     }
     this.position = pos
 
@@ -471,6 +485,8 @@ export default class Parser {
     // DELETE
     // VOID
     // TYPEOF
+    if (this.match(TokenType.PLUSPLUS)) return new UnaryExpression(UnaryExpression.Operator.INCREMENT_PREFIX, this.primary())
+    if (this.match(TokenType.MINUSMINUS)) return new UnaryExpression(UnaryExpression.Operator.DECREMENT_PREFIX, this.primary())
     if (this.match(TokenType.PLUS)) return new UnaryExpression(UnaryExpression.Operator.PLUS, this.primary())
     if (this.match(TokenType.MINUS)) return new UnaryExpression(UnaryExpression.Operator.NEGATION, this.primary())
     if (this.match(TokenType.TILDE)) return new UnaryExpression(UnaryExpression.Operator.BITWISE_NOT, this.primary())
@@ -495,7 +511,10 @@ export default class Parser {
     if (this.lookMatch(0, TokenType.WORD)) {
       // arr["key"](args) || obj.key(args) || arr || obj
       const qualifiedNameExpr = this.qualifiedName()
-      return this.lookMatch(0, TokenType.LPAREN) ? this.callExpression(qualifiedNameExpr) : qualifiedNameExpr
+      if (this.lookMatch(0, TokenType.LPAREN)) return this.callExpression(qualifiedNameExpr)
+      if (this.match(TokenType.PLUSPLUS)) return new UnaryExpression(UnaryExpression.Operator.INCREMENT_POSTFIX, qualifiedNameExpr)
+      if (this.match(TokenType.MINUSMINUS)) return new UnaryExpression(UnaryExpression.Operator.DECREMENT_POSTFIX, qualifiedNameExpr)
+      return qualifiedNameExpr
     }
 
     return this.value()
@@ -506,7 +525,7 @@ export default class Parser {
 
     if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
     if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
-    if (this.match(TokenType.DEF)) return new ValueExpression(new UserDefinedFunction(this.params(), this.body()))
+    // if (this.match(TokenType.DEF)) return new ValueExpression(new UserDefinedFunction(this.params(), this.body()))
     if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
     if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
     if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
@@ -514,7 +533,7 @@ export default class Parser {
     throw this.error('Unknown expression ' + current)
   }
 
-  private qualifiedName(): IIdentifier {
+  private qualifiedName(): Accessible {
     if (this.lookMatch(0, TokenType.WORD) && (this.lookMatch(1, TokenType.LBRACKET) || this.lookMatch(1, TokenType.DOT)))
       return new ContainerAccessExpression(this.consume(TokenType.WORD).getText(), this.dotOrBracketNotation())
     return new Identifier(this.consume(TokenType.WORD).getText())

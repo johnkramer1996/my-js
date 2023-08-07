@@ -27,6 +27,23 @@ export default class Lexer implements ILexer {
     ['!=', TokenType.EXCLEQ],
     ['<=', TokenType.LTEQ],
     ['>=', TokenType.GTEQ],
+
+    ['+=', TokenType.PLUSEQ],
+    ['-=', TokenType.MINUSEQ],
+    ['*=', TokenType.STAREQ],
+    ['/=', TokenType.SLASHEQ],
+    ['%=', TokenType.PERCENTEQ],
+    ['&=', TokenType.AMPEQ],
+    ['^=', TokenType.CARETEQ],
+    ['|=', TokenType.BAREQ],
+    ['::=', TokenType.COLONCOLONEQ],
+    ['<<=', TokenType.LTLTEQ],
+    ['>>=', TokenType.GTGTEQ],
+    ['>>>=', TokenType.GTGTGTEQ],
+
+    ['++', TokenType.PLUSPLUS],
+    ['--', TokenType.MINUSMINUS],
+
     ['&&', TokenType.AMPAMP],
     ['||', TokenType.BARBAR],
     ['<<', TokenType.LTLT],
@@ -46,8 +63,6 @@ export default class Lexer implements ILexer {
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
   private static KEYWORDS = new Map([
     [KeyWord[KeyWord.log], TokenType.LOG],
-    [KeyWord[KeyWord.print], TokenType.PRINT],
-    [KeyWord[KeyWord.println], TokenType.PRINTLN],
     [KeyWord[KeyWord.if], TokenType.IF],
     [KeyWord[KeyWord.else], TokenType.ELSE],
     [KeyWord[KeyWord.while], TokenType.WHILE],
@@ -56,11 +71,11 @@ export default class Lexer implements ILexer {
     [KeyWord[KeyWord.break], TokenType.BREAK],
     [KeyWord[KeyWord.continue], TokenType.CONTINUE],
     [KeyWord[KeyWord.def], TokenType.DEF],
+    [KeyWord[KeyWord.function], TokenType.FUNCTION],
     [KeyWord[KeyWord.return], TokenType.RETURN],
     [KeyWord[KeyWord.use], TokenType.USE],
     [KeyWord[KeyWord.match], TokenType.MATCH],
     [KeyWord[KeyWord.case], TokenType.CASE],
-    [KeyWord[KeyWord.extract], TokenType.EXTRACT],
     [KeyWord[KeyWord.const], TokenType.CONST],
     [KeyWord[KeyWord.let], TokenType.LET],
   ])

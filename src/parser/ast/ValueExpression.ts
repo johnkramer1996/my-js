@@ -5,15 +5,19 @@ import StringValue from '@lib/StringValue'
 import IVisitor from './IVisitor'
 import FunctionValue from '@lib/FunctionValue'
 import { Function } from '@lib/Functions'
+import Value from '@lib/Value'
 
 export default class ValueExpression implements IExpression {
   public value: IValue
 
   constructor(value: number)
   constructor(value: string)
-  constructor(value: Function)
-  constructor(value: string | number | Function) {
-    this.value = typeof value === 'number' ? new NumberValue(value) : typeof value === 'string' ? new StringValue(value) : new FunctionValue(value)
+  constructor(value: IValue)
+  constructor(value: string | number | IValue) {
+    if (typeof value === 'number') value = new NumberValue(value)
+    else if (typeof value === 'string') value = new StringValue(value)
+    this.value = value
+    // if (value instanceof Function) new FunctionValue(value)
   }
 
   public eval(): IValue {

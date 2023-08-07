@@ -15,6 +15,7 @@ enum TokenType {
   BREAK,
   CONTINUE,
   DEF,
+  FUNCTION,
   RETURN,
   USE,
   MATCH,
@@ -35,6 +36,22 @@ enum TokenType {
   LT, // <
   GT, // >
   GTEQ, // >=
+
+  PLUSEQ, // +=
+  MINUSEQ, // -=
+  STAREQ, // *=
+  SLASHEQ, // /=
+  PERCENTEQ, // %=
+  AMPEQ, // &=
+  CARETEQ, // ^=
+  BAREQ, // |=
+  COLONCOLONEQ, // ::=
+  LTLTEQ, // <<=
+  GTGTEQ, // >>=
+  GTGTGTEQ, // >>>=
+
+  PLUSPLUS, // ++
+  MINUSMINUS, // --
 
   LTLT, // <<
   GTGT, // >>

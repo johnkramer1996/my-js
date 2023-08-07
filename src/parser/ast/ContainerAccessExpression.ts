@@ -9,25 +9,34 @@ import TypeException from '@exceptions/TypeException'
 import FunctionValue from '@lib/FunctionValue'
 import CallStack from '@lib/CallStack'
 
-export interface IIdentifier extends IExpression {
-  setValue(value: IValue): void
-  defineValue(value: IValue): void
+export const instanceOfAccessible = (object: any): object is Accessible => {
+  return 'set' in object
+}
+
+export interface Accessible extends IExpression {
+  get(): IValue
+  set(value: IValue): IValue
+  define(value: IValue): IValue
   getName(): string
 }
 
-export class Identifier implements IExpression, IIdentifier {
+export class Identifier implements Accessible {
   constructor(public name: string) {}
 
   public eval(): IValue {
     return Variables.get(this.getName())
   }
 
-  public setValue(value: IValue): void {
-    Variables.set(this.getName(), value)
+  public get(): IValue {
+    return Variables.get(this.getName())
   }
 
-  public defineValue(value: IValue): void {
-    Variables.define(this.getName(), value)
+  public set(value: IValue): IValue {
+    return Variables.set(this.getName(), value), value
+  }
+
+  public define(value: IValue): IValue {
+    return Variables.define(this.getName(), value), value
   }
 
   public getName(): string {
@@ -43,20 +52,26 @@ export class Identifier implements IExpression, IIdentifier {
   }
 }
 
-export class AssignmentPattern implements IIdentifier {
-  constructor(public identifier: IIdentifier, public valueExpr: IExpression) {}
+export class AssignmentPattern implements Accessible {
+  constructor(public identifier: Accessible, public valueExpr: IExpression) {}
 
   public eval(): IValue {
+    return this.get()
+  }
+
+  public get(): IValue {
     return Variables.get(this.getName())
   }
 
-  public setValue(value: IValue): void {
+  public set(value: IValue): IValue {
     const defaultExpr = this.getValueExpr().eval()
     Variables.set(this.getName(), value || defaultExpr)
+    return value || defaultExpr
   }
 
-  public defineValue(value: IValue): void {
+  public define(value: IValue): IValue {
     Variables.define(this.getName(), value)
+    return value
   }
 
   public getName(): string {
@@ -76,24 +91,30 @@ export class AssignmentPattern implements IIdentifier {
   }
 }
 
-export class ArrayPattern implements IIdentifier, Iterable<IIdentifier> {
-  public elements: IIdentifier[] = []
+export class ArrayPattern implements Accessible, Iterable<Accessible> {
+  public elements: Accessible[] = []
 
   public eval(): IValue {
+    return this.get()
+  }
+
+  public get(): IValue {
     return Variables.get(this.getName())
   }
 
-  public setValue(value: IValue): void {
+  public set(value: IValue): IValue {
     if (!(value instanceof ArrayValue)) throw new Error('expect array')
-    this.elements.forEach((variable, i) => variable.setValue(value.get(i)))
+    this.elements.forEach((variable, i) => variable.set(value.get(i)))
+    return BooleanValue.FALSE
   }
 
-  public defineValue(value: IValue): void {
+  public define(value: IValue): IValue {
     if (!(value instanceof ArrayValue)) throw new Error('expect array')
-    this.elements.forEach((variable, i) => variable.defineValue(value.get(i)))
+    this.elements.forEach((variable, i) => variable.define(value.get(i)))
+    return BooleanValue.FALSE
   }
 
-  public add(name: IIdentifier, expr: IExpression | null): void {
+  public add(name: Accessible, expr: IExpression | null): void {
     this.elements.push(expr ? new AssignmentPattern(name, expr) : name)
   }
 
@@ -105,17 +126,17 @@ export class ArrayPattern implements IIdentifier, Iterable<IIdentifier> {
     visitor.visit(this)
   }
 
-  public [Symbol.iterator](): Iterator<IIdentifier> {
+  public [Symbol.iterator](): Iterator<Accessible> {
     return this.elements[Symbol.iterator]()
   }
 }
 
-export class Params implements Iterable<IIdentifier> {
-  public params: IIdentifier[] = []
+export class Params implements Iterable<Accessible> {
+  public params: Accessible[] = []
   public requiredArgumentsCount = 0
   public hasOptionalParams = false
 
-  public add(name: IIdentifier, expr: IExpression | null): void {
+  public add(name: Accessible, expr: IExpression | null): void {
     this.params.push(expr ? new AssignmentPattern(name, expr) : name)
     !expr && ++this.requiredArgumentsCount
 
@@ -123,7 +144,7 @@ export class Params implements Iterable<IIdentifier> {
     if (expr) this.hasOptionalParams = true
   }
 
-  public get(index: number): IIdentifier {
+  public get(index: number): Accessible {
     return this.params[index]
   }
 
@@ -135,16 +156,16 @@ export class Params implements Iterable<IIdentifier> {
     return this.params.length
   }
 
-  public iterator(): Iterator<IIdentifier> {
+  public iterator(): Iterator<Accessible> {
     return this[Symbol.iterator]()
   }
 
-  public [Symbol.iterator](): Iterator<IIdentifier> {
+  public [Symbol.iterator](): Iterator<Accessible> {
     return this.params[Symbol.iterator]()
   }
 
   public toString(): string {
-    const result: (IIdentifier | string)[] = []
+    const result: (Accessible | string)[] = []
     result.push('(')
     for (const arg of this.params) {
       result.push(arg)
@@ -155,14 +176,14 @@ export class Params implements Iterable<IIdentifier> {
   }
 }
 
-export default class ContainerAccessExpression implements IIdentifier, IExpression {
+export default class ContainerAccessExpression implements Accessible, IExpression {
   constructor(public variable: string, public indices: IExpression[]) {}
 
   public eval(): IValue {
-    return this.getItem(this.getValue())
+    return this.getItem(this.get())
   }
 
-  public getValue(): ArrayValue | MapValue {
+  public get(): ArrayValue | MapValue {
     const variable = Variables.get(this.variable)
     this.isArrayOrMapValue(variable)
     const container = this.getContainer(variable)
@@ -174,13 +195,13 @@ export default class ContainerAccessExpression implements IIdentifier, IExpressi
     return this.variable
   }
 
-  public setValue(value: IValue): void {
-    const arrOrObj = this.getValue()
-    if (arrOrObj instanceof ArrayValue) return arrOrObj.set(this.lastIndex().asNumber(), value)
-    arrOrObj.set(this.lastIndex().asString(), value)
+  public set(value: IValue): IValue {
+    const arrOrObj = this.get()
+    if (arrOrObj instanceof ArrayValue) return arrOrObj.set(this.lastIndex().asNumber(), value), value
+    return arrOrObj.set(this.lastIndex().asString(), value), value
   }
 
-  public defineValue(value: IValue): void {
+  public define(value: IValue): IValue {
     throw new Error('the container member cannot be defined')
   }
 

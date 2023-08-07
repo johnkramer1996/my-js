@@ -1,5 +1,4 @@
 import AssignValidator from '@visitors/Hoisting'
-import FunctionAdder from 'parser/visitors/FunctionAdder'
 import Lexer from 'parser/Lexer'
 import Parser from 'parser/Parser'
 import CallStack from '@lib/CallStack'
@@ -19,7 +18,8 @@ try {
   ast.execute()
 } catch (e) {
   if (e instanceof Error) {
-    console.dir(`Error: ${e.message}`)
+    console.error('custom error')
+    console.dir(`${e.name}: ${e.message}`)
     for (const call of CallStack.getCalls()) console.log(`\tat ${call}`)
   }
 }
