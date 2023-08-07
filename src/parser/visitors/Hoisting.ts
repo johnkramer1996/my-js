@@ -6,12 +6,15 @@ import AssignmentExpression, { VaraibleDeclaration, VariableDeclarator } from '@
 import BlockStatement from '@ast/BlockStatement'
 import BooleanValue from '@lib/BooleanValue'
 import StringValue from '@lib/StringValue'
+import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 
-export default class AssignValidator extends AbstractVisitor {
+export default class Hoisting extends AbstractVisitor {
   private declarations: VariableDeclarator[]
+  private functionDeclarations: FunctionDefineStatement[]
   constructor(blockStatements: BlockStatement) {
     super()
     this.declarations = (blockStatements.statements.filter((i) => i instanceof VaraibleDeclaration) as VaraibleDeclaration[]).map((i) => i.declarations).flat()
+    this.functionDeclarations = blockStatements.statements.filter((i) => i instanceof FunctionDefineStatement) as FunctionDefineStatement[]
   }
 
   public visit(s: IStatement | IExpression): void {
@@ -20,8 +23,12 @@ export default class AssignValidator extends AbstractVisitor {
     if (s instanceof VariableDeclarator) {
       if (this.declarations.find((i) => i === s)) {
         const identifier = s.identifier.getName()
-        Variables.define(identifier, StringValue.EMPTY)
+        Variables.define(identifier)
       }
+    }
+
+    if (s instanceof FunctionDefineStatement) {
+      s.execute()
     }
 
     // if (s instanceof AssignmentExpression) {

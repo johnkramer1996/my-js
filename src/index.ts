@@ -1,4 +1,4 @@
-import AssignValidator from 'parser/visitors/AssignValidator'
+import AssignValidator from '@visitors/Hoisting'
 import FunctionAdder from 'parser/visitors/FunctionAdder'
 import Lexer from 'parser/Lexer'
 import Parser from 'parser/Parser'

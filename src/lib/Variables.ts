@@ -1,10 +1,13 @@
 import IValue from './IValue'
 import BooleanValue from './BooleanValue'
 import FunctionValue from './FunctionValue'
-import StringValue from './StringValue'
+
+export const uninitialized = {}
+
+type Variable = { value: IValue | typeof uninitialized; kind: string }
 
 export class Scope {
-  public variables: Map<String, IValue> = new Map()
+  public variables: Map<String, Variable> = new Map()
 
   constructor(public parent: Scope | null = null) {}
 }
@@ -18,8 +21,8 @@ export default class Variables {
 
   static {
     this.scope.variables.clear()
-    this.scope.variables.set('true', BooleanValue.TRUE)
-    this.scope.variables.set('false', BooleanValue.FALSE)
+    this.scope.variables.set('true', { value: BooleanValue.TRUE, kind: 'conts' })
+    this.scope.variables.set('false', { value: BooleanValue.FALSE, kind: 'conts' })
   }
 
   public static push(scope?: Scope): void {
@@ -36,21 +39,31 @@ export default class Variables {
 
   public static get(key: string): IValue {
     const scopeData = this.findScope(key)
-    if (scopeData.isFound) return scopeData.scope.variables.get(key) as IValue
+    if (scopeData.isFound) {
+      const variable = scopeData.scope.variables.get(key)
+      if (variable === uninitialized) throw new Error(`"ReferenceError: Cannot access '${key}' before initialization`)
+      return (scopeData.scope.variables.get(key) as Variable).value as IValue
+    }
     return BooleanValue.FALSE
   }
 
   public static set(key: string, value: IValue): void {
     const scopeData = this.findScope(key)
-    if (!scopeData.isFound) throw new Error('Varaible undefined')
-    scopeData.scope.variables.set(key, value)
+    if (!scopeData.isFound) {
+      debugger
+      throw new Error('Varaible undefined' + key)
+    }
+    scopeData.scope.variables.set(key, { value, kind: 'const' })
     if (value instanceof FunctionValue) value.setScope(new Scope(Variables.scope))
   }
 
-  public static define(key: string, value: IValue): void {
-    if (this.scope.variables.get(key) && (this.scope.variables.get(key) !== StringValue.EMPTY || value === StringValue.EMPTY)) throw new Error(`Cannot redeclare block-scoped variable '${key}'`)
+  public static define(key: string, value: IValue | typeof uninitialized = uninitialized): void {
+    const variable = this.scope.variables.get(key)
+    if (variable && variable.value !== uninitialized) {
+      throw new Error(`Cannot redeclare block-scoped variable '${key}'`)
+    }
     if (value instanceof FunctionValue) value.setScope(new Scope(Variables.scope))
-    this.scope.variables.set(key, value)
+    this.scope.variables.set(key, { value, kind: 'const' })
   }
 
   public static remove(key: string) {

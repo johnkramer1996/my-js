@@ -1,7 +1,10 @@
+const a = 10
+echo()
+
+
+
 {
-    const a = 10
-    a = 20
-    log a
+    def echo() {
+       log a
+    }
 }
-const a = 30
-log a
