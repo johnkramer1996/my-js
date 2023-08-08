@@ -127,7 +127,7 @@ export default class Parser {
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.match(TokenType.MATCH)) return new ExprStatement(this.matchExpression())
     if (this.match(TokenType.EXTRACT)) return this.destructuringAssignment()
-    if (this.match(TokenType.CONST) || this.match(TokenType.LET)) return this.variableDeclaration()
+    if (this.match(TokenType.CONST) || this.match(TokenType.LET) || this.match(TokenType.VAR)) return this.variableDeclaration()
     const current = this.get()
     try {
       return new ExprStatement(this.expression())

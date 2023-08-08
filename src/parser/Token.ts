@@ -20,6 +20,7 @@ export enum KeyWord {
   extract,
   const,
   let,
+  var,
 }
 
 export interface IToken {

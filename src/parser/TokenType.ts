@@ -23,6 +23,7 @@ enum TokenType {
   EXTRACT,
   CONST,
   LET,
+  VAR,
 
   PLUS, // +
   MINUS, // -

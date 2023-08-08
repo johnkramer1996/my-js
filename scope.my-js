@@ -1,7 +1,11 @@
-function myFunc(a, b) {
-    log arguments.a
-}
+const a = 20;
 
 
-const a = 20
-myFunc(20)
+log a
+
+log b
+
+var b = 20
+
+
+log b

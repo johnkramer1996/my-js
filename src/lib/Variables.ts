@@ -75,7 +75,7 @@ export default class Variables {
   public static hoisting(key: string) {
     const variable = this.scope.variables.get(key)
     if (variable === uninitialized) throw new SyntaxError(`Identifier '${key}' has already been declared. `)
-    this.scope.variables.set(key, uninitialized)
+    this.scope.variables.set(key, this.kind !== 'var' ? uninitialized : { value: UndefinedValue.UNDEFINED, kind: 'var' })
   }
 
   public static remove(key: string) {
