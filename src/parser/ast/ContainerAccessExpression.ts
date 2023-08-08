@@ -9,18 +9,18 @@ import TypeException from '@exceptions/TypeException'
 import FunctionValue from '@lib/FunctionValue'
 import CallStack from '@lib/CallStack'
 
-export const instanceOfAccessible = (object: any): object is Accessible => {
+export const instanceOfIAccessible = (object: any): object is IAccessible => {
   return 'set' in object
 }
 
-export interface Accessible extends IExpression {
+export interface IAccessible extends IExpression {
   get(): IValue
   set(value: IValue): IValue
   define(value: IValue): IValue
   getName(): string
 }
 
-export class Identifier implements Accessible {
+export class Identifier implements IAccessible {
   constructor(public name: string) {}
 
   public eval(): IValue {
@@ -52,8 +52,8 @@ export class Identifier implements Accessible {
   }
 }
 
-export class AssignmentPattern implements Accessible {
-  constructor(public identifier: Accessible, public valueExpr: IExpression) {}
+export class AssignmentPattern implements IAccessible {
+  constructor(public identifier: IAccessible, public valueExpr: IExpression) {}
 
   public eval(): IValue {
     return this.get()
@@ -65,13 +65,12 @@ export class AssignmentPattern implements Accessible {
 
   public set(value: IValue): IValue {
     const defaultExpr = this.getValueExpr().eval()
-    Variables.set(this.getName(), value || defaultExpr)
-    return value || defaultExpr
+    return Variables.set(this.getName(), value || defaultExpr)
   }
 
   public define(value: IValue): IValue {
-    Variables.define(this.getName(), value)
-    return value
+    const defaultExpr = this.getValueExpr().eval()
+    return Variables.define(this.getName(), value || defaultExpr)
   }
 
   public getName(): string {
@@ -91,8 +90,8 @@ export class AssignmentPattern implements Accessible {
   }
 }
 
-export class ArrayPattern implements Accessible, Iterable<Accessible> {
-  public elements: Accessible[] = []
+export class ArrayPattern implements IAccessible, Iterable<IAccessible> {
+  public elements: IAccessible[] = []
 
   public eval(): IValue {
     return this.get()
@@ -114,7 +113,7 @@ export class ArrayPattern implements Accessible, Iterable<Accessible> {
     return BooleanValue.FALSE
   }
 
-  public add(name: Accessible, expr: IExpression | null): void {
+  public add(name: IAccessible, expr: IExpression | null): void {
     this.elements.push(expr ? new AssignmentPattern(name, expr) : name)
   }
 
@@ -126,17 +125,17 @@ export class ArrayPattern implements Accessible, Iterable<Accessible> {
     visitor.visit(this)
   }
 
-  public [Symbol.iterator](): Iterator<Accessible> {
+  public [Symbol.iterator](): Iterator<IAccessible> {
     return this.elements[Symbol.iterator]()
   }
 }
 
-export class Params implements Iterable<Accessible> {
-  public params: Accessible[] = []
+export class Params implements Iterable<IAccessible> {
+  public params: IAccessible[] = []
   public requiredArgumentsCount = 0
   public hasOptionalParams = false
 
-  public add(name: Accessible, expr: IExpression | null): void {
+  public add(name: IAccessible, expr: IExpression | null): void {
     this.params.push(expr ? new AssignmentPattern(name, expr) : name)
     !expr && ++this.requiredArgumentsCount
 
@@ -144,7 +143,7 @@ export class Params implements Iterable<Accessible> {
     if (expr) this.hasOptionalParams = true
   }
 
-  public get(index: number): Accessible {
+  public get(index: number): IAccessible {
     return this.params[index]
   }
 
@@ -156,27 +155,26 @@ export class Params implements Iterable<Accessible> {
     return this.params.length
   }
 
-  public iterator(): Iterator<Accessible> {
+  public iterator(): Iterator<IAccessible> {
     return this[Symbol.iterator]()
   }
 
-  public [Symbol.iterator](): Iterator<Accessible> {
+  public [Symbol.iterator](): Iterator<IAccessible> {
     return this.params[Symbol.iterator]()
   }
 
   public toString(): string {
-    const result: (Accessible | string)[] = []
+    const result: (IAccessible | string)[] = []
     result.push('(')
     for (const arg of this.params) {
-      result.push(arg)
-      result.push(', ')
+      result.push(arg + ', ')
     }
     result.push(')')
-    return result.toString()
+    return result.join('')
   }
 }
 
-export default class ContainerAccessExpression implements Accessible, IExpression {
+export default class ContainerAccessExpression implements IAccessible, IExpression {
   constructor(public variable: string, public indices: IExpression[]) {}
 
   public eval(): IValue {

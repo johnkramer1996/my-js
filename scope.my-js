@@ -1,7 +1,7 @@
-function myFunc(a) {
-    log a 
+function myFunc(a, b) {
+    log arguments.a
 }
 
 
 const a = 20
-myFunc(a)
+myFunc(20)

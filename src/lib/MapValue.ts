@@ -3,13 +3,17 @@ import IValue from './IValue'
 import NumberValue from './NumberValue'
 import Types from './Types'
 import Value from './Value'
+import UndefinedValue from './UndefinedValue'
 
 export type Object = { [index: string]: IValue }
 
 export default class MapValue extends Value<Object> implements Iterable<[string, IValue]> {
   public static EMPTY: MapValue = new MapValue()
 
-  constructor(obj: Object = {}) {
+  constructor(value: IValue[])
+  constructor(value?: Object)
+  constructor(value: Object | IValue[] = {}) {
+    const obj = Array.isArray(value) ? Object.assign({}, value) : {}
     super(obj, Types.OBJECT)
   }
 
@@ -22,8 +26,8 @@ export default class MapValue extends Value<Object> implements Iterable<[string,
   }
 
   public get(key: string): IValue {
-    if (!this.value[key]) throw new Error('error')
-    return this.value[key] as IValue
+    if (!this.value[key]) return UndefinedValue.UNDEFINED
+    return this.value[key]
   }
 
   public set(key: string, value: IValue) {

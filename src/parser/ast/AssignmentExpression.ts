@@ -3,7 +3,7 @@ import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 import IValue from '@lib/IValue'
-import ContainerAccessExpression, { Accessible, Identifier } from './ContainerAccessExpression'
+import ContainerAccessExpression, { IAccessible, Identifier } from './ContainerAccessExpression'
 import BooleanValue from '@lib/BooleanValue'
 import BinaryExpression, { BinaryOperator } from './BinaryExpression'
 import ValueExpression from './ValueExpression'
@@ -43,7 +43,7 @@ export class VaraibleDeclaration implements IStatement {
 }
 
 export default class AssignmentExpression implements IExpression {
-  constructor(public operation: BinaryOperator | null, public target: Accessible, public expression: IExpression) {}
+  constructor(public operation: BinaryOperator | null, public target: IAccessible, public expression: IExpression) {}
 
   public eval(): IValue {
     if (this.operation === null) return this.target.set(this.expression.eval())

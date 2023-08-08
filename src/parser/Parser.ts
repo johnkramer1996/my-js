@@ -21,7 +21,7 @@ import CallExpression from '@ast/CallExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
 import ArrayExpression from '@ast/ArrayExpression'
-import ContainerAccessExpression, { Accessible, ArrayPattern, Identifier, Params } from '@ast/ContainerAccessExpression'
+import ContainerAccessExpression, { IAccessible, ArrayPattern, Identifier, Params } from '@ast/ContainerAccessExpression'
 import ParseException from '@exceptions/ParseException'
 import CommaExpression from '@ast/CommaExpresstion'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
@@ -233,7 +233,7 @@ export default class Parser {
     return new ForStatement(initialization, termination, increment, statement)
   }
 
-  private assignmentExpression(qualifiedNameExpr: Accessible = this.qualifiedName()): IExpression {
+  private assignmentExpression(qualifiedNameExpr: IAccessible = this.qualifiedName()): IExpression {
     // this.consume(TokenType.EQ)
     const binary = this.assignOperator.get(this.get(0).getType())
     if (binary === undefined) throw new Error('undefiner')
@@ -290,7 +290,7 @@ export default class Parser {
     return arrayPattern
   }
 
-  private identifier(): Accessible {
+  private identifier(): IAccessible {
     if (this.lookMatch(0, TokenType.WORD)) return new Identifier(this.consume(TokenType.WORD).getText())
     return this.arrayPattern()
   }
@@ -533,7 +533,7 @@ export default class Parser {
     throw this.error('Unknown expression ' + current)
   }
 
-  private qualifiedName(): Accessible {
+  private qualifiedName(): IAccessible {
     if (this.lookMatch(0, TokenType.WORD) && (this.lookMatch(1, TokenType.LBRACKET) || this.lookMatch(1, TokenType.DOT)))
       return new ContainerAccessExpression(this.consume(TokenType.WORD).getText(), this.dotOrBracketNotation())
     return new Identifier(this.consume(TokenType.WORD).getText())

@@ -3,7 +3,7 @@ import IExpression from './IExpression'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupportedException'
-import { instanceOfAccessible } from './ContainerAccessExpression'
+import { instanceOfIAccessible } from './ContainerAccessExpression'
 
 enum Operator {
   DELETE = 'delete',
@@ -31,19 +31,19 @@ export default class UnaryExpression implements IExpression {
       case Operator.INCREMENT_PREFIX: {
         debugger
         const result = new NumberValue(value.asNumber() + 1)
-        return instanceOfAccessible(this.expression) ? this.expression.set(result) : result
+        return instanceOfIAccessible(this.expression) ? this.expression.set(result) : result
       }
       case Operator.DECREMENT_PREFIX: {
         const result = new NumberValue(value.asNumber() - 1)
-        return instanceOfAccessible(this.expression) ? this.expression.set(result) : result
+        return instanceOfIAccessible(this.expression) ? this.expression.set(result) : result
       }
       case Operator.INCREMENT_POSTFIX: {
         const result = new NumberValue(value.asNumber() + 1)
-        return instanceOfAccessible(this.expression) ? (this.expression.set(result), value) : result
+        return instanceOfIAccessible(this.expression) ? (this.expression.set(result), value) : result
       }
       case Operator.DECREMENT_POSTFIX: {
         const result = new NumberValue(value.asNumber() - 1)
-        return instanceOfAccessible(this.expression) ? (this.expression.set(result), value) : result
+        return instanceOfIAccessible(this.expression) ? (this.expression.set(result), value) : result
       }
       case Operator.PLUS:
         return new NumberValue(value.asNumber())

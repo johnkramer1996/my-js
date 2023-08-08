@@ -3,6 +3,7 @@ import BooleanValue from './BooleanValue'
 import FunctionValue from './FunctionValue'
 import SyntaxError from '@exceptions/SyntaxError'
 import ReferenceError from '@exceptions/ReferenceError'
+import UndefinedValue from './UndefinedValue'
 
 const uninitialized = '<uninitialized>'
 
@@ -26,6 +27,7 @@ export default class Variables {
     this.scope.variables.clear()
     this.scope.variables.set('true', { value: BooleanValue.TRUE, kind: 'conts' })
     this.scope.variables.set('false', { value: BooleanValue.FALSE, kind: 'conts' })
+    this.scope.variables.set('undefined', { value: UndefinedValue.UNDEFINED, kind: 'conts' })
   }
 
   public static setKind(kind: string): void {
@@ -67,7 +69,7 @@ export default class Variables {
   public static define(key: string, value: IValue): IValue {
     if (value instanceof FunctionValue) value.setScope(new Scope(Variables.scope))
     this.scope.variables.set(key, { value, kind: this.kind })
-    return value as IValue
+    return value
   }
 
   public static hoisting(key: string) {
