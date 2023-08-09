@@ -8,7 +8,6 @@ import ContinueStatement from '@ast/ContinueStatement'
 import DoWhileStatement from '@ast/DoWhileStatement'
 import IExpression from '@ast/IExpression'
 import ForStatement from '@ast/ForStatement'
-import FunctionalExpression from '@ast/FunctionalExpression'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 import ExprStatement from '@ast/ExprStatement'
 import IfStatement from '@ast/IfStatement'
@@ -18,7 +17,7 @@ import IStatement from '@ast/IStatement'
 import TernaryExpression from '@ast/TernarExpression'
 import UnaryExpression from '@ast/UnaryExpression'
 import UseStatement from '@ast/UseStatement'
-import ValueExpression from '@ast/ValueExpression'
+import Literal from '@ast/Literal'
 import VariableExpression from '@ast/VariableExpression'
 import WhileStatement from '@ast/WhileStatement'
 import IVisitor from '@ast/IVisitor'
@@ -27,6 +26,8 @@ import ForeachArrayStatement from '@ast/ForeachStatement'
 import AssignmentExpression, { VaraibleDeclaration, VariableDeclarator } from '@ast/AssignmentExpression'
 import MatchExpression from '@ast/MatchExpression'
 import DestructuringAssignmentStatement from '@ast/DestructuringAssignmentStatement'
+import Program from '@ast/Program'
+import CallExpression from '@ast/CallExpression'
 
 export default abstract class AbstractVisitor implements IVisitor {
   public visit(s: IStatement | IExpression): void {
@@ -44,6 +45,8 @@ export default abstract class AbstractVisitor implements IVisitor {
     } else if (s instanceof BinaryExpression) {
       s.expr1.accept(this)
       s.expr2.accept(this)
+    } else if (s instanceof Program) {
+      for (const statement of s.statements) statement.accept(this)
     } else if (s instanceof BlockStatement) {
       for (const statement of s.statements) statement.accept(this)
     } else if (s instanceof BreakStatement) {
@@ -68,7 +71,7 @@ export default abstract class AbstractVisitor implements IVisitor {
       // s.func.accept(this)
     } else if (s instanceof ExprStatement) {
       s.expr.accept(this)
-    } else if (s instanceof FunctionalExpression) {
+    } else if (s instanceof CallExpression) {
       s.functionExpr.accept(this)
       for (const arg of s.args) arg.accept(this)
     } else if (s instanceof IfStatement) {
@@ -85,8 +88,9 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.falseExpr.accept(this)
     } else if (s instanceof UnaryExpression) {
       s.expression.accept(this)
-    } else if (s instanceof ValueExpression) {
+    } else if (s instanceof Literal) {
     } else if (s instanceof VariableExpression) {
+      s.name.accept(this)
     } else if (s instanceof WhileStatement) {
       s.condition.accept(this)
       s.statement.accept(this)

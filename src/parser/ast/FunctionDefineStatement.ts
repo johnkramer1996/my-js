@@ -10,7 +10,11 @@ export default class FunctionDefineStatement implements IStatement {
   constructor(public name: Identifier, public func: UserDefinedFunction) {}
 
   public execute(): void {
-    Variables.define(this.name.getName(), new FunctionValue(this.func))
+    this.name.set(new FunctionValue(this.func))
+  }
+
+  public hoisting() {
+    Variables.hoisting(this.name.getName(), 'func', new FunctionValue(this.func))
   }
 
   public accept(visitor: IVisitor): void {

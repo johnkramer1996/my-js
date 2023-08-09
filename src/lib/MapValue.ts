@@ -13,7 +13,7 @@ export default class MapValue extends Value<Object> implements Iterable<[string,
   constructor(value: IValue[])
   constructor(value?: Object)
   constructor(value: Object | IValue[] = {}) {
-    const obj = Array.isArray(value) ? Object.assign({}, value) : {}
+    const obj = Array.isArray(value) ? value.reduce((prev, val, i) => ((prev[i] = val), prev), {} as any) : value
     super(obj, Types.OBJECT)
   }
 

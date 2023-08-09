@@ -164,13 +164,7 @@ export class Params implements Iterable<IAccessible> {
   }
 
   public toString(): string {
-    const result: (IAccessible | string)[] = []
-    result.push('(')
-    for (const arg of this.params) {
-      result.push(arg + ', ')
-    }
-    result.push(')')
-    return result.join('')
+    return `(${this.params.join(', ')})`
   }
 }
 

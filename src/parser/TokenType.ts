@@ -24,6 +24,10 @@ enum TokenType {
   CONST,
   LET,
   VAR,
+  THIS,
+  NULL,
+  UNDEFINED,
+  DEBUGGER,
 
   PLUS, // +
   MINUS, // -

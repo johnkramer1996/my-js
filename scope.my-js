@@ -1,11 +1,11 @@
-const a = 20;
+var message = 'Hi';
 
+function say(message2) {
+    console.log(message);
+    console.log(message2);
+    log arguments
+    debugger
+    return 123
 
-log a
-
-log b
-
-var b = 20
-
-
-log b
+}
+log say(123);

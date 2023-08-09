@@ -3,20 +3,18 @@ import IStatement from './IStatement'
 import IExpression from './IExpression'
 import BooleanValue from '@lib/BooleanValue'
 import IVisitor from './IVisitor'
+import CallStack from '@lib/CallStack'
 
 export default class ReturnStatement implements IStatement {
-  private result!: IValue
-
   constructor(public expression: IExpression) {}
 
   public execute(): void {
-    this.result = this.expression.eval()
-    throw this
+    CallStack.setReturn(this.expression.eval())
   }
 
-  public getResult(): IValue {
-    return this.result || BooleanValue.FALSE
-  }
+  // public getResult(): IValue {
+  //   return this.result || BooleanValue.FALSE
+  // }
 
   public accept(visitor: IVisitor): void {
     visitor.visit(this)

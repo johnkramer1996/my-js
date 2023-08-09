@@ -3,6 +3,7 @@ import Lexer from 'parser/Lexer'
 import Parser from 'parser/Parser'
 import CallStack from '@lib/CallStack'
 import program from '../scope.my-js'
+import Hoisting from '@visitors/Hoisting'
 
 // for node.js
 // import { readFileSync } from 'fs'
@@ -15,6 +16,8 @@ try {
   const ast = parser.parse()
   // ast.accept(new FunctionAdder())
   // ast.accept(new AssignValidator())
+  // ast.accept(new Hoisting())
+  ast.creation()
   ast.execute()
 } catch (e) {
   if (e instanceof Error) {

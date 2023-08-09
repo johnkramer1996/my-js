@@ -19,7 +19,7 @@ export default class FunctionValue extends Value<Function> implements IValue {
   }
 
   public setScope(scope: Scope) {
-    if (this.value instanceof UserDefinedFunction) this.value.setScope(scope)
+    if (this.value instanceof UserDefinedFunction) this.value.outer = scope
   }
 
   public compareTo(o: IValue): number {

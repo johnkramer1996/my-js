@@ -61,7 +61,7 @@ export default class Lexer implements ILexer {
   ])
   private static OPERATOR_CHARS = '+-*/%()[]{}=<>!&|.,^~?:'
   private static SINGLE_OR_DOUBLE_QUOTE = ["'", '"']
-  private static KEYWORDS = new Map([
+  public static KEYWORDS = new Map([
     [KeyWord[KeyWord.log], TokenType.LOG],
     [KeyWord[KeyWord.if], TokenType.IF],
     [KeyWord[KeyWord.else], TokenType.ELSE],
@@ -79,6 +79,10 @@ export default class Lexer implements ILexer {
     [KeyWord[KeyWord.const], TokenType.CONST],
     [KeyWord[KeyWord.let], TokenType.LET],
     [KeyWord[KeyWord.var], TokenType.VAR],
+    [KeyWord[KeyWord.this], TokenType.THIS],
+    [KeyWord[KeyWord.null], TokenType.NULL],
+    [KeyWord[KeyWord.undefined], TokenType.UNDEFINED],
+    [KeyWord[KeyWord.debugger], TokenType.DEBUGGER],
   ])
 
   private tokens: IToken[] = []

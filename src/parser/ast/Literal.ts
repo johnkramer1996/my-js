@@ -1,13 +1,16 @@
+import FunctionValue from '@lib/FunctionValue'
 import IExpression from '@ast/IExpression'
 import IValue from '@lib/IValue'
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import IVisitor from './IVisitor'
-import FunctionValue from '@lib/FunctionValue'
 import { Function } from '@lib/Functions'
-import Value from '@lib/Value'
 
-export default class ValueExpression implements IExpression {
+function isFunction(func: any): func is Function {
+  return 'execute' in func
+}
+
+export default class Literal implements IExpression {
   public value: IValue
 
   constructor(value: number)
@@ -16,8 +19,8 @@ export default class ValueExpression implements IExpression {
   constructor(value: string | number | IValue) {
     if (typeof value === 'number') value = new NumberValue(value)
     else if (typeof value === 'string') value = new StringValue(value)
+    const a = FunctionValue.EMPTY
     this.value = value
-    // if (value instanceof Function) new FunctionValue(value)
   }
 
   public eval(): IValue {

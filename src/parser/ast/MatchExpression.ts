@@ -77,7 +77,7 @@ export default class MatchExpression implements IExpression {
     try {
       s.execute()
     } catch (ret) {
-      if (ret instanceof ReturnStatement) return ret.getResult()
+      // if (ret instanceof ReturnStatement) return ret.getResult()
     }
     return BooleanValue.FALSE
   }

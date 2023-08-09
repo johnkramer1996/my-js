@@ -1,9 +1,9 @@
-import Token, { IToken } from './Token'
+import Token, { IToken, KeyWord } from './Token'
 import TokenType from './TokenType'
 import IStatement from '@ast/IStatement'
 import IExpression from '@ast/IExpression'
 import LogStatement from '@ast/LogStatement'
-import ValueExpression from '@ast/ValueExpression'
+import Literal from '@ast/Literal'
 import BlockStatement from '@ast/BlockStatement'
 import BinaryExpression, { BinaryOperator } from '@ast/BinaryExpression'
 import UnaryExpression from '@ast/UnaryExpression'
@@ -33,6 +33,11 @@ import MatchExpression, { ConstantPattern, Pattern, VariablePattern } from '@ast
 import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import DestructuringAssignmentStatement from '@ast/DestructuringAssignmentStatement'
+import Program from '@ast/Program'
+import ThisExpression from '@ast/ThisExpression'
+import UndefinedValue from '@lib/UndefinedValue'
+import Lexer from './Lexer'
+import DebuggerStatement from '@ast/DebuggerStatement'
 
 // TODO add AssignInicialization
 
@@ -88,13 +93,13 @@ export default class Parser {
     this.size = tokens.length
   }
 
-  public parse(): IStatement {
-    const mainBlock = new BlockStatement()
+  public parse(): Program {
+    const program = new Program()
     while (!this.match(TokenType.EOF)) {
-      mainBlock.add(this.statementOrBlock())
+      program.add(this.statementOrBlock())
       while (this.match(TokenType.SEMIKOLON));
     }
-    return mainBlock
+    return program
   }
 
   private statementOrBlock(): IStatement {
@@ -121,12 +126,12 @@ export default class Parser {
     if (this.match(TokenType.FOR)) return this.forStatement()
     if (this.match(TokenType.BREAK)) return new BreakStatement()
     if (this.match(TokenType.CONTINUE)) return new ContinueStatement()
-    if (this.match(TokenType.DEF)) return this.functionDefine()
     if (this.match(TokenType.FUNCTION)) return this.functionDefine()
     if (this.match(TokenType.RETURN)) return new ReturnStatement(this.expression())
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
     if (this.match(TokenType.MATCH)) return new ExprStatement(this.matchExpression())
     if (this.match(TokenType.EXTRACT)) return this.destructuringAssignment()
+    if (this.match(TokenType.DEBUGGER)) return new DebuggerStatement()
     if (this.match(TokenType.CONST) || this.match(TokenType.LET) || this.match(TokenType.VAR)) return this.variableDeclaration()
     const current = this.get()
     try {
@@ -144,8 +149,8 @@ export default class Parser {
       const identifier = new Identifier(this.consume(TokenType.WORD).getText())
       if (this.match(TokenType.EQ)) {
         declarations.push(new VariableDeclarator(identifier, this.expression()))
-      } else if (kind === 'let') {
-        declarations.push(new VariableDeclarator(identifier, new ValueExpression(0)))
+      } else if (kind === 'let' || kind === 'var') {
+        declarations.push(new VariableDeclarator(identifier, new Literal(UndefinedValue.UNDEFINED)))
       } else throw new SyntaxError('Missing initializer in const declaration')
     } while (this.match(TokenType.COMMA))
 
@@ -322,7 +327,10 @@ export default class Parser {
     const indices: IExpression[] = []
     while (this.lookMatch(0, TokenType.DOT) || this.lookMatch(0, TokenType.LBRACKET)) {
       if (this.match(TokenType.DOT)) {
-        const key = new ValueExpression(this.consume(TokenType.WORD).getText())
+        const current = this.get()
+        const keywords = [...Lexer.KEYWORDS.values()]
+        const isKeyword = keywords.find((k) => k === current.getType())
+        const key = new Literal(this.consume(isKeyword ? current.getType() : TokenType.WORD).getText())
         indices.push(key)
       }
       if (this.match(TokenType.LBRACKET)) {
@@ -499,9 +507,7 @@ export default class Parser {
   private primary(): IExpression {
     if (this.match(TokenType.COLONCOLON)) return new FunctionReferenceExpression(this.consume(TokenType.WORD).getText())
     if (this.match(TokenType.MATCH)) return this.matchExpression()
-    if (this.lookMatch(0, TokenType.LPAREN)) {
-      return this.nested()
-    }
+    if (this.lookMatch(0, TokenType.LPAREN)) return this.nested()
 
     return this.variable()
   }
@@ -525,10 +531,15 @@ export default class Parser {
 
     if (this.lookMatch(0, TokenType.LBRACKET)) return this.array()
     if (this.lookMatch(0, TokenType.LBRACE)) return this.map()
-    // if (this.match(TokenType.DEF)) return new ValueExpression(new UserDefinedFunction(this.params(), this.body()))
-    if (this.match(TokenType.NUMBER)) return new ValueExpression(Number(current.getText()))
-    if (this.match(TokenType.HEX_NUMBER)) return new ValueExpression(Number.parseInt(current.getText(), 16))
-    if (this.match(TokenType.TEXT)) return new ValueExpression(current.getText())
+    //FunctionExpression
+    //ArrowFunctionExpression
+    // if (this.match(TokenType.FUNCTION)) return new Literal(new UserDefinedFunction(this.params(), this.body()))
+    if (this.match(TokenType.NUMBER)) return new Literal(Number(current.getText()))
+    if (this.match(TokenType.HEX_NUMBER)) return new Literal(Number.parseInt(current.getText(), 16))
+    if (this.match(TokenType.TEXT)) return new Literal(current.getText())
+    if (this.match(TokenType.WORD)) return new Literal(current.getText())
+    if (this.match(TokenType.LOG)) return new Literal(current.getText())
+    if (this.match(TokenType.THIS)) return new ThisExpression()
 
     throw this.error('Unknown expression ' + current)
   }

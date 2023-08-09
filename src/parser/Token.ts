@@ -21,6 +21,10 @@ export enum KeyWord {
   const,
   let,
   var,
+  this,
+  null,
+  undefined,
+  debugger,
 }
 
 export interface IToken {
