@@ -5,7 +5,7 @@ import { HttpHttp } from './functions/HttpHttp'
 
 export default class Http implements IModule {
   public init(): void {
-    Functions.set('urlencode', new HttpUrlencode())
-    Functions.set('http', new HttpHttp())
+    // Functions.set('urlencode', new HttpUrlencode())
+    // Functions.set('http', new HttpHttp())
   }
 }

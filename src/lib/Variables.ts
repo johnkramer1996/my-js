@@ -5,10 +5,39 @@ import SyntaxError from '@exceptions/SyntaxError'
 import ReferenceError from '@exceptions/ReferenceError'
 import UndefinedValue from './UndefinedValue'
 import MapValue from './MapValue'
+import IStatement from '@ast/IStatement'
+import IVisitor from '@ast/IVisitor'
+import Function from './Functions'
 
 const uninitialized = '<uninitialized>'
 
 type Variable = { value: IValue | typeof uninitialized; kind: string }
+
+// var Scope = function Scope(flags) {
+//   this.flags = flags;
+//   this.var = [];
+//   this.lexical = [];
+//   this.functions = [];
+//   this.inClassFieldInit = false;
+//   pp$3.enterScope = function(flags) {
+//     this.scopeStack.push(new Scope(flags));
+//   };
+
+//   pp$3.exitScope = function() {
+//     this.scopeStack.pop();
+//   };
+
+// };
+
+export class BuiltInFunction implements IStatement {
+  constructor(public callback: Function) {}
+
+  execute(...values: IValue[]): IValue {
+    return this.callback.execute(...values)
+  }
+
+  accept(visitor: IVisitor): void {}
+}
 
 export class Scope {
   public variables: Map<String, Variable> = new Map()
@@ -27,7 +56,7 @@ export default class Variables {
     this.scope.variables.clear()
     this.scope.variables.set('console', {
       value: new MapValue({
-        log: new FunctionValue({ execute: (...values: IValue[]) => (console.log(values.toString()), UndefinedValue.UNDEFINED) }),
+        log: new FunctionValue(new BuiltInFunction({ execute: (...values: IValue[]) => (console.log(values.toString()), UndefinedValue.UNDEFINED) })),
       }),
       kind: 'conts',
     })

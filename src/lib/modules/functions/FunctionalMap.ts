@@ -1,4 +1,4 @@
-import { Function } from '@lib/Functions'
+import Function from '@lib/Functions'
 import IValue from '@lib/IValue'
 import StringValue from '@lib/StringValue'
 import Types from '@lib/Types'
@@ -9,13 +9,13 @@ import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchExcepti
 
 export default class FunctionalMap implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length < 2) throw new ArgumentsMismatchException('At least two args expected')
-    if (args[1].type() != Types.FUNCTION) throw new Error('Function expected in second arg')
+    // if (args.length < 2) throw new ArgumentsMismatchException('At least two args expected')
+    // if (args[1].type() != Types.FUNCTION) throw new Error('Function expected in second arg')
 
-    const container = args[0]
-    const consumer = (args[1] as FunctionValue).getValue()
-    if (container instanceof ArrayValue) return this.mapArray(container, consumer)
-    if (container instanceof MapValue) return this.mapMap(container, consumer)
+    // const container = args[0]
+    // const consumer = (args[1] as FunctionValue).getValue()
+    // if (container instanceof ArrayValue) return this.mapArray(container, consumer)
+    // if (container instanceof MapValue) return this.mapMap(container, consumer)
 
     throw new Error('Invalid first argument. Array or map exprected')
   }

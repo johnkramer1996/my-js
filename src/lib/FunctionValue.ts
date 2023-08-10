@@ -1,25 +1,52 @@
 import TypeException from '@exceptions/TypeException'
-import BooleanValue from './BooleanValue'
-import { Function } from './Functions'
 import IValue from './IValue'
 import Types from './Types'
 import Value from './Value'
-import UserDefinedFunction from './UserDefinedFunction'
-import { Scope } from './Variables'
+import Variables, { BuiltInFunction, Scope } from './Variables'
+import IStatement from '@ast/IStatement'
+import { Params } from '@ast/Params'
+import UndefinedValue from './UndefinedValue'
+import CallStack from './CallStack'
+import BlockStatement from '@ast/BlockStatement'
+import { VaraibleDeclaration } from '@ast/AssignmentExpression'
+import FunctionDefineStatement from '@ast/FunctionDefineStatement'
 
-export default class FunctionValue extends Value<Function> implements IValue {
-  public static EMPTY: FunctionValue = new FunctionValue({ execute: () => BooleanValue.FALSE })
+export default class FunctionValue extends Value<IStatement> implements IValue {
+  // public static EMPTY: FunctionValue = new FunctionValue({ execute: () => BooleanValue.FALSE })
 
-  constructor(value: Function) {
+  constructor(value: IStatement, public params: Params = new Params()) {
     super(value, Types.FUNCTION)
   }
 
-  public getValue(): Function {
+  public execute(...values: IValue[]): IValue {
+    if (this.value instanceof BuiltInFunction) return this.value.execute(...values)
+    this.hoisting()
+    this.setArgs(values)
+    console.log(this.params)
+    console.log(Variables.scope)
+    console.log(this.params.params)
+    this.value.execute()
+    return CallStack.getReturn()
+  }
+
+  public hoisting() {
+    for (const param of this.getParams()) Variables.hoisting(param.getName(), 'var')
+  }
+
+  public getValue(): IStatement {
     return this.value
   }
 
+  public setArgs(values: IValue[]) {
+    this.getParams().forEach((arg, i) => arg.define(values[i] ?? UndefinedValue.UNDEFINED))
+  }
+
+  public getParams() {
+    return this.params.params
+  }
+
   public setScope(scope: Scope) {
-    if (this.value instanceof UserDefinedFunction) this.value.outer = scope
+    // if (this.value instanceof UserDefinedFunction) this.value.outer = scope
   }
 
   public compareTo(o: IValue): number {

@@ -1,5 +1,5 @@
 import FunctionValue from './FunctionValue'
-import { Function } from './Functions'
+import Function from './Functions'
 import IValue from './IValue'
 import UndefinedValue from './UndefinedValue'
 import UserDefinedFunction from './UserDefinedFunction'

@@ -1,18 +1,19 @@
-import { Function } from '@lib/Functions'
+import Function from '@lib/Functions'
 import IValue from '@lib/IValue'
 import ArrayValue from '@lib/ArrayValue'
 import FunctionValue from '@lib/FunctionValue'
 import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
 import TypeException from '@exceptions/TypeException'
+import BooleanValue from '@lib/BooleanValue'
 
 export default class FunctionalFlatMap implements Function {
   public execute(...args: IValue[]): IValue {
-    if (args.length < 2) throw new ArgumentsMismatchException('At least two arguments expected')
-    if (!(args[0] instanceof ArrayValue)) throw new TypeException('Array expected in first argument')
-    if (!(args[1] instanceof FunctionValue)) throw new TypeException('Function expected in second argument')
-
-    const mapper = args[1].getValue()
-    return this.flatMapArray(args[0], mapper)
+    // if (args.length < 2) throw new ArgumentsMismatchException('At least two arguments expected')
+    // if (!(args[0] instanceof ArrayValue)) throw new TypeException('Array expected in first argument')
+    // if (!(args[1] instanceof FunctionValue)) throw new TypeException('Function expected in second argument')
+    // const mapper = args[1].getValue()
+    // return this.flatMapArray(args[0], mapper)
+    return BooleanValue.FALSE
   }
 
   private flatMapArray(array: ArrayValue, mapper: Function): ArrayValue {

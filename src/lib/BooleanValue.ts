@@ -27,4 +27,8 @@ export default class BooleanValue extends Value<boolean> {
   public asString(): string {
     return String(this.value)
   }
+
+  public toHtml() {
+    return 'true'
+  }
 }

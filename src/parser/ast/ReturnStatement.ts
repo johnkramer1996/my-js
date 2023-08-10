@@ -4,6 +4,7 @@ import IExpression from './IExpression'
 import BooleanValue from '@lib/BooleanValue'
 import IVisitor from './IVisitor'
 import CallStack from '@lib/CallStack'
+import Highlight from 'Highlight'
 
 export default class ReturnStatement implements IStatement {
   constructor(public expression: IExpression) {}

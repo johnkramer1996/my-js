@@ -6,6 +6,7 @@ import FunctionDefineStatement from './FunctionDefineStatement'
 import { VaraibleDeclaration, VariableDeclarator } from './AssignmentExpression'
 import StringValue from '@lib/StringValue'
 import CallStack from '@lib/CallStack'
+import { Location } from 'parser/Parser'
 
 //(this binding)
 //LexicalEnvironment = {
@@ -26,11 +27,11 @@ import CallStack from '@lib/CallStack'
 // This binding.
 
 export default class Program implements IStatement {
-  public statements: IStatement[] = []
+  constructor(public body: IStatement[], public location: Location) {}
 
   // Phase execute
   public execute(): void {
-    for (const statement of this.statements) statement.execute()
+    for (const statement of this.body) statement.execute()
   }
 
   // Phase creation
@@ -46,7 +47,7 @@ export default class Program implements IStatement {
   private hosting() {
     // 1. Creation of the Variable Object (VO)
     // Hoisting in JavaScript
-    for (const statement of this.statements) {
+    for (const statement of this.body) {
       if (statement instanceof VaraibleDeclaration || statement instanceof FunctionDefineStatement) statement.hoisting()
     }
   }
@@ -58,7 +59,7 @@ export default class Program implements IStatement {
   }
 
   public add(statement: IStatement) {
-    this.statements.push(statement)
+    this.body.push(statement)
   }
 
   public accept(visitor: IVisitor): void {
@@ -67,9 +68,8 @@ export default class Program implements IStatement {
 
   public toString(): string {
     const result: string[] = []
-    for (const statement of this.statements) {
-      result.push(statement.toString())
-      result.push('\n')
+    for (const statement of this.body) {
+      result.push(statement.toString() + '\n')
     }
     return result.join('')
   }

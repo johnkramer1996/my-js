@@ -1,11 +1,13 @@
-var message = 'Hi';
-
-function say(message2) {
-    console.log(message);
-    console.log(message2);
-    log arguments
-    debugger
-    return 123
-
+const a = 10
+const b = 1
+function add(b, c) {
+    const d = 10 + a
+    return a + b + c + d
 }
-log say(123);
+
+const a2 = function() {
+    
+}
+
+
+ add(10, 10)

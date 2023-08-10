@@ -1,0 +1,104 @@
+* {
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.mainContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.left,
+.right {
+  width: 50%;
+  position: relative;
+  z-index: 3;
+}
+
+.left {
+  background-color: #282c34;
+}
+
+.ast {
+  white-space: pre-wrap;
+}
+
+.text,
+.textarea {
+  resize: none;
+  padding: 50px;
+  font-family: monospace;
+  line-height: 1em;
+}
+
+.textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  width: 100%;
+  min-height: 200px;
+  border: none;
+  background-color: transparent;
+  color: transparent;
+  caret-color: #f8f8f2;
+  outline: none;
+  line-height: 0.98em;
+}
+
+.text {
+  margin: 0;
+  white-space: pre-wrap;
+  color: #abb2bf;
+}
+
+.normal {
+  color: #abb2bf;
+}
+.keyword {
+  color: #c792ea;
+}
+.def {
+  color: #61afef;
+}
+.variable {
+  color: #82b1ff;
+}
+.property {
+  color: #80cbae;
+}
+.operator {
+  color: #e9eded;
+}
+.number {
+  color: #f77669;
+}
+
+.builtin {
+  color: #56b6c2;
+}
+.definition {
+  color: #61afef;
+}
+.comment {
+  color: #5c6370;
+}
+.string {
+  color: #98c379;
+}
+.instance {
+  color: #e5c07b;
+}

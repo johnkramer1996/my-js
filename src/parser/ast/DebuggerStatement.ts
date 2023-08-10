@@ -12,6 +12,6 @@ export default class DebuggerStatement implements IStatement {
   }
 
   public toString(): string {
-    return 'continue'
+    return 'debugger'
   }
 }

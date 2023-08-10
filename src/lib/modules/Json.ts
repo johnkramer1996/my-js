@@ -1,6 +1,6 @@
 import ArrayValue from '@lib/ArrayValue'
 import BooleanValue from '@lib/BooleanValue'
-import Functions, { Function } from '@lib/Functions'
+import Function from '@lib/Functions'
 import IModule from '@lib/IModule'
 import IValue from '@lib/IValue'
 import MapValue from '@lib/MapValue'
@@ -33,7 +33,7 @@ class JsonEncode implements Function {
 
 export default class Json implements IModule {
   public init(): void {
-    Functions.set('jsonencode', new JsonEncode())
-    Functions.set('jsondecode', new JsonDecode())
+    // Functions.set('jsonencode', new JsonEncode())
+    // Functions.set('jsondecode', new JsonDecode())
   }
 }

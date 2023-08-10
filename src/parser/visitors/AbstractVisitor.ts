@@ -25,7 +25,6 @@ import MapExpression from '@ast/MapExpression'
 import ForeachArrayStatement from '@ast/ForeachStatement'
 import AssignmentExpression, { VaraibleDeclaration, VariableDeclarator } from '@ast/AssignmentExpression'
 import MatchExpression from '@ast/MatchExpression'
-import DestructuringAssignmentStatement from '@ast/DestructuringAssignmentStatement'
 import Program from '@ast/Program'
 import CallExpression from '@ast/CallExpression'
 
@@ -36,17 +35,19 @@ export default abstract class AbstractVisitor implements IVisitor {
     } else if (s instanceof ArrayExpression) {
       for (const el of s.elements) el.accept(this)
     } else if (s instanceof AssignmentExpression) {
+      debugger
+      s.target.accept(this)
       s.expression.accept(this)
     } else if (s instanceof VaraibleDeclaration) {
       for (const declarator of s.declarations) declarator.accept(this)
     } else if (s instanceof VariableDeclarator) {
       s.target.accept(this)
-      s.expression.accept(this)
+      s.expression && s.expression.accept(this)
     } else if (s instanceof BinaryExpression) {
       s.expr1.accept(this)
       s.expr2.accept(this)
     } else if (s instanceof Program) {
-      for (const statement of s.statements) statement.accept(this)
+      for (const statement of s.body) statement.accept(this)
     } else if (s instanceof BlockStatement) {
       for (const statement of s.statements) statement.accept(this)
     } else if (s instanceof BreakStatement) {
@@ -54,8 +55,6 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.expr1.accept(this)
       s.expr2.accept(this)
     } else if (s instanceof ContinueStatement) {
-    } else if (s instanceof DestructuringAssignmentStatement) {
-      s.containerExpression.accept(this)
     } else if (s instanceof DoWhileStatement) {
       s.condition.accept(this)
       s.statement.accept(this)
@@ -72,7 +71,7 @@ export default abstract class AbstractVisitor implements IVisitor {
     } else if (s instanceof ExprStatement) {
       s.expr.accept(this)
     } else if (s instanceof CallExpression) {
-      s.functionExpr.accept(this)
+      s.callee.accept(this)
       for (const arg of s.args) arg.accept(this)
     } else if (s instanceof IfStatement) {
       s.expression.accept(this)

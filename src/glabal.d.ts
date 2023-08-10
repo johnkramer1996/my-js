@@ -1,4 +1,7 @@
 declare module '*.my-js' {
-  const content: any
+  const content: string
   export default content
 }
+
+declare module '*.css'
+declare module '*.scss'

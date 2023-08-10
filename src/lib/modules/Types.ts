@@ -15,14 +15,14 @@ export default class Types implements IModule {
     Variables.set('MAP', new NumberValue(TypesEnum.MAP))
     Variables.set('FUNCTION', new NumberValue(TypesEnum.FUNCTION))
 
-    Functions.set('typeof', {
-      execute: (value: IValue) => new StringValue(TypesEnum[value.type()]),
-    })
-    Functions.set('string', {
-      execute: (value: IValue) => new StringValue(value.asString()),
-    })
-    Functions.set('number', {
-      execute: (value: IValue) => new NumberValue(value.asNumber()),
-    })
+    // Functions.set('typeof', {
+    //   execute: (value: IValue) => new StringValue(TypesEnum[value.type()]),
+    // })
+    // Functions.set('string', {
+    //   execute: (value: IValue) => new StringValue(value.asString()),
+    // })
+    // Functions.set('number', {
+    //   execute: (value: IValue) => new NumberValue(value.asNumber()),
+    // })
   }
 }

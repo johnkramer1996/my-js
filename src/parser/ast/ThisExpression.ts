@@ -4,7 +4,7 @@ import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import IVisitor from './IVisitor'
 import FunctionValue from '@lib/FunctionValue'
-import { Function } from '@lib/Functions'
+import Function from '@lib/Functions'
 import Value from '@lib/Value'
 import Variables from '@lib/Variables'
 

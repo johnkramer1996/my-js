@@ -3,7 +3,7 @@ import IExpression from './IExpression'
 import IValue from '@lib/IValue'
 import IVisitor from './IVisitor'
 import VariableDoesNotExistsException from '@exceptions/VariableDoesNotExistsException'
-import { IAccessible } from './ContainerAccessExpression'
+import { IAccessible } from './IAccessible'
 
 export default class VariableExpression implements IExpression {
   constructor(public name: IAccessible) {}

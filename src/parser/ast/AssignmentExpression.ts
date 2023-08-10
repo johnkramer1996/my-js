@@ -3,16 +3,19 @@ import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 import IValue from '@lib/IValue'
-import ContainerAccessExpression, { IAccessible, Identifier } from './ContainerAccessExpression'
-import BooleanValue from '@lib/BooleanValue'
+import ContainerAccessExpression from './ContainerAccessExpression'
+import { IAccessible } from './IAccessible'
+import { Identifier } from './Identifier'
 import BinaryExpression, { BinaryOperator } from './BinaryExpression'
 import Literal from './Literal'
+import UndefinedValue from '@lib/UndefinedValue'
+import { Location } from 'parser/Parser'
 
 export class VariableDeclarator implements IStatement {
-  constructor(public target: Identifier, public expression: IExpression) {}
+  constructor(public target: Identifier, public expression: IExpression | null, public location: Location) {}
 
   public execute(): void {
-    const result = this.expression.eval()
+    const result = this.expression?.eval() || UndefinedValue.UNDEFINED
     this.target.define(result)
   }
 
@@ -30,7 +33,7 @@ export class VariableDeclarator implements IStatement {
 }
 
 export class VaraibleDeclaration implements IStatement {
-  constructor(public declarations: VariableDeclarator[], public kind: string) {}
+  constructor(public declarations: VariableDeclarator[], public kind: string, public location: Location) {}
 
   public execute(): void {
     for (const decl of this.declarations) decl.execute()

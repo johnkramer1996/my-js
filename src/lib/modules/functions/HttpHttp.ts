@@ -1,4 +1,4 @@
-import { Function } from '@lib/Functions'
+import Function from '@lib/Functions'
 import NumberValue from '@lib/NumberValue'
 import IValue from '@lib/IValue'
 import StringValue from '@lib/StringValue'
@@ -65,28 +65,29 @@ export class HttpHttp implements Function {
   public process(url: string, method: string): IValue
   public process(url: string, method: string, requestParams: MapValue, options: MapValue, func: FunctionValue): IValue
   public process(url: string, method: string, requestParams: MapValue): IValue
-  public process(url: string, method: string, requestParams: MapValue = MapValue.EMPTY, options: MapValue = MapValue.EMPTY, func: FunctionValue = FunctionValue.EMPTY): IValue {
-    const callback = func.getValue()
-    try {
-      const params =
-        method === 'GET'
-          ? { method }
-          : {
-              method: method.toUpperCase(),
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(JSON.parse(requestParams.asString())),
-            }
+  public process(url: string, method: string, requestParams: MapValue = MapValue.EMPTY, options: MapValue = MapValue.EMPTY, func?: FunctionValue): IValue {
+    // public process(url: string, method: string, requestParams: MapValue = MapValue.EMPTY, options: MapValue = MapValue.EMPTY, func: FunctionValue = FunctionValue.EMPTY): IValue {
+    // const callback = func.getValue()
+    // try {
+    //   const params =
+    //     method === 'GET'
+    //       ? { method }
+    //       : {
+    //           method: method.toUpperCase(),
+    //           headers: {
+    //             'Content-Type': 'application/json',
+    //           },
+    //           body: JSON.stringify(JSON.parse(requestParams.asString())),
+    //         }
 
-      fetch(url, params)
-        .then((data) => data.json())
-        .then((data) => callback.execute(decode(data)))
-        .catch(console.log)
+    //   fetch(url, params)
+    //     .then((data) => data.json())
+    //     .then((data) => callback.execute(decode(data)))
+    //     .catch(console.log)
 
-      return BooleanValue.TRUE
-    } catch (e) {
-      return BooleanValue.FALSE
-    }
+    return BooleanValue.TRUE
+    // } catch (e) {
+    //   return BooleanValue.FALSE
+    // }
   }
 }

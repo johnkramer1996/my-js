@@ -1,20 +1,20 @@
-import Functions, { Function } from '@lib/Functions'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
-import { Identifier } from './ContainerAccessExpression'
+import { Identifier } from './Identifier'
 import Variables, { Scope } from '@lib/Variables'
 import FunctionValue from '@lib/FunctionValue'
+import { Params } from './Params'
 
 export default class FunctionDefineStatement implements IStatement {
-  constructor(public name: Identifier, public func: UserDefinedFunction) {}
+  constructor(public name: Identifier, public params: Params, private body: IStatement) {}
 
   public execute(): void {
-    this.name.set(new FunctionValue(this.func))
+    this.name.set(new FunctionValue(this.body, this.params))
   }
 
   public hoisting() {
-    Variables.hoisting(this.name.getName(), 'func', new FunctionValue(this.func))
+    Variables.hoisting(this.name.getName(), 'func', new FunctionValue(this.body, this.params))
   }
 
   public accept(visitor: IVisitor): void {
@@ -22,6 +22,6 @@ export default class FunctionDefineStatement implements IStatement {
   }
 
   public toString(): string {
-    return `def ${this.name} ${this.func}`
+    return `function ${this.name} ${this.body}`
   }
 }

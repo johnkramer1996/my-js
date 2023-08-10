@@ -6,6 +6,7 @@ import StringValue from '@lib/StringValue'
 import ArrayValue from '@lib/ArrayValue'
 import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupportedException'
 import TypeException from '@exceptions/TypeException'
+import Highlight from 'Highlight'
 
 export enum BinaryOperator {
   ADD = '+',

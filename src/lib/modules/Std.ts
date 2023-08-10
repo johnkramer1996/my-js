@@ -1,4 +1,4 @@
-import Functions, { Function } from '@lib/Functions'
+import Function from '@lib/Functions'
 import IModule from '@lib/IModule'
 import StdRand from './functions/StdRand'
 import StdMultiArray from './functions/StdMultiArray'
@@ -161,29 +161,28 @@ export class stdTrim implements Function {
 
 export default class Std implements IModule {
   public init(): void {
-    Variables.set('echo', new FunctionValue(new StdEcho()))
-    Functions.set('array', new StdArray())
-    Functions.set('newarray', new StdNewArray())
-    Functions.set('multiArray', new StdMultiArray())
-    Functions.set('length', new StdLength())
-    Functions.set('rand', new StdRand())
-    Functions.set('nextFrame', new StdNextFrame())
-    Functions.set('thread', new StdThread())
-    Functions.set('sort', new StdSort())
-
-    // String
-    Functions.set('sprintf', new StdSprintf())
-    Functions.set('split', new StdSplit())
-    Functions.set('join', new StdJoin())
-    Functions.set('indexOf', new StdIndexOf())
-    Functions.set('lastIndexOf', new StdLastIndexOf())
-    Functions.set('charAt', new StdCharAt())
-    Functions.set('toChar', new stdToChar())
-    // Functions.set('substring', new std_substring())
-    Functions.set('toLowerCase', new stdToLowercase())
-    Functions.set('toUpperCase', new stdToUppercase())
-    Functions.set('trim', new stdTrim())
-    Functions.set('replace', new StdReplace())
+    // Variables.set('echo', new FunctionValue(new StdEcho()))
+    // Functions.set('array', new StdArray())
+    // Functions.set('newarray', new StdNewArray())
+    // Functions.set('multiArray', new StdMultiArray())
+    // Functions.set('length', new StdLength())
+    // Functions.set('rand', new StdRand())
+    // Functions.set('nextFrame', new StdNextFrame())
+    // Functions.set('thread', new StdThread())
+    // Functions.set('sort', new StdSort())
+    // // String
+    // Functions.set('sprintf', new StdSprintf())
+    // Functions.set('split', new StdSplit())
+    // Functions.set('join', new StdJoin())
+    // Functions.set('indexOf', new StdIndexOf())
+    // Functions.set('lastIndexOf', new StdLastIndexOf())
+    // Functions.set('charAt', new StdCharAt())
+    // Functions.set('toChar', new stdToChar())
+    // // Functions.set('substring', new std_substring())
+    // Functions.set('toLowerCase', new stdToLowercase())
+    // Functions.set('toUpperCase', new stdToUppercase())
+    // Functions.set('trim', new stdTrim())
+    // Functions.set('replace', new StdReplace())
     // Functions.set('replaceAll', new StdReplaceAll())
     // Functions.set('replaceFirst', new std_replacefirst())
   }

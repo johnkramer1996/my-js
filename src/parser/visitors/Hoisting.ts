@@ -11,7 +11,7 @@ import Program from '@ast/Program'
 
 export default class Hoisting extends AbstractVisitor {
   public visit(s: IStatement | IExpression): void {
-    // only GLobal
+    // only GLobalivisi
     // if (s instanceof VaraibleDeclaration) s.hoisting()
     // if (s instanceof FunctionDefineStatement) s.hoisting()
 

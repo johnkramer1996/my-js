@@ -1,20 +1,13 @@
 import IStatement from '@ast/IStatement'
-import ReturnStatement from '@ast/ReturnStatement'
 import IValue from './IValue'
-import BooleanValue from './BooleanValue'
-import { Function } from './Functions'
+import Function from './Functions'
 import Variables, { Scope } from './Variables'
-import { ArgumentsMismatchException } from '@exceptions/ArgumentsMismatchException'
-import { IAccessible, Identifier, Params } from '@ast/ContainerAccessExpression'
-import FunctionValue from './FunctionValue'
+import { IAccessible } from '@ast/IAccessible'
+import { Params } from '@ast/Params'
 import UndefinedValue from './UndefinedValue'
-import MapValue from './MapValue'
 import CallStack from './CallStack'
 
 export default class UserDefinedFunction implements Function {
-  // The non-null assertion operator is an exclamation mark
-  // If you intend to definitely initialize a field through means other than the constructor
-  // strictPropertyInitialization
   public outer!: Scope
   constructor(private args: Params, private body: IStatement) {}
 
@@ -34,10 +27,6 @@ export default class UserDefinedFunction implements Function {
 
     this.body.execute()
     return CallStack.getReturn()
-  }
-
-  public hoisting() {
-    for (const param of this.args.params) Variables.hoisting(param.getName(), 'var')
   }
 
   public setOuter(scope: Scope) {

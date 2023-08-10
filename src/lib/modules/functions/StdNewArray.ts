@@ -1,4 +1,4 @@
-import { Function } from '@lib/Functions'
+import Function from '@lib/Functions'
 import IValue from '@lib/IValue'
 import BooleanValue from '@lib/BooleanValue'
 import ArrayValue from '@lib/ArrayValue'

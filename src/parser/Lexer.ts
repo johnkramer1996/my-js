@@ -83,6 +83,8 @@ export default class Lexer implements ILexer {
     [KeyWord[KeyWord.null], TokenType.NULL],
     [KeyWord[KeyWord.undefined], TokenType.UNDEFINED],
     [KeyWord[KeyWord.debugger], TokenType.DEBUGGER],
+    [KeyWord[KeyWord.true], TokenType.TRUE],
+    [KeyWord[KeyWord.false], TokenType.FALSE],
   ])
 
   private tokens: IToken[] = []
@@ -91,6 +93,7 @@ export default class Lexer implements ILexer {
   private position = 0
   private row = 1
   private col = 1
+  private start = 0
 
   constructor(text: string) {
     this.text = text
@@ -101,13 +104,17 @@ export default class Lexer implements ILexer {
     while (this.position < this.length) {
       const char = this.peek()
       if (this.isWhiteSpace(char)) this.next()
-      else if (this.isSemikolon(char)) this.tokenizeSemikolon()
-      else if (this.isLetter(char) || ['_', '$'].includes(char)) this.tokenizeWord()
-      else if (this.isDigit(char)) this.tokenizeNumber()
-      else if (this.isOctothorp(char)) this.tokenizeHexNumber()
-      else if (this.isQuote(char)) this.tokenizeText()
-      else if (this.isOperator(char)) this.tokenizeOperator()
-      else throw this.error(`Unknown char "${this.peek()}"`)
+      else {
+        this.start = this.position
+        if (this.isSemikolon(char)) this.tokenizeSemikolon()
+        else if (this.isLetter(char) || ['_', '$'].includes(char)) this.tokenizeWord()
+        else if (this.isDigit(char)) this.tokenizeNumber()
+        else if (this.isOctothorp(char)) this.tokenizeHexNumber()
+        else if (this.isExtendedWord(char)) this.tokenizeExtendedWord()
+        else if (this.isQuote(char)) this.tokenizeText()
+        else if (this.isOperator(char)) this.tokenizeOperator()
+        else throw this.error(`Unknown char "${this.peek()}"`)
+      }
     }
     return this.tokens
   }
@@ -136,6 +143,10 @@ export default class Lexer implements ILexer {
 
   private isOctothorp(char: string): boolean {
     return char === '#'
+  }
+
+  private isExtendedWord(char: string): boolean {
+    return char === '`'
   }
 
   private isHexNumber(char: string): boolean {
@@ -176,6 +187,16 @@ export default class Lexer implements ILexer {
     this.addToken(TokenType.HEX_NUMBER, hexNumber)
   }
 
+  private tokenizeExtendedWord(): void {
+    this.next() // skip `
+    const result = this.getNextChars((current) => {
+      if (current === '\0') throw this.error('Reached end of file while parsing extended word.')
+      if (current === '\n' || current == '\r') throw this.error('Reached end of line while parsing extended word.')
+      return !(current === '`')
+    })
+    this.addToken(TokenType.WORD, result)
+  }
+
   private tokenizeText(): void {
     const singleOrDoubleQuote = this.peek()
     const buffer: string[] = []
@@ -184,6 +205,10 @@ export default class Lexer implements ILexer {
       if (current === '\\') {
         current = this.next()
         const escape = [
+          { char: '"', escape: '"' },
+          { char: '0', escape: '\0' },
+          { char: 'b', escape: '\b' },
+          { char: 'f', escape: '\f' },
           { char: 'n', escape: '\n' },
           { char: 't', escape: '\t' },
         ].find(({ char }) => char === current)
@@ -192,10 +217,15 @@ export default class Lexer implements ILexer {
         continue
       }
       buffer.push(current)
+
+      const next = this.peek(1)
+      if (next === '\0' || next === '\n') throw this.error('Reached end of line while parsing text.')
     }
 
     this.next()
-    this.addToken(TokenType.TEXT, buffer.join(''))
+    const text = buffer.join('')
+    const raw = `${singleOrDoubleQuote}${text}${singleOrDoubleQuote}`
+    this.addToken(TokenType.TEXT, text, raw)
   }
 
   private tokenizeOperator(): void {
@@ -263,8 +293,9 @@ export default class Lexer implements ILexer {
     return this.text[position]
   }
 
-  private addToken(type: TokenType, text = ''): void {
-    this.tokens.push(new Token(type, text, this.row, this.col))
+  private addToken(type: TokenType, text = '', raw = text): void {
+    this.tokens.push(new Token(type, text, raw, this.row, this.col, this.start, this.position))
+    this.start = this.position
   }
 
   private error(text: string): Error {

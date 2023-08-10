@@ -1,0 +1,94 @@
+
+> my@1.0.0 start
+> nodemon
+
+[33m[nodemon] 3.0.1[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src\**\*[39m
+[33m[nodemon] watching extensions: ts,json[39m
+[32m[nodemon] starting `ts-node ./src/index.ts`[39m
+C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/index.ts(5,21): error TS2307: Cannot find module '../scope.my-js' or its corresponding type declarations.
+src/index.ts(20,70): error TS2304: Cannot find name 'Params'.
+
+    at createTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1617:30)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1293:10)
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1096:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:935:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:84:12) {
+  diagnosticCodes: [ 2307, 2304 ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node ./src/index.ts`[39m
+C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/index.ts(5,21): error TS2307: Cannot find module '../scope.my-js' or its corresponding type declarations.
+src/index.ts(20,70): error TS2304: Cannot find name 'Params'.
+
+    at createTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1617:30)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1293:10)
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1096:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:935:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:84:12) {
+  diagnosticCodes: [ 2307, 2304 ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node ./src/index.ts`[39m
+C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/index.ts(5,21): error TS2307: Cannot find module '../scope.my-js' or its corresponding type declarations.
+src/index.ts(20,70): error TS2304: Cannot find name 'Params'.
+
+    at createTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1617:30)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1293:10)
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1096:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:935:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:84:12) {
+  diagnosticCodes: [ 2307, 2304 ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node ./src/index.ts`[39m
+C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/index.ts(5,21): error TS2307: Cannot find module '../scope.my-js' or its corresponding type declarations.
+
+    at createTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1617:30)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1293:10)
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\vital\OneDrive\Рабочий стол\webpack\my-js\my-js\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1096:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:935:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:84:12) {
+  diagnosticCodes: [ 2307 ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

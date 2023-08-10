@@ -10,8 +10,7 @@ export default class ExprStatement implements IStatement {
   }
 
   public accept(visitor: IVisitor): void {
-    //todo
-    // visitor.visit(this);
+    visitor.visit(this)
   }
 
   public toString(): string {

@@ -6,33 +6,29 @@ import CallStack from '@lib/CallStack'
 import UserDefinedFunction from '@lib/UserDefinedFunction'
 import Variables, { Scope } from '@lib/Variables'
 import MapValue from '@lib/MapValue'
+import UndefinedValue from '@lib/UndefinedValue'
+
+// function execution context.
+// this.createFEC()
+// this.hoisting()
+// this.bindThis()
 
 export default class CallExpression implements IExpression {
-  constructor(public functionExpr: IExpression, public args: IExpression[]) {}
+  constructor(public callee: IExpression, public args: IExpression[]) {}
 
   public eval(): IValue {
-    const value = this.functionExpr.eval()
-    if (!(value instanceof FunctionValue)) throw new Error('expect function' + value)
-
-    const func = value.getValue()
-
-    // function execution context.
-    // this.createFEC()
-    // this.hoisting()
-    // this.bindThis()
+    const func = this.callee.eval()
+    if (!(func instanceof FunctionValue)) throw new Error('expect function' + func)
 
     const values = this.args.map((v) => v.eval())
     Variables.push()
+    // if (func instanceof UserDefinedFunction) func.hoisting()
+    CallStack.enter('FUNC')
     Variables.scope.variables.set('this', { value: new MapValue(values), kind: 'const' })
     Variables.scope.variables.set('arguments', { value: new MapValue(values), kind: 'const' })
-    if (func instanceof UserDefinedFunction) func.hoisting()
-    CallStack.enter('FUNC')
     const result = func.execute(...values)
     const scope = Variables.pop()
-    if (result instanceof FunctionValue) {
-      const func = result.getValue()
-      if (func instanceof UserDefinedFunction) func.outer = scope
-    }
+    if (result instanceof FunctionValue) result.setScope(scope)
     CallStack.exit()
     return result
   }
@@ -42,6 +38,6 @@ export default class CallExpression implements IExpression {
   }
 
   public toString(): string {
-    return this.functionExpr + '(' + this.args.toString() + ')'
+    return this.callee + '(' + this.args.toString() + ')'
   }
 }

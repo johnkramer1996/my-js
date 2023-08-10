@@ -3,7 +3,7 @@ import IExpression from './IExpression'
 import NumberValue from '@lib/NumberValue'
 import IVisitor from './IVisitor'
 import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupportedException'
-import { instanceOfIAccessible } from './ContainerAccessExpression'
+import { instanceOfIAccessible } from './IAccessible'
 
 enum Operator {
   DELETE = 'delete',
@@ -29,7 +29,6 @@ export default class UnaryExpression implements IExpression {
     const value = this.expression.eval()
     switch (this.operation) {
       case Operator.INCREMENT_PREFIX: {
-        debugger
         const result = new NumberValue(value.asNumber() + 1)
         return instanceOfIAccessible(this.expression) ? this.expression.set(result) : result
       }

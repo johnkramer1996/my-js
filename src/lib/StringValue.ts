@@ -30,4 +30,8 @@ export default class StringValue extends Value<string> {
   public asString(): string {
     return this.value
   }
+
+  public toHtml() {
+    return `<span class='string'>'${this.value}'</span>`
+  }
 }
