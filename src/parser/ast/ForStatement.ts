@@ -4,14 +4,20 @@ import IStatement from './IStatement'
 import BreakStatement from './BreakStatement'
 import ContinueStatement from './ContinueStatement'
 import IVisitor from './IVisitor'
+import { Location } from 'parser/Parser'
 
 export default class ForStatement implements IStatement {
-  constructor(public initialization: IStatement, public termination: IExpression, public increment: IStatement, public statement: IStatement) {}
+  public start: number
+  public end: number
+  constructor(public init: IStatement, public test: IExpression, public update: IStatement, public statement: IStatement) {
+    this.start = Location.endStatement().getStart()
+    this.end = Location.getPrevToken().getEnd()
+  }
 
   public execute(): void {
-    for (this.initialization.execute(); this.termination.eval().asNumber() != 0; this.increment.execute()) {
+    for (this.init.execute(); this.test.eval().asNumber() != 0; this.update.execute()) {
+      this.statement.execute()
       try {
-        this.statement.execute()
       } catch (er) {
         if (er instanceof BreakStatement) break
         if (er instanceof ContinueStatement) continue
@@ -25,6 +31,6 @@ export default class ForStatement implements IStatement {
   }
 
   public toString(): string {
-    return 'for ' + this.initialization + ', ' + this.termination + ', ' + this.increment + ' ' + this.statement
+    return 'for ' + this.init + ', ' + this.test + ', ' + this.update + ' ' + this.statement
   }
 }

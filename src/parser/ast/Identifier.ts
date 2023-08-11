@@ -8,8 +8,8 @@ export class Identifier implements IAccessible {
   start: number
   end: number
   constructor(private name: string) {
-    this.start = Location.getPosition().start
-    this.end = Location.getPosition().end
+    this.start = Location.getPrevToken().start
+    this.end = Location.getPrevToken().end
   }
 
   public eval(): IValue {

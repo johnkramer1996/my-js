@@ -85,7 +85,7 @@ export default class Variables {
     const scopeData = this.loopUp(key)
     if (!scopeData.isFound) throw new ReferenceError(`${key} is not defined`)
     const variable = scopeData.scope.variables.get(key)
-    if (variable?.value === uninitialized) throw new ReferenceError(`"Cannot access '${key}' before initialization`)
+    if (variable?.value === uninitialized) throw new ReferenceError(`"Cannot access '${key}' before init`)
     return (scopeData.scope.variables.get(key) as Variable).value as IValue
   }
 
@@ -93,7 +93,7 @@ export default class Variables {
     const scopeData = this.loopUp(key)
     if (!scopeData.isFound) throw new ReferenceError(`${key} is not defined`)
     const variable = scopeData.scope.variables.get(key)
-    if (variable?.value === uninitialized) throw new ReferenceError(`"Cannot access '${key}' before initialization`)
+    if (variable?.value === uninitialized) throw new ReferenceError(`"Cannot access '${key}' before init`)
     if (!variable) throw new ReferenceError('Varaible undefined' + key)
     if (variable.kind === 'const') throw new SyntaxError(`Cannot assign to '${key}' because it is a constant.`)
     variable.value = value

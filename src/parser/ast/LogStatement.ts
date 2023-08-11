@@ -7,10 +7,9 @@ import { Location } from 'parser/Parser'
 export default class LogStatement implements IStatement {
   public start: number
   public end: number
-  constructor(public expression: IExpression, public newLine: boolean = false) {
-    Location.endStatement()
-    this.start = Location.getStatement().start
-    this.end = Location.getStatement().end
+  constructor(public expression: IExpression) {
+    this.start = Location.endStatement().getStart()
+    this.end = Location.getPrevToken().getEnd()
   }
 
   public execute(): void {

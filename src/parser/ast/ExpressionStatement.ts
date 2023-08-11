@@ -4,12 +4,11 @@ import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class ExpressionStatement implements IStatement {
-  start: number
-  end: number
+  public start: number
+  public end: number
   constructor(public expr: IExpression) {
-    Location.endStatement()
-    this.start = Location.getStatement().start
-    this.end = Location.getStatement().end
+    this.start = Location.endStatement().getStart()
+    this.end = Location.getPrevToken().getEnd()
   }
 
   public execute(): void {

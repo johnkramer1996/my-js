@@ -19,7 +19,7 @@ export default class CallExpression implements IExpression {
   public end: number
   constructor(public callee: IExpression, public args: IExpression[]) {
     this.start = callee.start
-    this.end = Location.getPosition().end
+    this.end = Location.getPrevToken().end
   }
 
   public eval(): IValue {

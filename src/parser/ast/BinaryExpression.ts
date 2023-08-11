@@ -24,17 +24,22 @@ export enum BinaryOperator {
 }
 
 export default class BinaryExpression implements IExpression {
+  public start: number
+  public end: number
   public static Operator = BinaryOperator
 
-  constructor(public operation: BinaryOperator, public expr1: IExpression, public expr2: IExpression) {}
+  constructor(public operator: BinaryOperator, public left: IExpression, public right: IExpression) {
+    this.start = left.start
+    this.end = right.end
+  }
 
   public eval(): IValue {
-    const value1 = this.expr1.eval()
-    const value2 = this.expr2.eval()
+    const value1 = this.left.eval()
+    const value2 = this.right.eval()
 
     if (value1 instanceof StringValue || value2 instanceof StringValue) {
       const string1 = value1.asString()
-      switch (this.operation) {
+      switch (this.operator) {
         case BinaryOperator.MULTIPLY: {
           return new StringValue(string1.repeat(value2.asNumber()))
         }
@@ -45,7 +50,7 @@ export default class BinaryExpression implements IExpression {
     }
 
     if (value1 instanceof ArrayValue) {
-      switch (this.operation) {
+      switch (this.operator) {
         case BinaryOperator.LSHIFT:
           if (!(value2 instanceof ArrayValue)) throw new TypeException('Cannot merge non array value to array')
           return ArrayValue.merge(value1, value2)
@@ -59,7 +64,7 @@ export default class BinaryExpression implements IExpression {
     const number2 = value2.asNumber() || 0
 
     const result = (() => {
-      switch (this.operation) {
+      switch (this.operator) {
         case BinaryOperator.ADD:
           return number1 + number2
         case BinaryOperator.SUBTRACT:
@@ -83,7 +88,7 @@ export default class BinaryExpression implements IExpression {
         case BinaryOperator.URSHIFT:
           return number1 >>> number2
         default:
-          throw new OperationIsNotSupportedException('Operation ' + this.operation + ' is not supported')
+          throw new OperationIsNotSupportedException('Operation ' + this.operator + ' is not supported')
       }
     })()
 
@@ -95,6 +100,6 @@ export default class BinaryExpression implements IExpression {
   }
 
   public toString(): string {
-    return `${this.expr1} ${this.operation} ${this.expr2}`
+    return `${this.left} ${this.operator} ${this.right}`
   }
 }

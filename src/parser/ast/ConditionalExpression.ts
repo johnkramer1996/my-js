@@ -19,11 +19,11 @@ enum ConditionOperator {
 export default class ConditionalExpression implements IExpression {
   public static Operator = ConditionOperator
 
-  constructor(public operation: ConditionOperator, public expr1: IExpression, public expr2: IExpression) {}
+  constructor(public operator: ConditionOperator, public left: IExpression, public right: IExpression) {}
 
   public eval(): IValue {
-    const value1 = this.expr1.eval()
-    const value2 = this.expr2.eval()
+    const value1 = this.left.eval()
+    const value2 = this.right.eval()
 
     const isBoolean = value1 instanceof BooleanValue || value2 instanceof BooleanValue
     const isNumber = value1 instanceof NumberValue || value2 instanceof NumberValue
@@ -32,7 +32,7 @@ export default class ConditionalExpression implements IExpression {
     const number2 = isBoolean || isNumber ? value2.asNumber() : 0
 
     const result = (() => {
-      switch (this.operation) {
+      switch (this.operator) {
         case ConditionOperator.EQUALS:
           return number1 === number2
         case ConditionOperator.NOT_EQUALS:
@@ -50,7 +50,7 @@ export default class ConditionalExpression implements IExpression {
         case ConditionOperator.OR:
           return number1 != 0 || number2 != 0
         default:
-          throw new OperationIsNotSupportedException('Operation ' + this.operation + ' is not supported')
+          throw new OperationIsNotSupportedException('Operation ' + this.operator + ' is not supported')
       }
     })()
 
@@ -62,6 +62,6 @@ export default class ConditionalExpression implements IExpression {
   }
 
   public toString(): string {
-    return `${this.expr1} ${this.operation} ${this.expr2}`
+    return `${this.left} ${this.operator} ${this.right}`
   }
 }

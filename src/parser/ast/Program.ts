@@ -28,11 +28,11 @@ import { Console } from 'components/App'
 // This binding.
 
 export default class Program implements IStatement {
-  start: number
-  end: number
+  public start: number
+  public end: number
   constructor(public body: IStatement[]) {
     this.start = 0
-    this.end = Location.getPosition().end
+    this.end = Location.getPrevToken().getEnd()
   }
 
   // Phase execute

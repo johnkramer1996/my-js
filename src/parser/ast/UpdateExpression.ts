@@ -6,32 +6,26 @@ import OperationIsNotSupportedException from '@exceptions/OperationIsNotSupporte
 import { instanceOfIAccessible } from './IAccessible'
 
 enum Operator {
-  DELETE = 'delete',
-  VOID = 'void',
-  TYPEOF = 'typeof',
-  PLUS = '+',
-  NEGATION = '-',
-  BITWISE_NOT = '~',
-  LOGICAL_NOT = '!',
-  AWAIT = 'await',
+  INCREMENT = '++',
+  DECREMENT = '--',
 }
 
-export default class UnaryExpression implements IExpression {
+export default class UpdateExpression implements IExpression {
   public static Operator = Operator
 
-  constructor(public operator: Operator, public expression: IExpression) {}
+  constructor(public operator: Operator, public expression: IExpression, public prefix: boolean = true) {}
 
   public eval(): IValue {
     const value = this.expression.eval()
     switch (this.operator) {
-      case Operator.PLUS:
-        return new NumberValue(value.asNumber())
-      case Operator.NEGATION:
-        return new NumberValue(-value.asNumber())
-      case Operator.LOGICAL_NOT:
-        return new NumberValue(!!value.asNumber() ? 1 : 0)
-      case Operator.BITWISE_NOT:
-        return new NumberValue(~value.asNumber())
+      case Operator.INCREMENT: {
+        const result = new NumberValue(value.asNumber() + 1)
+        return instanceOfIAccessible(this.expression) ? (this.expression.set(result), this.prefix ? result : value) : result
+      }
+      case Operator.DECREMENT: {
+        const result = new NumberValue(value.asNumber() - 1)
+        return instanceOfIAccessible(this.expression) ? (this.expression.set(result), this.prefix ? result : value) : result
+      }
       default:
         throw new OperationIsNotSupportedException('Operation ' + this.operator + ' is not supported')
     }

@@ -12,7 +12,12 @@ import UndefinedValue from '@lib/UndefinedValue'
 import { Location } from 'parser/Parser'
 
 export class VariableDeclarator implements IStatement {
-  constructor(public id: Identifier, public init: IExpression | null, public location: Location) {}
+  public start: number
+  public end: number
+  constructor(public id: Identifier, public init: IExpression | null) {
+    this.start = id.start
+    this.end = init?.end || id.end
+  }
 
   public execute(): void {
     const result = this.init?.eval() || UndefinedValue.UNDEFINED
@@ -33,7 +38,12 @@ export class VariableDeclarator implements IStatement {
 }
 
 export class VaraibleDeclaration implements IStatement {
-  constructor(public declarations: VariableDeclarator[], public kind: string, public location: Location) {}
+  public start: number
+  public end: number
+  constructor(public declarations: VariableDeclarator[], public kind: string) {
+    this.start = Location.endStatement().getStart()
+    this.end = Location.getPrevToken().getEnd()
+  }
 
   public execute(): void {
     for (const decl of this.declarations) decl.execute()
@@ -53,11 +63,11 @@ export class VaraibleDeclaration implements IStatement {
 }
 
 export default class AssignmentExpression implements IExpression {
-  constructor(public operation: BinaryOperator | null, public target: IAccessible, public expression: IExpression) {}
+  constructor(public operator: BinaryOperator | null, public target: IAccessible, public expression: IExpression) {}
 
   public eval(): IValue {
-    if (this.operation === null) return this.target.set(this.expression.eval())
-    return this.target.set(new BinaryExpression(this.operation, new Literal(this.target.get()), new Literal(this.expression.eval())).eval())
+    if (this.operator === null) return this.target.set(this.expression.eval())
+    return this.target.set(new BinaryExpression(this.operator, new Literal(this.target.get()), new Literal(this.expression.eval())).eval())
   }
 
   public accept(visitor: IVisitor): void {

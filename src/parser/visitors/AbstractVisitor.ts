@@ -43,24 +43,24 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.id.accept(this)
       s.init && s.init.accept(this)
     } else if (s instanceof BinaryExpression) {
-      s.expr1.accept(this)
-      s.expr2.accept(this)
+      s.left.accept(this)
+      s.right.accept(this)
     } else if (s instanceof Program) {
       for (const statement of s.body) statement.accept(this)
     } else if (s instanceof BlockStatement) {
       for (const statement of s.statements) statement.accept(this)
     } else if (s instanceof BreakStatement) {
     } else if (s instanceof ConditionalExpression) {
-      s.expr1.accept(this)
-      s.expr2.accept(this)
+      s.left.accept(this)
+      s.right.accept(this)
     } else if (s instanceof ContinueStatement) {
     } else if (s instanceof DoWhileStatement) {
       s.condition.accept(this)
       s.statement.accept(this)
     } else if (s instanceof ForStatement) {
-      s.initialization.accept(this)
-      s.termination.accept(this)
-      s.increment.accept(this)
+      s.init.accept(this)
+      s.test.accept(this)
+      s.update.accept(this)
       s.statement.accept(this)
     } else if (s instanceof ForeachArrayStatement) {
       s.container.accept(this)
