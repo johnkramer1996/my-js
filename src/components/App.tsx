@@ -16,7 +16,7 @@ import { IToken } from 'parser/Token'
 import TokenType from 'parser/TokenType'
 import React, { useEffect, useState } from 'react'
 
-const program = `10 `
+const program = `name()()`
 
 export class Console {
   public static results: string[] = []

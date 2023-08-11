@@ -28,7 +28,12 @@ import { Console } from 'components/App'
 // This binding.
 
 export default class Program implements IStatement {
-  constructor(public body: IStatement[], public location: Location) {}
+  start: number
+  end: number
+  constructor(public body: IStatement[]) {
+    this.start = 0
+    this.end = Location.getPosition().end
+  }
 
   // Phase execute
   public execute(): void {

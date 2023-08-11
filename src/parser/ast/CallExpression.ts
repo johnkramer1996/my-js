@@ -7,6 +7,7 @@ import UserDefinedFunction from '@lib/UserDefinedFunction'
 import Variables, { Scope } from '@lib/Variables'
 import MapValue from '@lib/MapValue'
 import UndefinedValue from '@lib/UndefinedValue'
+import { Location } from 'parser/Parser'
 
 // function execution context.
 // this.createFEC()
@@ -14,7 +15,12 @@ import UndefinedValue from '@lib/UndefinedValue'
 // this.bindThis()
 
 export default class CallExpression implements IExpression {
-  constructor(public callee: IExpression, public args: IExpression[]) {}
+  public start: number
+  public end: number
+  constructor(public callee: IExpression, public args: IExpression[]) {
+    this.start = callee.start
+    this.end = Location.getPosition().end
+  }
 
   public eval(): IValue {
     const func = this.callee.eval()

@@ -9,7 +9,7 @@ import DoWhileStatement from '@ast/DoWhileStatement'
 import IExpression from '@ast/IExpression'
 import ForStatement from '@ast/ForStatement'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
-import ExprStatement from '@ast/ExprStatement'
+import ExpressionStatement from '@ast/ExpressionStatement'
 import IfStatement from '@ast/IfStatement'
 import LogStatement from '@ast/LogStatement'
 import ReturnStatement from '@ast/ReturnStatement'
@@ -67,7 +67,7 @@ export default abstract class AbstractVisitor implements IVisitor {
       s.body.accept(this)
     } else if (s instanceof FunctionDefineStatement) {
       // s.func.accept(this)
-    } else if (s instanceof ExprStatement) {
+    } else if (s instanceof ExpressionStatement) {
       s.expr.accept(this)
     } else if (s instanceof CallExpression) {
       s.callee.accept(this)

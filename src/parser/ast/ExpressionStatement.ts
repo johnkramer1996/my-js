@@ -3,10 +3,13 @@ import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
-export default class ExprStatement implements IStatement {
-  public location: Location
+export default class ExpressionStatement implements IStatement {
+  start: number
+  end: number
   constructor(public expr: IExpression) {
-    this.location = expr.location
+    Location.endStatement()
+    this.start = Location.getStatement().start
+    this.end = Location.getStatement().end
   }
 
   public execute(): void {

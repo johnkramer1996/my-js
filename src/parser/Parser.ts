@@ -16,7 +16,7 @@ import ForStatement from '@ast/ForStatement'
 import BreakStatement from '@ast/BreakStatement'
 import ContinueStatement from '@ast/ContinueStatement'
 import FunctionDefineStatement from '@ast/FunctionDefineStatement'
-import ExprStatement from '@ast/ExprStatement'
+import ExpressionStatement from '@ast/ExpressionStatement'
 import CallExpression from '@ast/CallExpression'
 import UseStatement from '@ast/UseStatement'
 import ReturnStatement from '@ast/ReturnStatement'
@@ -38,7 +38,6 @@ import NumberValue from '@lib/NumberValue'
 import StringValue from '@lib/StringValue'
 import Program from '@ast/Program'
 import ThisExpression from '@ast/ThisExpression'
-import UndefinedValue from '@lib/UndefinedValue'
 import Lexer from './Lexer'
 import DebuggerStatement from '@ast/DebuggerStatement'
 import BooleanValue from '@lib/BooleanValue'
@@ -62,6 +61,34 @@ type Binary =
     } // TODO make a general class
 
 export class Location {
+  static token: IToken
+  static statement = {
+    start: 0,
+    end: 0,
+  }
+  static position = 0
+  static setToken(token: IToken) {
+    if (token.getType() === TokenType.EOF) return
+    this.token = token
+  }
+  static getPosition() {
+    return { start: this.token.getStart(), end: this.token.getEnd() }
+  }
+  static getStatement() {
+    return this.statement
+  }
+  static startStatement() {
+    this.statement.start = this.token.getStart()
+  }
+  static endStatement() {
+    this.statement.end = this.token.getEnd()
+  }
+  // static startExpression(position: number) {
+  //   this.startStm = position
+  // }
+  // static endExpression(position: number) {
+  //   this.endStm = position
+  // }
   constructor(public start: number, public end: number) {}
 }
 
@@ -106,6 +133,7 @@ export default class Parser {
   }
 
   public parse(): Program {
+    Location.setToken(this.get())
     const statements: IStatement[] = []
     while (!this.match(TokenType.EOF)) {
       try {
@@ -116,10 +144,10 @@ export default class Parser {
           Console.error(`${e.name}: ${e.message}`, e.row, e.col)
         }
         this.position++
-        return new Program(statements, new Location(0, this.getPrev(2).getEnd()))
+        return new Program(statements)
       }
     }
-    return new Program(statements, new Location(0, this.size < 2 ? 0 : this.getPrev(2).getEnd()))
+    return new Program(statements)
   }
 
   private statementOrBlock(): IStatement {
@@ -137,6 +165,7 @@ export default class Parser {
   }
 
   private statement(): IStatement {
+    Location.startStatement()
     if (this.match(TokenType.LOG)) return new LogStatement(this.expression())
     if (this.match(TokenType.IF)) return this.ifElseStatement()
     if (this.match(TokenType.WHILE)) return this.whileStatement()
@@ -147,11 +176,11 @@ export default class Parser {
     if (this.match(TokenType.FUNCTION)) return this.functionDefine()
     if (this.match(TokenType.RETURN)) return new ReturnStatement(this.expression())
     if (this.match(TokenType.USE)) return new UseStatement(this.expression())
-    // if (this.match(TokenType.MATCH)) return new ExprStatement(this.matchExpression())
+    // if (this.match(TokenType.MATCH)) return new ExpressionStatement(this.matchExpression())
     if (this.match(TokenType.DEBUGGER)) return new DebuggerStatement()
     if (this.match(TokenType.CONST) || this.match(TokenType.LET) || this.match(TokenType.VAR)) return this.variableDeclaration()
     try {
-      return new ExprStatement(this.expression())
+      return new ExpressionStatement(this.expression())
     } catch (e) {
       if (e instanceof Error) {
         throw this.error(e.message)
@@ -177,7 +206,7 @@ export default class Parser {
       } else throw new SyntaxError('Missing initializer in const declaration')
     } while (this.match(TokenType.COMMA))
 
-    return new VaraibleDeclaration(declarations, kind, new Location(start, this.getPrev().getEnd()))
+    return new VaraibleDeclaration(declarations, kind)
   }
 
   private callExpression(qualifiedNameExpr: IExpression): CallExpression {
@@ -254,11 +283,11 @@ export default class Parser {
 
   private simpleForStatement(): ForStatement {
     const openParen = this.match(TokenType.LPAREN)
-    const initialization = new ExprStatement(this.assignmentExpression())
+    const initialization = new ExpressionStatement(this.assignmentExpression())
     this.consume(TokenType.COMMA)
     const termination = this.expression()
     this.consume(TokenType.COMMA)
-    const increment = new ExprStatement(this.assignmentExpression())
+    const increment = new ExpressionStatement(this.assignmentExpression())
     if (openParen) this.consume(TokenType.RPAREN)
     const statement = this.statementOrBlock()
     return new ForStatement(initialization, termination, increment, statement)
@@ -273,7 +302,7 @@ export default class Parser {
   }
 
   private functionDefine(): FunctionDefineStatement {
-    const name = new Identifier(this.consume(TokenType.WORD).getText(), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
+    const name = new Identifier(this.consume(TokenType.WORD).getText())
 
     return new FunctionDefineStatement(name, this.params(), this.block())
   }
@@ -307,7 +336,7 @@ export default class Parser {
   }
 
   private identifier(): IAccessible {
-    if (this.lookMatch(0, TokenType.WORD)) return new Identifier(this.consume(TokenType.WORD).getText(), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
+    if (this.lookMatch(0, TokenType.WORD)) return new Identifier(this.consume(TokenType.WORD).getText())
     return this.arrayPattern()
   }
 
@@ -341,7 +370,7 @@ export default class Parser {
         const current = this.get()
         const keywords = [...Lexer.KEYWORDS.values()]
         const isKeyword = keywords.find((k) => k === current.getType())
-        const key = new Literal(this.consume(isKeyword ? current.getType() : TokenType.WORD).getText(), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
+        const key = new Literal(this.consume(isKeyword ? current.getType() : TokenType.WORD).getText())
         indices.push(key)
       }
       if (this.match(TokenType.LBRACKET)) {
@@ -543,13 +572,15 @@ export default class Parser {
     //FunctionExpression
     //ArrowFunctionExpression
     if (this.match(TokenType.FUNCTION)) return new FunctionExpression(this.params(), this.body())
-    if (this.match(TokenType.NUMBER)) return new Literal(Number(current.getText()), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
-    if (this.match(TokenType.HEX_NUMBER)) return new Literal(Number.parseInt(current.getText(), 16), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
-    if (this.match(TokenType.TEXT)) return new Literal(current.getText(), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
-    if (this.match(TokenType.WORD)) return new Literal(current.getText(), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
-    if (this.match(TokenType.LOG)) return new Literal(current.getText(), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
+    if (this.match(TokenType.NUMBER)) {
+      return new Literal(Number(current.getText()))
+    }
+    if (this.match(TokenType.HEX_NUMBER)) return new Literal(Number.parseInt(current.getText(), 16))
+    if (this.match(TokenType.TEXT)) return new Literal(current.getText())
+    if (this.match(TokenType.WORD)) return new Literal(current.getText())
+    if (this.match(TokenType.LOG)) return new Literal(current.getText())
     if (this.match(TokenType.THIS)) return new ThisExpression()
-    if (this.match(TokenType.TRUE)) return new Literal(BooleanValue.TRUE, new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
+    if (this.match(TokenType.TRUE)) return new Literal(BooleanValue.TRUE)
 
     throw this.error('Expression expected instead get ' + current)
   }
@@ -557,7 +588,7 @@ export default class Parser {
   private qualifiedName(): IAccessible {
     if (this.lookMatch(0, TokenType.WORD) && (this.lookMatch(1, TokenType.LBRACKET) || this.lookMatch(1, TokenType.DOT)))
       return new ContainerAccessExpression(this.consume(TokenType.WORD).getText(), this.dotOrBracketNotation())
-    return new Identifier(this.consume(TokenType.WORD).getText(), new Location(this.getPrev().getStart(), this.getPrev().getEnd()))
+    return new Identifier(this.consume(TokenType.WORD).getText())
   }
 
   private nested(): IExpression {
@@ -586,12 +617,14 @@ export default class Parser {
   private consume(type: TokenType): IToken {
     const current = this.get()
     if (current.getType() !== type) throw this.error('Token ' + current + " doesn't match " + TokenType[type])
-    ++this.position
+    Location.setToken(this.get())
+    this.position++
     return current
   }
 
   private match(type: TokenType): boolean {
-    return type === this.get().getType() ? (++this.position, true) : false
+    const current = this.get()
+    return type === this.get().getType() ? (this.position++, Location.setToken(current), true) : false
   }
 
   private lookMatch(pos: number, type: TokenType): boolean {

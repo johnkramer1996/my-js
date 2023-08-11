@@ -5,7 +5,12 @@ import { IAccessible } from './IAccessible'
 import { Location } from 'parser/Parser'
 
 export class Identifier implements IAccessible {
-  constructor(private name: string, public location: Location) {}
+  start: number
+  end: number
+  constructor(private name: string) {
+    this.start = Location.getPosition().start
+    this.end = Location.getPosition().end
+  }
 
   public eval(): IValue {
     return Variables.get(this.getName())
