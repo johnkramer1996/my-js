@@ -1,6 +1,7 @@
 import LexerException from '@exceptions/LexerException'
 import Token, { IToken, KeyWord } from './Token'
 import TokenType from './TokenType'
+import { Console } from 'components/App'
 
 export interface ILexer {
   tokenize(): IToken[]
@@ -101,19 +102,25 @@ export default class Lexer implements ILexer {
   }
 
   public tokenize(): IToken[] {
-    while (this.position < this.length) {
-      const char = this.peek()
-      if (this.isWhiteSpace(char)) this.next()
-      else {
-        this.start = this.position
-        if (this.isSemikolon(char)) this.tokenizeSemikolon()
-        else if (this.isLetter(char) || ['_', '$'].includes(char)) this.tokenizeWord()
-        else if (this.isDigit(char)) this.tokenizeNumber()
-        else if (this.isOctothorp(char)) this.tokenizeHexNumber()
-        else if (this.isExtendedWord(char)) this.tokenizeExtendedWord()
-        else if (this.isQuote(char)) this.tokenizeText()
-        else if (this.isOperator(char)) this.tokenizeOperator()
-        else throw this.error(`Unknown char "${this.peek()}"`)
+    try {
+      while (this.position < this.length) {
+        const char = this.peek()
+        if (this.isWhiteSpace(char)) this.next()
+        else {
+          this.start = this.position
+          if (this.isSemikolon(char)) this.tokenizeSemikolon()
+          else if (this.isLetter(char) || ['_', '$'].includes(char)) this.tokenizeWord()
+          else if (this.isDigit(char)) this.tokenizeNumber()
+          else if (this.isOctothorp(char)) this.tokenizeHexNumber()
+          else if (this.isBackTick(char)) this.tokenizeBackTick()
+          else if (this.isQuote(char)) this.tokenizeText()
+          else if (this.isOperator(char)) this.tokenizeOperator()
+          else throw this.error(`Unknown char "${this.peek()}"`)
+        }
+      }
+    } catch (e) {
+      if (e instanceof LexerException) {
+        Console.error(`${e.name}: ${e.message}`, e.row, e.col)
       }
     }
     return this.tokens
@@ -145,7 +152,7 @@ export default class Lexer implements ILexer {
     return char === '#'
   }
 
-  private isExtendedWord(char: string): boolean {
+  private isBackTick(char: string): boolean {
     return char === '`'
   }
 
@@ -159,7 +166,7 @@ export default class Lexer implements ILexer {
 
   private tokenizeSemikolon(): void {
     this.next()
-    this.addToken(TokenType.SEMIKOLON)
+    this.addToken(TokenType.SEMIKOLON, ';')
   }
 
   private tokenizeWord(): void {
@@ -187,14 +194,14 @@ export default class Lexer implements ILexer {
     this.addToken(TokenType.HEX_NUMBER, hexNumber)
   }
 
-  private tokenizeExtendedWord(): void {
+  private tokenizeBackTick(): void {
     this.next() // skip `
     const result = this.getNextChars((current) => {
-      if (current === '\0') throw this.error('Reached end of file while parsing extended word.')
-      if (current === '\n' || current == '\r') throw this.error('Reached end of line while parsing extended word.')
+      if (current === '\0') throw this.error('Unterminated string literal')
+      if (current === '\n' || current == '\r') throw this.error('Unterminated string literal')
       return !(current === '`')
     })
-    this.addToken(TokenType.WORD, result)
+    this.addToken(TokenType.TEXT, result, `\`${result}\``)
   }
 
   private tokenizeText(): void {
@@ -219,7 +226,13 @@ export default class Lexer implements ILexer {
       buffer.push(current)
 
       const next = this.peek(1)
-      if (next === '\0' || next === '\n') throw this.error('Reached end of line while parsing text.')
+      if (next === '\0' || next === '\n') {
+        const text = buffer.join('')
+        const raw = `${singleOrDoubleQuote}${text}`
+        this.position = this.length
+        this.addToken(TokenType.TEXT, text, raw)
+        throw this.error('Unterminated string literal')
+      }
     }
 
     this.next()

@@ -7,12 +7,16 @@ import Types from './Types'
 export default abstract class Value<T extends string | number | boolean | undefined | IValue[] | Object | Function | IStatement> implements IValue {
   constructor(protected value: T, protected typeValue: Types) {}
 
-  public type() {
+  public abstract equals(value: IValue): boolean
+  public abstract compareTo(o: IValue): number
+
+  public type(): Types {
     return this.typeValue
   }
 
-  public abstract equals(value: IValue): boolean
-  public abstract compareTo(o: IValue): number
+  public getValue(): T {
+    return this.value
+  }
 
   public asNumber(): number {
     return Number(this.value)

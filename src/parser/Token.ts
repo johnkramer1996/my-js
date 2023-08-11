@@ -33,6 +33,8 @@ export interface IToken {
   getType(): TokenType
   getText(): string
   getRaw(): string
+  getRow(): number
+  getCol(): number
   getStart(): number
   getEnd(): number
 }

@@ -12,15 +12,15 @@ import UndefinedValue from '@lib/UndefinedValue'
 import { Location } from 'parser/Parser'
 
 export class VariableDeclarator implements IStatement {
-  constructor(public target: Identifier, public expression: IExpression | null, public location: Location) {}
+  constructor(public id: Identifier, public init: IExpression | null, public location: Location) {}
 
   public execute(): void {
-    const result = this.expression?.eval() || UndefinedValue.UNDEFINED
-    this.target.define(result)
+    const result = this.init?.eval() || UndefinedValue.UNDEFINED
+    this.id.define(result)
   }
 
   public hoisting(kind: string): void {
-    Variables.hoisting(this.target.getName(), kind)
+    Variables.hoisting(this.id.getName(), kind)
   }
 
   public accept(visitor: IVisitor): void {
@@ -28,7 +28,7 @@ export class VariableDeclarator implements IStatement {
   }
 
   public toString() {
-    return `${this.target} = ${this.expression}`
+    return `${this.id} = ${this.init}`
   }
 }
 

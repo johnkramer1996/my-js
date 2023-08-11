@@ -7,6 +7,7 @@ import { VaraibleDeclaration, VariableDeclarator } from './AssignmentExpression'
 import StringValue from '@lib/StringValue'
 import CallStack from '@lib/CallStack'
 import { Location } from 'parser/Parser'
+import { Console } from 'components/App'
 
 //(this binding)
 //LexicalEnvironment = {
@@ -31,7 +32,17 @@ export default class Program implements IStatement {
 
   // Phase execute
   public execute(): void {
-    for (const statement of this.body) statement.execute()
+    this.creation()
+    for (const statement of this.body) {
+      try {
+        statement.execute()
+      } catch (e) {
+        console.log(e)
+        if (e instanceof Error) {
+          // Console.error(`${e.name}: ${e.message}`, 0, 0)
+        }
+      }
+    }
   }
 
   // Phase creation

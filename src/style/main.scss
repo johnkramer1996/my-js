@@ -12,6 +12,10 @@ body {
   width: 100%;
 }
 
+.hidden {
+  display: none;
+}
+
 .mainContainer {
   position: relative;
   height: 100%;
@@ -28,6 +32,7 @@ body {
 
 .left {
   background-color: #282c34;
+  color: #abb2bf;
 }
 
 .ast {
@@ -62,7 +67,10 @@ body {
 .text {
   margin: 0;
   white-space: pre-wrap;
-  color: #abb2bf;
+}
+
+.error {
+  background-color: red;
 }
 
 .normal {
@@ -101,4 +109,35 @@ body {
 }
 .instance {
   color: #e5c07b;
+}
+
+.ast {
+  padding: 50px;
+  &__title {
+    margin: 0;
+    // padding-top: 20px;
+    // margin-left: -20px;
+    color: #268bd2;
+  }
+  &__list {
+    padding: 0;
+    margin: 0;
+    padding-left: 10px;
+  }
+  li {
+    margin-top: 5px;
+  }
+
+  &__key {
+    color: #b58900;
+  }
+  &__dot {
+    color: #93a1a1;
+  }
+  &__notation {
+    color: #93a1a1;
+  }
+  &__value {
+    color: #2aa198;
+  }
 }

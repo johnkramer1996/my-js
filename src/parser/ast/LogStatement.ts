@@ -1,19 +1,13 @@
 import IStatement from '@ast/IStatement'
 import IExpression from '@ast/IExpression'
 import IVisitor from './IVisitor'
-
-export const process = {
-  stdout: {
-    write: (str: string) => console.log(str),
-  },
-}
+import { Console } from 'components/App'
 
 export default class LogStatement implements IStatement {
   constructor(public expression: IExpression, public newLine: boolean = false) {}
 
   public execute(): void {
-    process.stdout.write(String(this.expression.eval().asString()))
-    // this.newLine && process.stdout.write('\n')
+    Console.log(this.expression.eval().asString())
   }
 
   public accept(visitor: IVisitor): void {

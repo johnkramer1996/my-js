@@ -35,14 +35,13 @@ export default abstract class AbstractVisitor implements IVisitor {
     } else if (s instanceof ArrayExpression) {
       for (const el of s.elements) el.accept(this)
     } else if (s instanceof AssignmentExpression) {
-      debugger
       s.target.accept(this)
       s.expression.accept(this)
     } else if (s instanceof VaraibleDeclaration) {
       for (const declarator of s.declarations) declarator.accept(this)
     } else if (s instanceof VariableDeclarator) {
-      s.target.accept(this)
-      s.expression && s.expression.accept(this)
+      s.id.accept(this)
+      s.init && s.init.accept(this)
     } else if (s instanceof BinaryExpression) {
       s.expr1.accept(this)
       s.expr2.accept(this)

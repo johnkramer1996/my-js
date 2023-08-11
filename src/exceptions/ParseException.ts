@@ -1,7 +1,5 @@
 export default class ParserException extends Error {
-  constructor()
-  constructor(message: string)
-  constructor(message?: string) {
-    super(message || '')
+  constructor(message: string, public row: number, public col: number) {
+    super(message)
   }
 }

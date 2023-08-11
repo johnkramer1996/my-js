@@ -8,6 +8,7 @@ import MapValue from './MapValue'
 import IStatement from '@ast/IStatement'
 import IVisitor from '@ast/IVisitor'
 import Function from './Functions'
+import { Console } from 'components/App'
 
 const uninitialized = '<uninitialized>'
 
@@ -50,13 +51,17 @@ class ScopeFindData {
 }
 
 export default class Variables {
-  public static scope: Scope = new Scope()
+  public static scope: Scope
 
   static {
-    this.scope.variables.clear()
+    this.init()
+  }
+
+  public static init() {
+    this.scope = new Scope()
     this.scope.variables.set('console', {
       value: new MapValue({
-        log: new FunctionValue(new BuiltInFunction({ execute: (...values: IValue[]) => (console.log(values.toString()), UndefinedValue.UNDEFINED) })),
+        log: new FunctionValue(new BuiltInFunction({ execute: (...values: IValue[]) => (Console.log(values.toString()), UndefinedValue.UNDEFINED) })),
       }),
       kind: 'conts',
     })

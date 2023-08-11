@@ -1,9 +1,13 @@
+import { Location } from 'parser/Parser'
 import IExpression from './IExpression'
 import IStatement from './IStatement'
 import IVisitor from './IVisitor'
 
 export default class ExprStatement implements IStatement {
-  constructor(public expr: IExpression) {}
+  public location: Location
+  constructor(public expr: IExpression) {
+    this.location = expr.location
+  }
 
   public execute(): void {
     this.expr.eval()
